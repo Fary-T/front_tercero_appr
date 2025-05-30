@@ -27,8 +27,19 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   };
 
   const handleGuardar = () => {
-    onGuardar(formData); // llama a la función del padre
-    setFormData({ nombre: '', correo: '', telefono: '' }); // limpia
+    onGuardar(formData);
+    setFormData({
+      nombre: '',
+      correo: '',
+      telefono: '',
+      username: '',
+      password: '',
+      apellido: '',
+      tipo: '',
+      activo: '',
+      cedula: '',
+      rol: ''
+    }); // limpia
   };
 
   return (

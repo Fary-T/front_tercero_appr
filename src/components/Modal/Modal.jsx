@@ -12,7 +12,14 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     correo: '',
-    telefono: ''
+    telefono: '',
+    username: '',
+    password: '',
+    apellido: '',
+    tipo: '',
+    activo: '',
+    cedula: '',
+    rol: ''
   });
 
   const handleChange = (e) => {

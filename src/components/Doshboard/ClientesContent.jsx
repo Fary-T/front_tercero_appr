@@ -48,29 +48,6 @@ export const ClientesContent = () => {
     }
   };
 
-  const guardarCliente = async (nuevoCliente) => {
-    try {
-      const response = await fetch("http://localhost:3030/usuario/agregar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(nuevoCliente)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Cliente agregado correctamente");
-        setModalAbierto(false);
-        consultarClientes(); // refrescar tabla
-      } else {
-        alert(data.mensaje || "Error al agregar cliente");
-      }
-    } catch (error) {
-      console.error("Error al guardar cliente:", error);
-      alert("No se pudo guardar el cliente");
-    }
-  };
-
   return (
     <Box>
       <Box>
@@ -142,7 +119,7 @@ export const ClientesContent = () => {
       <Modal
         open={modalAbierto}
         onClose={() => setModalAbierto(false)}
-        onGuardar={guardarCliente}
+        onGuardar={consultarClientes} // solo refresca tabla
       />
       <ModalEliminarUsuario
         open={modalEliminarAbierto}

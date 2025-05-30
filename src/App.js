@@ -17,7 +17,6 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="*" element={<>NOT FOUND</>} />
-            <Route path="/" element={<>Ruta base</>} />
             <Route path="/login" element={<Login />} />
             <Route path="/Planes" element={<Planes />} />
             <Route path="/home" element={<Home />} />
@@ -25,6 +24,7 @@ function App() {
             <Route element={<AuthGuard />}>
               <Route path="/doshboard" element={<Doshboard />} />
               <Route path="/doshboardAgentes" element={<DoshboardAgentes />} />
+              <Route path="/" element={<>Ruta base</>} />
               <Route
                 path="/doshboardClientes"
                 element={<DoshboardClientes />}

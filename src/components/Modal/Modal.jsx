@@ -142,4 +142,5 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   );
 };
 
+
 Modal.propTypes = {};

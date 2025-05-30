@@ -29,6 +29,10 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   const validarCampos = () => {
     const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     const soloNumeros10 = /^\d{10}$/;
+    if (!formData.correo.includes('@') || !formData.correo.trim()) {
+    alert("El correo debe contener un '@' y no puede estar vacío.");
+    return false; // Detener la ejecución si hay un error
+  }
 
     if (!formData.username.trim()) {
       alert("El nombre de usuario es requerido.");

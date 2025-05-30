@@ -61,13 +61,6 @@ export const ModalEditarUsuario = ({ open, onClose, usuario, onGuardar }) => {
     newErrors.push("El apellido solo debe contener letras.");
   }
 
-  if (typeof formData.tipo !== 'string' || !formData.tipo.trim()) {
-    newErrors.push("El campo 'tipo' es requerido.");
-  }
-
-  if (!["1", "0"].includes(formData.activo)) {
-    newErrors.push("El campo 'activo' debe ser 1 (activo) o 0 (inactivo).");
-  }
 
   if (!soloNumeros10.test(formData.cedula)) {
     newErrors.push("La cédula debe contener exactamente 10 números.");
@@ -75,6 +68,9 @@ export const ModalEditarUsuario = ({ open, onClose, usuario, onGuardar }) => {
 
   if (!soloNumeros10.test(formData.telefono)) {
     newErrors.push("El teléfono debe contener exactamente 10 números.");
+  }
+  if (!formData.correo.includes('@') || !formData.correo.trim()) {
+    newErrors.push("El correo debe contener un '@' y no puede estar vacío.");
   }
 
   return newErrors; // Devuelve un array de errores

@@ -1,41 +1,41 @@
-"use client";
+'use client';
 import React from 'react';
 import './Footer.css';
-import PropTypes from 'prop-types';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 
-export const Footer = ({}) => {
-	return (
-    <>
-<Box
+export const Footer = () => {
+  return (
+    <Box
+      component="footer"
       sx={{
         bgcolor: '#25004D',
         color: 'white',
-        py: 2,
-        px: { xs: 3, md: 8 },
+        py: 4,
+        px: { xs: 2, sm: 4, md: 8 },
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        minHeight: { xs: '10px', md: '10px' },
+        minHeight: { md: '300px' }, // Asegura altura visible en pantallas medianas
+        mt: 'auto', // Para que se "pegue" abajo si el layout lo permite
       }}
     >
       <Grid
         container
-        spacing={4}
         alignItems="center"
-        justifyContent="center"
+        justifyContent="space-between"
+        spacing={4}
         sx={{
           maxWidth: 1200,
-          width: '100%',
+          flexDirection: { xs: 'row', sm: 'row', md: 'row' },
+          flexWrap: 'nowrap',
         }}
       >
+        {/* TEXTO */}
         <Grid
           item
           xs={12}
-          md={6}
+          md={7}
           sx={{
-            textAlign: { xs: 'center', md: 'left' },
-            pr: { md: 4 },
+            textAlign: 'left',
           }}
         >
           <Typography
@@ -45,12 +45,13 @@ export const Footer = ({}) => {
               fontWeight: 'bold',
               color: 'white',
               mb: 4,
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+              fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3rem' },
             }}
           >
-            Por que elegirnos
+            Por qué elegirnos
           </Typography>
 
+          {/* Ítem 1 */}
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="h5"
@@ -70,23 +71,20 @@ export const Footer = ({}) => {
                   height: '12px',
                   bgcolor: '#FFD700',
                 },
-                fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.5rem' },
+                fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
               }}
             >
               Profesionalismo
             </Typography>
             <Typography
               variant="body1"
-              sx={{
-                color: 'white',
-                ml: { md: 3 },
-                mt: 1,
-              }}
+              sx={{ mt: 1, ml: { md: 3 } }}
             >
               Contamos con un equipo de expertos en seguros
             </Typography>
           </Box>
 
+          {/* Ítem 2 */}
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="h5"
@@ -106,31 +104,29 @@ export const Footer = ({}) => {
                   height: '12px',
                   bgcolor: '#FFD700',
                 },
-                fontSize: { xs: '1.2rem', sm: '1.4rem', md: '1.5rem' },
+                fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
               }}
             >
               Atención personalizada
             </Typography>
             <Typography
               variant="body1"
-              sx={{
-                color: 'white',
-                ml: { md: 3 },
-                mt: 1,
-              }}
+              sx={{ mt: 1, ml: { md: 3 } }}
             >
               Brindamos un servicio adaptado a tus necesidades
             </Typography>
           </Box>
         </Grid>
 
+        {/* IMAGEN */}
         <Grid
           item
           xs={12}
-          md={6}
+          md={5}
           sx={{
-            textAlign: 'center',
-            mt: { xs: 4, md: 0 },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: { xs: 'flex-end', md: 'center' },
           }}
         >
           <Box
@@ -138,16 +134,13 @@ export const Footer = ({}) => {
             src="/light.png"
             alt="Ilustración de un foco"
             sx={{
-              width: '100%',
+              width: { xs: '130px', sm: '200px', md: '300px' },
               height: 'auto',
-              maxWidth: '352px',
-              maxHeight: '391.312px',
               objectFit: 'contain',
             }}
           />
         </Grid>
       </Grid>
     </Box>
-    </>
   );
 };

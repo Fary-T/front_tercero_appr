@@ -16,18 +16,17 @@ export const HeroandServices = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const headingFontSize = isXs ? "1.8rem" : "3.5rem";
   const paragraphFontSize = isXs ? "0.85rem" : "1.35rem";
   const imageMaxHeight = isXs ? 180 : 400;
-  const textAlignValue = "left"; // Siempre alineado a la izquierda
 
   const irAPlanes = () => {
-    navigate("/Planes"); 
+    navigate("/Planes");
   };
 
   return (
     <>
+      {/* Sección principal */}
       <Box
         sx={{
           bgcolor: "#25004D",
@@ -36,20 +35,21 @@ export const HeroandServices = () => {
           px: { xs: 2, md: 8 },
           display: "flex",
           justifyContent: "center",
-          // Removemos minHeight para que se ajuste al contenido
         }}
       >
         <Box sx={{ maxWidth: 1200, width: "100%" }}>
           {/* Layout para Desktop */}
+          {/* Layout para Desktop */}
           <Grid
             container
-            spacing={4}
+            spacing={0} // eliminamos espacio adicional entre columnas
             alignItems="center"
-            sx={{ 
-              display: { xs: "none", md: "flex" }
+            justifyContent="space-between"
+            sx={{
+              display: { xs: "none", md: "flex" },
             }}
           >
-            <Grid item xs={12} md={6} sx={{ textAlign: "left" }}>
+            <Grid item md={6} sx={{ textAlign: "left", pr: 4 }}>
               <Typography
                 variant="h2"
                 component="h1"
@@ -73,8 +73,8 @@ export const HeroandServices = () => {
                 }}
               >
                 Asegura tu bienestar y el de tu familia con nuestros seguros
-                confiables. Comienza hoy mismo a construir un futuro más seguro y
-                sin preocupaciones.
+                confiables. Comienza hoy mismo a construir un futuro más seguro
+                y sin preocupaciones.
               </Typography>
               <Box sx={{ textAlign: "left" }}>
                 <Button
@@ -95,17 +95,19 @@ export const HeroandServices = () => {
                 </Button>
               </Box>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item md={6} sx={{ pl: 4 }}>
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "flex-end",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
                 }}
               >
                 <Box
                   component="img"
                   src="/miss.png"
-                  alt="Ilustración de seguridad con escudo y persona"
+                  alt="Ilustración de seguridad"
                   sx={{
                     maxWidth: "100%",
                     height: "auto",
@@ -117,7 +119,7 @@ export const HeroandServices = () => {
             </Grid>
           </Grid>
 
-          {/* Layout para Mobile - Flexbox horizontal */}
+          {/* Layout para Mobile */}
           <Box
             sx={{
               display: { xs: "flex", md: "none" },
@@ -126,7 +128,7 @@ export const HeroandServices = () => {
               gap: 2,
             }}
           >
-            {/* Contenido de texto - lado izquierdo */}
+            {/* Texto - lado izquierdo */}
             <Box sx={{ flex: 1, pr: 1 }}>
               <Typography
                 variant="h2"
@@ -135,7 +137,7 @@ export const HeroandServices = () => {
                   fontWeight: "bold",
                   mb: 2,
                   fontSize: headingFontSize,
-                  textAlign: "left", // Siempre a la izquierda
+                  textAlign: "left",
                 }}
               >
                 Empieza a proteger tu futuro hoy
@@ -146,13 +148,13 @@ export const HeroandServices = () => {
                   mb: 3,
                   fontSize: paragraphFontSize,
                   lineHeight: 1.4,
-                  textAlign: "left", // Siempre a la izquierda
+                  textAlign: "left",
                 }}
               >
                 Asegura tu bienestar y el de tu familia con nuestros seguros
                 confiables. Comienza hoy mismo a construir un futuro más seguro.
               </Typography>
-              <Box sx={{ textAlign: "left" }}> {/* Botón alineado a la izquierda */}
+              <Box sx={{ textAlign: "left" }}>
                 <Button
                   variant="contained"
                   onClick={irAPlanes}
@@ -173,7 +175,15 @@ export const HeroandServices = () => {
             </Box>
 
             {/* Imagen - lado derecho */}
-            <Box sx={{ flex: "0 0 auto", width: "140px" }}>
+            <Box
+              sx={{
+                flex: "0 0 auto",
+                width: "140px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Box
                 component="img"
                 src="/miss.png"
@@ -190,7 +200,7 @@ export const HeroandServices = () => {
         </Box>
       </Box>
 
-      {/* Sección de servicios - sin cambios */}
+      {/* Sección de servicios */}
       <Box
         sx={{
           py: { xs: 6, md: 10 },
@@ -212,8 +222,8 @@ export const HeroandServices = () => {
         >
           Nuestros Servicios
         </Typography>
-        <Grid container spacing={6} justifyContent="center">
-          <Grid item xs={12} sm={6} md={6}>
+        <Grid container spacing={4} justifyContent="center">
+          <Grid item xs={6} sm={6} md={6}>
             <Box
               sx={{
                 display: "flex",
@@ -247,7 +257,7 @@ export const HeroandServices = () => {
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={6}>
+          <Grid item xs={6} sm={6} md={6}>
             <Box
               sx={{
                 display: "flex",

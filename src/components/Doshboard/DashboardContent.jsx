@@ -87,7 +87,7 @@ export const DashboardContent = () => {
     if (isXs) {
       return {
         titleVariant: "h6",
-        cardHeight: 100,
+        cardHeight: 120,
         padding: 1,
         spacing: 1.5,
         minSectionHeight: 220,
@@ -97,7 +97,7 @@ export const DashboardContent = () => {
     if (isSm) {
       return {
         titleVariant: "h5",
-        cardHeight: 120,
+        cardHeight: 140,
         padding: 1.5,
         spacing: 2,
         minSectionHeight: 280,
@@ -107,7 +107,7 @@ export const DashboardContent = () => {
     if (isMd) {
       return {
         titleVariant: "h4",
-        cardHeight: 140,
+        cardHeight: 160,
         padding: 2,
         spacing: 2,
         minSectionHeight: 320,
@@ -117,7 +117,7 @@ export const DashboardContent = () => {
     if (isLg) {
       return {
         titleVariant: "h4",
-        cardHeight: 150,
+        cardHeight: 170,
         padding: 2.5,
         spacing: 2.5,
         minSectionHeight: 350,
@@ -126,7 +126,7 @@ export const DashboardContent = () => {
     }
     return {
       titleVariant: "h4",
-      cardHeight: 160,
+      cardHeight: 180,
       padding: 3,
       spacing: 3,
       minSectionHeight: 380,
@@ -170,73 +170,112 @@ export const DashboardContent = () => {
         Dashboard - Seguros de Vida y Salud
       </Typography>
 
-      {/* Métricas - Grid responsivo */}
-      <Grid container spacing={config.spacing} sx={{ mb: config.spacing }}>
-        {metricas.map(({ label, value, color, icon, bgColor }) => (
-          <Grid item xs={6} sm={6} md={3} key={label}>
-            <Paper 
-              elevation={2} 
-              sx={{ 
-                height: config.cardHeight,
-                p: { xs: 1, sm: 1.5, md: 2 },
+      {/* Métricas - Grid responsivo centrado */}
+      <Box sx={{ 
+        display: 'flex',
+        justifyContent: 'center',
+        mb: config.spacing,
+        width: '100%'
+      }}>
+        <Grid 
+          container 
+          spacing={config.spacing} 
+          sx={{ 
+            maxWidth: { xs: '100%', sm: '100%', md: '900px', lg: '1000px' },
+            justifyContent: { xs: 'center', md: 'space-between' },
+            alignItems: 'stretch'
+          }}
+        >
+          {metricas.map(({ label, value, color, icon, bgColor }) => (
+            <Grid 
+              item 
+              xs={6} 
+              sm={6} 
+              md={3} 
+              key={label}
+              sx={{
                 display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                backgroundColor: bgColor,
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                borderRadius: { xs: 1, sm: 2 },
-                '&:hover': {
-                  transform: { xs: 'none', sm: 'translateY(-2px)', md: 'translateY(-4px)' },
-                  boxShadow: { xs: 2, sm: 4, md: 6 }
-                }
+                justifyContent: 'center'
               }}
             >
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'flex-start',
-                mb: { xs: 0.5, sm: 1 }
-              }}>
-                <Box sx={{ color: color }}>
+              <Paper 
+                elevation={2} 
+                sx={{ 
+                  width: '100%',
+                  maxWidth: { xs: '160px', sm: '180px', md: '220px', lg: '240px' },
+                  height: config.cardHeight,
+                  p: { xs: 1.5, sm: 2, md: 2.5 },
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: bgColor,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  borderRadius: { xs: 2, sm: 3 },
+                  border: `1px solid ${color}15`,
+                  '&:hover': {
+                    transform: { xs: 'scale(1.02)', sm: 'translateY(-3px) scale(1.02)', md: 'translateY(-5px) scale(1.03)' },
+                    boxShadow: { xs: 3, sm: 6, md: 8 },
+                    backgroundColor: `${bgColor}CC`,
+                    borderColor: `${color}25`
+                  }
+                }}
+              >
+                {/* Icono centrado */}
+                <Box sx={{ 
+                  color: color,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  mb: { xs: 1, sm: 1.5 }
+                }}>
                   {icon}
                 </Box>
+                
+                {/* Valor principal */}
                 <Typography 
-                  variant={isXs ? "h6" : isSm ? "h5" : "h4"}
+                  variant={isXs ? "h5" : isSm ? "h4" : "h3"}
                   fontWeight="bold"
                   sx={{ 
                     color: color,
                     fontSize: { 
-                      xs: '1rem', 
-                      sm: '1.25rem', 
-                      md: '1.5rem',
-                      lg: '1.75rem'
-                    }
+                      xs: '1.4rem', 
+                      sm: '1.6rem', 
+                      md: '1.8rem',
+                      lg: '2rem'
+                    },
+                    textAlign: 'center',
+                    mb: { xs: 0.5, sm: 1 }
                   }}
                 >
                   {value}
                 </Typography>
-              </Box>
-              <Typography 
-                variant="caption"
-                fontWeight="medium"
-                color="text.secondary"
-                sx={{ 
-                  fontSize: { 
-                    xs: '0.65rem', 
-                    sm: '0.75rem', 
-                    md: '0.85rem',
-                    lg: '0.9rem'
-                  },
-                  lineHeight: 1.2
-                }}
-              >
-                {label}
-              </Typography>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
+                
+                {/* Label */}
+                <Typography 
+                  variant="body2"
+                  fontWeight="600"
+                  color="text.secondary"
+                  sx={{ 
+                    fontSize: { 
+                      xs: '0.75rem', 
+                      sm: '0.85rem', 
+                      md: '0.9rem',
+                      lg: '0.95rem'
+                    },
+                    textAlign: 'center',
+                    lineHeight: 1.3,
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  {label}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
       {/* Secciones principales - Diseño flexible */}
       <Box sx={{ 

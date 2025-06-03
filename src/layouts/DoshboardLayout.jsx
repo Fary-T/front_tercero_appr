@@ -1,15 +1,21 @@
 "use client";
 import React, { useState } from "react";
 import {
+  AppBar,
   Box,
+  Toolbar,
   Typography,
+  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
   Button,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { DashboardContent } from "../components/Doshboard/DashboardContent";
@@ -20,43 +26,29 @@ import { RolesContent } from "../components/Doshboard/RolesContent";
 export const DoshboardLayout = () => {
   const [seccionActiva, setSeccionActiva] = useState("Dashboard");
   const [dialogoCerrarSesion, setDialogoCerrarSesion] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
 
-  // Función para manejar el clic en "Cerrar Sesión"
-  const handleCerrarSesionClick = () => {
-    setDialogoCerrarSesion(true);
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
   };
 
-  // Función para permanecer en la página (cerrar el diálogo)
-  const handlePermanecerEnPagina = () => {
-    setDialogoCerrarSesion(false);
-  };
-
-  // Función para cerrar el diálogo sin cerrar sesión (Cancelar)
-  const handleCancelarCerrarSesion = () => {
-    setDialogoCerrarSesion(false);
-  };
-
-  // Función para confirmar y cerrar sesión
+  const handleCerrarSesionClick = () => setDialogoCerrarSesion(true);
+  const handlePermanecerEnPagina = () => setDialogoCerrarSesion(false);
+  const handleCancelarCerrarSesion = () => setDialogoCerrarSesion(false);
   const handleConfirmarCerrarSesion = () => {
-    // Limpiar datos de sesión
     localStorage.removeItem("usuario");
     localStorage.removeItem("isAuthenticated");
-
-    // Cerrar el diálogo
     setDialogoCerrarSesion(false);
-
-    // Redirigir al home/login
     navigate("/home", { replace: true });
   };
 
-  // Función modificada para manejar la selección de sección
   const handleSeccionChange = (seccion) => {
-    if (seccion === "Cerrar Sesión") {
-      handleCerrarSesionClick();
-    } else {
-      setSeccionActiva(seccion);
-    }
+    if (seccion === "Cerrar Sesión") handleCerrarSesionClick();
+    else setSeccionActiva(seccion);
+    if (isMobile) setMobileOpen(false); // Cierra el drawer en móvil
   };
 
   const renderContenido = () => {
@@ -70,81 +62,73 @@ export const DoshboardLayout = () => {
       case "Gestión de Roles":
         return <RolesContent />;
       case "Reportes":
-        return <h2>Visualización de Reportes</h2>;
+        return <Typography variant="h6">Visualización de Reportes</Typography>;
       default:
-        return <h2>Selecciona una opción</h2>;
+        return <Typography variant="h6">Selecciona una opción</Typography>;
     }
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", width: "100%" }}>
+      {/* AppBar solo en móviles */}
+      {isMobile && (
+        <AppBar position="fixed" sx={{ backgroundColor: "#25004D" }}>
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap>
+              Seguros de Vida y Salud
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      {/* Sidebar */}
       <Sidebar
         seccionActiva={seccionActiva}
         setSeccionActiva={handleSeccionChange}
+        isMobile={isMobile}
+        mobileOpen={mobileOpen}
+        handleDrawerToggle={handleDrawerToggle}
       />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+
+      {/* Contenido principal */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, md: 3 },
+          width: "100%",
+          mt: isMobile ? 8 : 0,
+        }}
+      >
         {renderContenido()}
       </Box>
 
-      {/* Diálogo de confirmación para cerrar sesión */}
+      {/* Diálogo de cerrar sesión */}
       <Dialog
         open={dialogoCerrarSesion}
         onClose={handlePermanecerEnPagina}
-        aria-labelledby="dialog-cerrar-sesion-titulo"
-        aria-describedby="dialog-cerrar-sesion-descripcion"
       >
         <DialogTitle
-          id="dialog-cerrar-sesion-titulo"
-          sx={{
-            backgroundColor: "#25004D",
-            color: "white",
-            textAlign: "center",
-          }}
+          sx={{ backgroundColor: "#25004D", color: "white", textAlign: "center" }}
         >
           Cerrar Sesión
         </DialogTitle>
         <DialogContent sx={{ mt: 2 }}>
-          <DialogContentText
-            id="dialog-cerrar-sesion-descripcion"
-            sx={{ textAlign: "center", fontSize: "1.1rem" }}
-          >
+          <DialogContentText sx={{ textAlign: "center", fontSize: "1.1rem" }}>
             ¿Estás seguro de que deseas cerrar sesión?
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3, gap: 0 }}>
-          <Button
-            onClick={handlePermanecerEnPagina}
-            sx={{
-              backgroundColor: "#f8f8f9",
-              color: "black",
-              "&:hover": {
-                backgroundColor: "#beb8ff",
-              },
-              px: 2,
-              fontWeight: "bold",
-              fontSize: "0.9rem",
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-            }}
-          >
-            Permanecer en la página
-          </Button>
-          <Button
-            onClick={handleConfirmarCerrarSesion}
-            sx={{
-              backgroundColor: "#F8CF49",
-              color: "#25004D",
-              "&:hover": {
-                backgroundColor: "#FCC100",
-              },
-              px: 2,
-              fontWeight: "bold",
-              fontSize: "0.9rem",
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-            }}
-            autoFocus
-          >
+        <DialogActions sx={{ justifyContent: "center", pb: 3, gap: 1 }}>
+          <Button onClick={handlePermanecerEnPagina}>Permanecer</Button>
+          <Button onClick={handleConfirmarCerrarSesion} autoFocus>
             Sí, Cerrar Sesión
           </Button>
         </DialogActions>

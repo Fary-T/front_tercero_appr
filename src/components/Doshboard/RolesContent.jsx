@@ -10,12 +10,17 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton
+  IconButton,
+  useMediaQuery
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import { useTheme } from '@mui/material/styles';
 
 export const RolesContent = () => {
   const [roles, setRoles] = useState([]);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     obtenerRoles();
@@ -33,7 +38,6 @@ export const RolesContent = () => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Roles obtenidos:", data);
         setRoles(data);
       } else {
         alert(data.mensaje || "Error al obtener los roles");
@@ -45,15 +49,22 @@ export const RolesContent = () => {
   };
 
   return (
-    <Box p={3}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h6" fontWeight="bold">
+    <Box p={isMobile ? 1 : 3}>
+      <Box
+        display="flex"
+        flexDirection={isMobile ? 'column' : 'row'}
+        justifyContent="space-between"
+        alignItems={isMobile ? 'flex-start' : 'center'}
+        gap={2}
+        mb={2}
+      >
+        <Typography variant="h6" fontWeight="bold" textAlign={isMobile ? 'center' : 'left'}>
           Gestión de roles
         </Typography>
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
+        <Table size={isMobile ? 'small' : 'medium'}>
           <TableHead>
             <TableRow>
               <TableCell><b>ID</b></TableCell>
@@ -63,16 +74,16 @@ export const RolesContent = () => {
               <TableCell><b>Editar rol</b></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody key={0}>
-            {roles.map(p => (
+          <TableBody>
+            {roles.map((p) => (
               <TableRow key={p.id_usuario}>
-                <TableCell key={`${p.id_usuario}_1`}>{p.id_usuario}</TableCell>
-                <TableCell key={`${p.id_usuario}_2`}><strong>{p.nombre}</strong></TableCell>
-                <TableCell key={`${p.id_usuario}_3`}><strong>{p.tipo}</strong></TableCell>
-                <TableCell key={`${p.id_usuario}_4`}><strong>{p.rol}</strong></TableCell>
+                <TableCell>{p.id_usuario}</TableCell>
+                <TableCell><strong>{p.nombre}</strong></TableCell>
+                <TableCell><strong>{p.tipo}</strong></TableCell>
+                <TableCell><strong>{p.rol}</strong></TableCell>
                 <TableCell>
-                  <IconButton>
-                   <EditIcon />
+                  <IconButton color="primary" size={isMobile ? 'small' : 'medium'}>
+                    <EditIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -81,5 +92,5 @@ export const RolesContent = () => {
         </Table>
       </TableContainer>
     </Box>
-);
+  );
 };

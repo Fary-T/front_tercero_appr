@@ -1,65 +1,110 @@
-"use client";
-import React from 'react';
+import React from "react";
 import {
   Drawer,
-  Box,
-  Avatar,
-  Typography,
   List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-} from '@mui/material';
+  Toolbar,
+  Typography,
+  Box,
+} from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import PeopleIcon from "@mui/icons-material/People";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import DescriptionIcon from '@mui/icons-material/Description';
-import PeopleIcon from '@mui/icons-material/People';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-import LogoutIcon from '@mui/icons-material/Logout';
+const drawerWidth = 240;
 
-const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon /> },
-  { text: 'Polizas', icon: <DescriptionIcon /> },
-  { text: 'Clientes', icon: <PeopleIcon /> },
-  { text: 'Gestión de Roles', icon: <AdminPanelSettingsIcon /> },
-  { text: 'Reportes', icon: <AssessmentIcon /> },
-  { text: 'Cerrar Sesión', icon: <LogoutIcon /> },
-];
+export const Sidebar = ({
+  seccionActiva,
+  setSeccionActiva,
+  isMobile,
+  mobileOpen,
+  handleDrawerToggle,
+}) => {
+  const secciones = [
+    { texto: "Dashboard", icono: <DashboardIcon /> },
+    { texto: "Polizas", icono: <AssignmentIcon /> },
+    { texto: "Clientes", icono: <PeopleIcon /> },
+    { texto: "Gestión de Roles", icono: <ManageAccountsIcon /> },
+    { texto: "Reportes", icono: <BarChartIcon /> },
+    { texto: "Cerrar Sesión", icono: <ExitToAppIcon /> },
+  ];
 
-export const Sidebar = ({ seccionActiva, setSeccionActiva }) => {
-  return (
-    <Drawer
-      variant="permanent"
+  const contenidoDrawer = (
+    <Box
       sx={{
-        width: 240,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 240,
-          boxSizing: 'border-box',
-          backgroundColor: '#25004D',
-          color: 'white',
+        height: "100%",
+        backgroundColor: "#25004D",
+        color: "white",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Toolbar sx={{ justifyContent: "center", py: 2 }}>
+        <Typography variant="h6" noWrap>
+          Seguros de Vida <br /> y Salud
+        </Typography>
+      </Toolbar>
+
+      <List>
+        {secciones.map(({ texto, icono }) => (
+          <ListItem
+            key={texto}
+            disablePadding
+            onClick={() => setSeccionActiva(texto)}
+          >
+            <ListItemButton
+              selected={seccionActiva === texto}
+              sx={{
+                color: "white",
+                backgroundColor: seccionActiva === texto ? "#3E0A75" : "inherit",
+                "&:hover": {
+                  backgroundColor: "#3E0A75",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: "white" }}>{icono}</ListItemIcon>
+              <ListItemText primary={texto} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
+  return isMobile ? (
+    <Drawer
+      variant="temporary"
+      open={mobileOpen}
+      onClose={handleDrawerToggle}
+      ModalProps={{ keepMounted: true }}
+      sx={{
+        "& .MuiDrawer-paper": {
+          width: drawerWidth,
+          boxSizing: "border-box",
         },
       }}
     >
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Avatar />
-        <Box>
-          <Typography variant="body2" fontWeight="bold">Seguros de Vida</Typography>
-          <Typography variant="body2" fontWeight="bold">y Salud</Typography>
-        </Box>
-      </Box>
-
-      <List>
-        {menuItems.map(({ text, icon }) => (
-          <ListItemButton key={text} onClick={() => setSeccionActiva(text)}>
-            <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
-            <ListItemText
-              primary={<Typography fontWeight="bold" sx={{ color: 'white' }}>{text}</Typography>}
-            />
-          </ListItemButton>
-        ))}
-      </List>
+      {contenidoDrawer}
+    </Drawer>
+  ) : (
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: drawerWidth,
+          boxSizing: "border-box",
+        },
+      }}
+    >
+      {contenidoDrawer}
     </Drawer>
   );
 };

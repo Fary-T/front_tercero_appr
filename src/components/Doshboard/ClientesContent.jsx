@@ -9,9 +9,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button
+  Button,
+  Stack,
+  useMediaQuery
 } from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import { useTheme } from '@mui/material/styles';
 import { Modal } from '../Modal';
 import { ModalEliminarUsuario } from '../ModalEliminarUsuario/ModalEliminarUsuario';
 import { ModalEditarUsuario } from '../ModalEditarUsuario/ModalEditarUsuario';
@@ -20,9 +23,12 @@ export const ClientesContent = () => {
   const [clientes, setClientes] = useState([]);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null); // Puedes usarlo para saber qué cliente eliminar
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
   const [usuarioEditar, setUsuarioEditar] = useState(null);
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     consultarClientes();
@@ -49,48 +55,47 @@ export const ClientesContent = () => {
   };
 
   return (
-    <Box>
-      <Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-          <Typography variant="h5" fontWeight="bold">
-            Gestión de Clientes
-          </Typography>
+    <Box p={2}>
+      <Stack
+        direction={isSmallScreen ? 'column' : 'row'}
+        justifyContent="space-between"
+        alignItems={isSmallScreen ? 'flex-start' : 'center'}
+        spacing={2}
+        mb={2}
+      >
+        <Typography variant="h5" fontWeight="bold">
+          Gestión de Clientes
+        </Typography>
 
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button
-              variant="contained"
-              sx={{
+        <Stack direction={isSmallScreen ? 'column' : 'row'} spacing={1} width={isSmallScreen ? '100%' : 'auto'}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#25004D",
+              "&:hover": {
                 backgroundColor: "#25004D",
-                "&:hover": {
-                  backgroundColor: "#25004D", // Color más oscuro para el hover
-                },
-              }}
-              startIcon={<PersonAddAltIcon />}
-              onClick={() => setModalAbierto(true)}
-            >
-              Añadir cliente
-            </Button>
+              },
+              width: isSmallScreen ? '100%' : 'auto'
+            }}
+            startIcon={<PersonAddAltIcon />}
+            onClick={() => setModalAbierto(true)}
+          >
+            Añadir cliente
+          </Button>
 
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => setModalEliminarAbierto(true)}
-            >
-              Eliminar cliente
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => setModalEliminarAbierto(true)}
+            sx={{ width: isSmallScreen ? '100%' : 'auto' }}
+          >
+            Eliminar cliente
+          </Button>
+        </Stack>
+      </Stack>
 
       <TableContainer component={Paper}>
-        <Table>
+        <Table size={isSmallScreen ? "small" : "medium"}>
           <TableHead>
             <TableRow>
               <TableCell><strong>ID</strong></TableCell>
@@ -98,18 +103,36 @@ export const ClientesContent = () => {
               <TableCell><strong>Correo</strong></TableCell>
               <TableCell><strong>Teléfono</strong></TableCell>
               <TableCell><strong>Acción</strong></TableCell>
-              <TableCell><strong>Edicion</strong></TableCell>
+              <TableCell><strong>Edición</strong></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody key={0}>
-            {clientes.map(p => (
+          <TableBody>
+            {clientes.map((p) => (
               <TableRow key={p.id_usuario}>
-                <TableCell key={`${p.id_usuario}_1`}><strong>{p.id_usuario}</strong></TableCell>
-                <TableCell key={`${p.id_usuario}_2`}><strong>{p.nombre}</strong></TableCell>
-                <TableCell key={`${p.id_usuario}_3`}><strong>{p.correo}</strong></TableCell>
-                <TableCell key={`${p.id_usuario}_4`}><strong>{p.telefono}</strong></TableCell>
-                <TableCell key={`${p.id_seguro}_5`}><Button variant="outlined">Ver</Button></TableCell>
-                <TableCell key={`${p.id_seguro}_6`}><Button variant="outlined" onClick={() => { setUsuarioEditar(p); setModalEditarAbierto(true); }}> Editar </Button></TableCell>
+                <TableCell><strong>{p.id_usuario}</strong></TableCell>
+                <TableCell><strong>{p.nombre}</strong></TableCell>
+                <TableCell><strong>{p.correo}</strong></TableCell>
+                <TableCell><strong>{p.telefono}</strong></TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    size={isSmallScreen ? "small" : "medium"}
+                  >
+                    Ver
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    size={isSmallScreen ? "small" : "medium"}
+                    onClick={() => {
+                      setUsuarioEditar(p);
+                      setModalEditarAbierto(true);
+                    }}
+                  >
+                    Editar
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -119,7 +142,7 @@ export const ClientesContent = () => {
       <Modal
         open={modalAbierto}
         onClose={() => setModalAbierto(false)}
-        onGuardar={consultarClientes} // solo refresca tabla
+        onGuardar={consultarClientes}
       />
       <ModalEliminarUsuario
         open={modalEliminarAbierto}
@@ -127,7 +150,6 @@ export const ClientesContent = () => {
         usuario={usuarioSeleccionado}
         onEliminar={consultarClientes}
       />
-
       <ModalEditarUsuario
         open={modalEditarAbierto}
         onClose={() => setModalEditarAbierto(false)}

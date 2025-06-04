@@ -19,14 +19,18 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useTheme } from '@mui/material/styles';
+
 import { ModalPoliza } from '../ModalPoliza';
-import { ModalEditarPoliza } from '../ModalEditarPoliza/ModalEditarPoliza'; // Importa el modal
+import { ModalEditarPoliza } from '../ModalEditarPoliza/ModalEditarPoliza';
+import { ModalEliminarPoliza } from '../ModalEliminarPoliza';
 
 export const PolizasContent = () => {
   const [polizas, setPolizas] = useState([]);
   const [abrirModal, setAbrirModal] = useState(false);
   const [abrirModalEditar, setAbrirModalEditar] = useState(false);
   const [polizaSeleccionada, setPolizaSeleccionada] = useState(null);
+  const [abrirModalEliminar, setAbrirModalEliminar] = useState(false);
+  const [polizaAEliminar, setPolizaAEliminar] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -39,9 +43,7 @@ export const PolizasContent = () => {
     try {
       const response = await fetch("http://localhost:3030/seguro/", {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
@@ -56,34 +58,37 @@ export const PolizasContent = () => {
     }
   };
 
-  const handleAgregarClick = () => {
-    setAbrirModal(true);
-  };
-
-  const handleCerrarModal = () => {
-    setAbrirModal(false);
-  };
+  const handleAgregarClick = () => setAbrirModal(true);
+  const handleCerrarModal = () => setAbrirModal(false);
 
   const handleEditar = (poliza) => {
     setPolizaSeleccionada(poliza);
     setAbrirModalEditar(true);
   };
-
   const handleCerrarModalEditar = () => {
     setAbrirModalEditar(false);
     setPolizaSeleccionada(null);
   };
 
-  const handleEliminar = async (id) => {
-    const confirmacion = true; // Reemplazar por modal de confirmación si deseas
-    if (confirmacion) {
+  const abrirModalConfirmacion = (poliza) => {
+    setPolizaAEliminar(poliza);
+    setAbrirModalEliminar(true);
+  };
+  const cerrarModalEliminar = () => {
+    setPolizaAEliminar(null);
+    setAbrirModalEliminar(false);
+  };
+
+  const confirmarEliminacion = async () => {
+    if (polizaAEliminar) {
       try {
-        const response = await fetch(`http://localhost:3030/seguro/eliminar/${id}`, {
+        const response = await fetch(`http://localhost:3030/seguro/eliminar/${polizaAEliminar.id_seguro}`, {
           method: 'DELETE',
         });
 
         if (response.ok) {
-          obtenerPolizas();
+          await obtenerPolizas(); // Refresca los datos
+          cerrarModalEliminar();
         } else {
           const data = await response.json();
           console.error(data.error || 'Error al eliminar la póliza');
@@ -95,7 +100,6 @@ export const PolizasContent = () => {
   };
 
   const handleVerInformacion = (poliza) => {
-    // Por ahora solo muestra por consola
     console.log("Información de la póliza:", poliza);
   };
 
@@ -125,41 +129,48 @@ export const PolizasContent = () => {
         </Button>
       </Box>
 
-      <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
-        <Table size={isMobile ? 'small' : 'medium'}>
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>ID</strong></TableCell>
-              <TableCell><strong>Número de Póliza</strong></TableCell>
-              <TableCell><strong>Nombre del Seguro</strong></TableCell>
-              <TableCell><strong>Acciones</strong></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {polizas.map(p => (
-              <TableRow key={p.id_seguro}>
-                <TableCell><strong>{p.id_seguro}</strong></TableCell>
-                <TableCell><strong>{`00${p.id_seguro}`}</strong></TableCell>
-                <TableCell><strong>{p.nombre}</strong></TableCell>
-                <TableCell>
-                  <Stack direction="row" spacing={1}>
-                    <IconButton onClick={() => handleVerInformacion(p)} color="info">
-                      <VisibilityIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleEditar(p)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleEliminar(p.id_seguro)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </Stack>
-                </TableCell>
+      {polizas.length > 0 ? (
+        <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
+          <Table size={isMobile ? 'small' : 'medium'}>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>ID</strong></TableCell>
+                <TableCell><strong>Número de Póliza</strong></TableCell>
+                <TableCell><strong>Nombre del Seguro</strong></TableCell>
+                <TableCell><strong>Acciones</strong></TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {polizas.map(p => (
+                <TableRow key={p.id_seguro}>
+                  <TableCell><strong>{p.id_seguro}</strong></TableCell>
+                  <TableCell><strong>{`00${p.id_seguro}`}</strong></TableCell>
+                  <TableCell><strong>{p.nombre}</strong></TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={1}>
+                      <IconButton onClick={() => handleVerInformacion(p)} color="info">
+                        <VisibilityIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleEditar(p)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => abrirModalConfirmacion(p)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <Typography variant="body1" align="center" mt={4}>
+          No hay pólizas registradas.
+        </Typography>
+      )}
 
+      {/* Modales */}
       <ModalPoliza
         open={abrirModal}
         onClose={handleCerrarModal}
@@ -171,6 +182,13 @@ export const PolizasContent = () => {
         onClose={handleCerrarModalEditar}
         poliza={polizaSeleccionada}
         onGuardar={obtenerPolizas}
+      />
+
+      <ModalEliminarPoliza
+        open={abrirModalEliminar}
+        onClose={cerrarModalEliminar}
+        poliza={polizaAEliminar}
+        onEliminar={confirmarEliminacion}
       />
     </Box>
   );

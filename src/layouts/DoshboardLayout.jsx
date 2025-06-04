@@ -21,7 +21,6 @@ import { Sidebar } from "../components/Sidebar/Sidebar";
 import { DashboardContent } from "../components/Doshboard/DashboardContent";
 import { PolizasContent } from "../components/Doshboard/PolizasContent";
 import { ClientesContent } from "../components/Doshboard/ClientesContent";
-import { RolesContent } from "../components/Doshboard/RolesContent";
 
 export const DoshboardLayout = () => {
   const [seccionActiva, setSeccionActiva] = useState("Dashboard");
@@ -59,8 +58,6 @@ export const DoshboardLayout = () => {
         return <PolizasContent />;
       case "Clientes":
         return <ClientesContent />;
-      case "Gestión de Roles":
-        return <RolesContent />;
       case "Reportes":
         return <Typography variant="h6">Visualización de Reportes</Typography>;
       default:

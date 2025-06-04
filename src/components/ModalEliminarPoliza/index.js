@@ -1,0 +1,1 @@
+export { ModalEliminarPoliza } from './ModalEliminarPoliza';

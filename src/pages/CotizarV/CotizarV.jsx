@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Typography,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Button,
-  Link,
-} from '@mui/material';
+import {Box,Typography,TextField,Checkbox,FormControlLabel,Button,Link,} from '@mui/material';
 import Header from '../../components/planescomponents/Header';
 
 const Cotizar = () => {

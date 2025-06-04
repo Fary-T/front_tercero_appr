@@ -1,47 +1,79 @@
 import React from 'react';
-import { Grid, Box, Typography, Button, Paper } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Grid, Box, Typography } from '@mui/material';
+import PlanCard from './PlanCard';
 
 const Planes = () => {
-  const navigate = useNavigate();
+  const planesSalud = [
+    {
+      tipo: 'salud',
+      title: 'Plan Básico Salud',
+      precio: '$20/mes',
+      puntos: ['Consultas médicas generales', 'Descuentos en farmacia', 'Red de clínicas locales']
+    },
+    {
+      tipo: 'salud',
+      title: 'Plan Familiar Salud',
+      precio: '$45/mes',
+      puntos: ['Cobertura familiar completa', 'Atención pediátrica', 'Urgencias 24/7']
+    },
+    {
+      tipo: 'salud',
+      title: 'Plan Premium Salud',
+      precio: '$70/mes',
+      puntos: ['Hospitalización incluida', 'Chequeos anuales gratis', 'Atención internacional']
+    },
+  ];
 
-  const irACotizar = () => {
-    navigate('/Cotizar'); // Navegación sin recargar
-  };
+  const planesVida = [
+    {
+      tipo: 'vida',
+      title: 'Plan Vida Esencial',
+      precio: '$15/mes',
+      puntos: ['Cobertura por fallecimiento', 'Asistencia inmediata', 'Sin exámenes médicos']
+    },
+    {
+      tipo: 'vida',
+      title: 'Plan Vida Plus',
+      precio: '$30/mes',
+      puntos: ['Cobertura extendida', 'Indemnización por accidentes', 'Apoyo psicológico']
+    },
+    {
+      tipo: 'vida',
+      title: 'Plan Vida Integral',
+      precio: '$50/mes',
+      puntos: ['Ahorro a largo plazo', 'Beneficios por invalidez', 'Cobertura global']
+    },
+  ];
+
   return (
-    <Box sx={{ textAlign: 'center', px: 2, py: 5 }}>
-      <br />
-      <Typography variant="h4" gutterBottom fontWeight="bold">
+    <Box sx={{ textAlign: 'center', px: 3, py: 6, bgcolor: '#F4F1F8' }}>
+      <Typography variant="h3" fontWeight="bold" gutterBottom color="#25004D">
         Nuestros Planes
       </Typography>
+      <Typography variant="subtitle1" mb={4} color="#444">
+        Elige el plan que mejor se adapte a tus necesidades
+      </Typography>
+
+      {/* Planes de Salud */}
+      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ mt: 6, color: '#25004D' }}>
+        Planes de Salud
+      </Typography>
       <Grid container spacing={4} justifyContent="center">
-        {[{
-          title: 'Plan de Salud',
-          puntos: ['Atención médica rápida', 'Cobertura familiar', 'Descuentos en farmacias']
-        }, {
-          title: 'Plan de Vida',
-          puntos: ['Protección financiera', 'Apoyo a tus seres queridos', 'Planes flexibles']
-        }].map((plan, idx) => (
-          <Grid item xs={12} md={6} key={idx}>
-            <Paper elevation={3} sx={{ p: 3 }}>
-              <Typography variant="h5" fontWeight="bold" gutterBottom>{plan.title}</Typography>
-              {plan.puntos.map((punto, i) => (
-                <Typography key={i} variant="body1">✔ {punto}</Typography>
-              ))}
-              <Button
-                onClick={() => {
-                  if (plan.title === 'Plan de Salud') {
-                    navigate('/CotizarS');
-                  } else if (plan.title === 'Plan de Vida') {
-                    navigate('/CotizarV');
-                  }
-                }}
-                sx={{ mt: 2, backgroundColor: '#25004D' }}
-                variant="contained"
-              >
-                Más información
-              </Button>
-            </Paper>
+        {planesSalud.map((plan, idx) => (
+          <Grid item xs={12} sm={6} md={4} key={idx}>
+            <PlanCard {...plan} />
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Planes de Vida */}
+      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ mt: 8, color: '#FFCC00' }}>
+        Planes de Vida
+      </Typography>
+      <Grid container spacing={4} justifyContent="center">
+        {planesVida.map((plan, idx) => (
+          <Grid item xs={12} sm={6} md={4} key={idx}>
+            <PlanCard {...plan} />
           </Grid>
         ))}
       </Grid>

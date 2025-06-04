@@ -10,7 +10,7 @@ const Header = () => {
    if (location.pathname === '/CotizarS' || location.pathname === '/CotizarV') {
       navigate('/Planes');
     } else {
-      navigate('/');
+      navigate('/Home');
     }
   };
   return (

@@ -1,31 +1,91 @@
-import React from 'react';
-import Slider from 'react-slick';
-import { Box, Typography, Avatar } from '@mui/material';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-
-const testimonios = [
-  { nombre: 'Ana', texto: 'Excelente servicio.', foto: '/ana.png' },
-  { nombre: 'Carlos', texto: 'Muy confiable.', foto: '/carlos.png' }
-];
+import React, { useState } from 'react';
+import { Grid, Box, Typography, Card, CardContent, Rating } from '@mui/material';
+import TestimonioCard from './TestimonioCard';
 
 const Testimonios = () => {
-  const settings = {
-    dots: true, infinite: true, speed: 500, slidesToShow: 1, slidesToScroll: 1
-  };
+  const TestimonioData = [
+    {
+      id: 1,
+      nombre: "Carlos Pérez",
+      testimonio: "Excelente servicio y atención al cliente.",
+      estrellas: 5
+    },
+    {
+      id: 2,
+      nombre: "Lucía Gómez",
+      testimonio: "Muy satisfecha con mi seguro de vida.",
+      estrellas: 4
+    },
+    {
+      id: 3,
+      nombre: "Pedro Martínez",
+      testimonio: "Fácil de contratar y con buenos beneficios.",
+      estrellas: 5
+    },
+    {
+      id: 4,
+      nombre: "Ana López",
+      testimonio: "Atención personalizada y rápida respuesta.",
+      estrellas: 5
+    },
+    {
+      id: 5,
+      nombre: "Miguel Torres",
+      testimonio: "Precios competitivos y excelente cobertura.",
+      estrellas: 4
+    }
+  ];
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>Testimonios</Typography>
-      <Slider {...settings}>
-        {testimonios.map((testi, i) => (
-          <Box key={i} sx={{ textAlign: 'center' }}>
-            <Avatar src={testi.foto} alt='img' sx={{ width: 80, height: 80, mx: 'auto' }} />
-            <Typography fontWeight="bold">{testi.nombre}</Typography>
-            <Typography>{testi.texto}</Typography>
-          </Box>
+    <Box sx={{ textAlign: 'center', px: 3, py: 6, bgcolor: '#F4F1F8' }}>
+      <Typography variant="h3" fontWeight="bold" gutterBottom color="#25004D">
+        Lo que dicen nuestros clientes
+      </Typography>
+      <Typography variant="subtitle1" mb={4} color="#444">
+        Conoce las experiencias reales de quienes han confiado en nosotros
+      </Typography>
+
+      <Grid container spacing={2} justifyContent="center">
+        {TestimonioData.map((testimonio) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={testimonio.id}>
+            <TestimonioCard 
+              testimonio={testimonio.testimonio}
+              nombre={testimonio.nombre}
+              estrellas={testimonio.estrellas}
+            />
+          </Grid>
         ))}
-      </Slider>
+      </Grid>
+
+      {/* Estadísticas */}
+      <Box sx={{ mt: 6 }}>
+        <Grid container spacing={4} justifyContent="center">
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h4" fontWeight="bold" color="#1976d2">
+              1000+
+            </Typography>
+            <Typography variant="body1" color="#666">
+              Clientes Satisfechos
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h4" fontWeight="bold" color="#FFCC00">
+              4.8★
+            </Typography>
+            <Typography variant="body1" color="#666">
+              Calificación Promedio
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h4" fontWeight="bold" color="#4caf50">
+              99%
+            </Typography>
+            <Typography variant="body1" color="#666">
+              Recomendación
+            </Typography>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 };

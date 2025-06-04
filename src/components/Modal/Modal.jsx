@@ -8,7 +8,9 @@ import {
   Button,
   Grid,
   useMediaQuery,
-  useTheme
+  useTheme,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 
 export const Modal = ({ open, onClose, onGuardar }) => {
@@ -26,7 +28,7 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   });
 
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm')); // Pantallas pequeñas
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -62,8 +64,8 @@ export const Modal = ({ open, onClose, onGuardar }) => {
       return false;
     }
 
-    if (!formData.tipo.trim()) {
-      alert("El campo 'tipo' es requerido.");
+    if (formData.tipo === '') {
+      alert("Selecciona un tipo (admin, agente o cliente).");
       return false;
     }
 
@@ -79,11 +81,6 @@ export const Modal = ({ open, onClose, onGuardar }) => {
 
     if (!soloNumeros10.test(formData.telefono)) {
       alert("El teléfono debe contener exactamente 10 números.");
-      return false;
-    }
-
-    if (!formData.rol.trim()) {
-      alert("El rol es requerido.");
       return false;
     }
 
@@ -154,13 +151,40 @@ export const Modal = ({ open, onClose, onGuardar }) => {
             <TextField fullWidth label="Password" type="password" name="password" value={formData.password} onChange={handleChange} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label="Rol" name="rol" value={formData.rol} onChange={handleChange} />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField fullWidth label="Tipo" name="tipo" value={formData.tipo} onChange={handleChange} />
-          </Grid>
-          <Grid item xs={12} sm={6}>
             <TextField fullWidth label="Activo (1 o 0)" name="activo" value={formData.activo} onChange={handleChange} />
+          </Grid>
+
+          {/* Toggle de Tipo y Rol */}
+          <Grid item xs={12}>
+            <ToggleButtonGroup
+              value={formData.tipo}
+              exclusive
+              onChange={(event, newTipo) => {
+                if (newTipo !== null) {
+                  const rolMap = { 0: 'admin', 1: 'agente', 2: 'cliente' };
+                  setFormData({
+                    ...formData,
+                    tipo: newTipo,
+                    rol: rolMap[newTipo]
+                  });
+                }
+              }}
+              fullWidth
+              sx={{ display: 'flex', justifyContent: 'center' }}
+            >
+              <ToggleButton value={0} sx={{ flex: 1 }}>Admin</ToggleButton>
+              <ToggleButton value={1} sx={{ flex: 1 }}>Agente</ToggleButton>
+              <ToggleButton value={2} sx={{ flex: 1 }}>Cliente</ToggleButton>
+            </ToggleButtonGroup>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Rol"
+              value={formData.rol}
+              disabled
+            />
           </Grid>
         </Grid>
       </DialogContent>

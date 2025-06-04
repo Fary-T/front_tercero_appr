@@ -30,7 +30,6 @@ export const Sidebar = ({
     { texto: "Dashboard", icono: <DashboardIcon /> },
     { texto: "Polizas", icono: <AssignmentIcon /> },
     { texto: "Clientes", icono: <PeopleIcon /> },
-    { texto: "Gestión de Roles", icono: <ManageAccountsIcon /> },
     { texto: "Reportes", icono: <BarChartIcon /> },
     { texto: "Cerrar Sesión", icono: <ExitToAppIcon /> },
   ];

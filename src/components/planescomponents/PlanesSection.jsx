@@ -1,9 +1,15 @@
 import React from 'react';
 import { Grid, Box, Typography, Button, Paper } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Planes = () => {
+  const navigate = useNavigate();
+
+  const irACotizar = () => {
+    navigate('/Cotizar'); // Navegación sin recargar
+  };
   return (
-    <Box sx={{  textAlign: 'center', px: 2, py: 5  }}>
+    <Box sx={{ textAlign: 'center', px: 2, py: 5 }}>
       <br />
       <Typography variant="h4" gutterBottom fontWeight="bold">
         Nuestros Planes
@@ -22,7 +28,19 @@ const Planes = () => {
               {plan.puntos.map((punto, i) => (
                 <Typography key={i} variant="body1">✔ {punto}</Typography>
               ))}
-              <Button sx={{ mt: 2, backgroundColor: '#25004D' }} variant="contained">Más información</Button>
+              <Button
+                onClick={() => {
+                  if (plan.title === 'Plan de Salud') {
+                    navigate('/CotizarS');
+                  } else if (plan.title === 'Plan de Vida') {
+                    navigate('/CotizarV');
+                  }
+                }}
+                sx={{ mt: 2, backgroundColor: '#25004D' }}
+                variant="contained"
+              >
+                Más información
+              </Button>
             </Paper>
           </Grid>
         ))}

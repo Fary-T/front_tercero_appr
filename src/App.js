@@ -8,6 +8,8 @@ import { Doshboard } from "./pages/Doshboard/Doshboard";
 import { DoshboardAgentes } from "./pages/DoshboardAgentes";
 import { DoshboardClientes } from "./pages/DoshboardClientes/DoshboardClientes";
 import { Planes } from "./pages/Planes/Planes";
+import CotizarS from "./pages/CotizarS/CotizarS";
+import CotizarV from "./pages/CotizarV/CotizarV";
 import AuthGuard from "./guard/auth.guard";
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
             <Route path="*" element={<>NOT FOUND</>} />
             <Route path="/login" element={<Login />} />
             <Route path="/Planes" element={<Planes />} />
+            <Route path="/CotizarS" element={<CotizarS />} />
+            <Route path="/CotizarV" element={<CotizarV />} />
             <Route path="/home" element={<Home />} />
 
             <Route element={<AuthGuard />}>

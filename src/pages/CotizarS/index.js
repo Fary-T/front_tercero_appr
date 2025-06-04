@@ -1,0 +1,1 @@
+export { CotizarS } from './CotizarS';

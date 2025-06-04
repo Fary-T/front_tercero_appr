@@ -1,0 +1,1 @@
+export { ModalPoliza } from './ModalPoliza';

@@ -11,13 +11,23 @@ import {
   TableHead,
   TableRow,
   useMediaQuery,
+  IconButton,
+  Stack
 } from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useTheme } from '@mui/material/styles';
-import { Modal } from '../Modal';
+import { ModalPoliza } from '../ModalPoliza';
+import { ModalEditarPoliza } from '../ModalEditarPoliza/ModalEditarPoliza'; // Importa el modal
 
 export const PolizasContent = () => {
   const [polizas, setPolizas] = useState([]);
+  const [abrirModal, setAbrirModal] = useState(false);
+  const [abrirModalEditar, setAbrirModalEditar] = useState(false);
+  const [polizaSeleccionada, setPolizaSeleccionada] = useState(null);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -39,43 +49,54 @@ export const PolizasContent = () => {
       if (response.ok) {
         setPolizas(data);
       } else {
-        alert(data.mensaje || "Error al obtener las pólizas");
+        console.error(data.mensaje || "Error al obtener las pólizas");
       }
     } catch (error) {
       console.error("Error al conectar con el servidor:", error);
-      alert("No se pudo conectar al servidor");
     }
   };
 
-  const AñadirPoliza = async () => {
-    try {
-      const nuevaPoliza = {
-        tiempo_pago: 12,
-        nombre: '99984564',
-        tipo: 1,
-        precio: 35000,
-        descripcion: 'Poliza de vida'
-      };
+  const handleAgregarClick = () => {
+    setAbrirModal(true);
+  };
 
-      const response = await fetch("http://localhost:3030/seguro/agregar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(nuevaPoliza),
-      });
+  const handleCerrarModal = () => {
+    setAbrirModal(false);
+  };
 
-      const data = await response.json();
+  const handleEditar = (poliza) => {
+    setPolizaSeleccionada(poliza);
+    setAbrirModalEditar(true);
+  };
 
-      if (response.ok) {
-        obtenerPolizas();
-      } else {
-        alert(data.mensaje || "Error al añadir la póliza");
+  const handleCerrarModalEditar = () => {
+    setAbrirModalEditar(false);
+    setPolizaSeleccionada(null);
+  };
+
+  const handleEliminar = async (id) => {
+    const confirmacion = true; // Reemplazar por modal de confirmación si deseas
+    if (confirmacion) {
+      try {
+        const response = await fetch(`http://localhost:3030/seguro/eliminar/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          obtenerPolizas();
+        } else {
+          const data = await response.json();
+          console.error(data.error || 'Error al eliminar la póliza');
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-    } catch (error) {
-      console.error("Error al conectar con el servidor:", error);
-      alert("No se pudo conectar al servidor");
     }
+  };
+
+  const handleVerInformacion = (poliza) => {
+    // Por ahora solo muestra por consola
+    console.log("Información de la póliza:", poliza);
   };
 
   return (
@@ -97,7 +118,7 @@ export const PolizasContent = () => {
           variant="contained"
           color="secondary"
           startIcon={<PersonAddAltIcon />}
-          onClick={AñadirPoliza}
+          onClick={handleAgregarClick}
           fullWidth={isMobile}
         >
           Añadir póliza
@@ -109,27 +130,48 @@ export const PolizasContent = () => {
           <TableHead>
             <TableRow>
               <TableCell><strong>ID</strong></TableCell>
-              <TableCell><strong>Cliente</strong></TableCell>
               <TableCell><strong>Número de Póliza</strong></TableCell>
-              <TableCell><strong>Tipo de Póliza</strong></TableCell>
-              <TableCell><strong>Información</strong></TableCell>
+              <TableCell><strong>Nombre del Seguro</strong></TableCell>
+              <TableCell><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {polizas.map(p => (
               <TableRow key={p.id_seguro}>
-                <TableCell>{p.id_seguro}</TableCell>
-                <TableCell><strong>{p.nombre}</strong></TableCell>
+                <TableCell><strong>{p.id_seguro}</strong></TableCell>
                 <TableCell><strong>{`00${p.id_seguro}`}</strong></TableCell>
-                <TableCell><strong>{p.tipo}</strong></TableCell>
-                <TableCell><Button variant="outlined">+</Button></TableCell>
+                <TableCell><strong>{p.nombre}</strong></TableCell>
+                <TableCell>
+                  <Stack direction="row" spacing={1}>
+                    <IconButton onClick={() => handleVerInformacion(p)} color="info">
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleEditar(p)} color="primary">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleEliminar(p.id_seguro)} color="error">
+                      <DeleteIcon />
+                    </IconButton>
+                  </Stack>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
 
-      <Modal />
+      <ModalPoliza
+        open={abrirModal}
+        onClose={handleCerrarModal}
+        onGuardar={obtenerPolizas}
+      />
+
+      <ModalEditarPoliza
+        open={abrirModalEditar}
+        onClose={handleCerrarModalEditar}
+        poliza={polizaSeleccionada}
+        onGuardar={obtenerPolizas}
+      />
     </Box>
   );
 };

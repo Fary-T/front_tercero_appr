@@ -9,11 +9,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button,
   Stack,
+  IconButton,
   useMediaQuery
 } from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '@mui/material/styles';
 import { Modal } from '../Modal';
 import { ModalEliminarUsuario } from '../ModalEliminarUsuario/ModalEliminarUsuario';
@@ -46,11 +49,10 @@ export const ClientesContent = () => {
       if (response.ok) {
         setClientes(data);
       } else {
-        alert(data.mensaje || "Error al obtener los clientes");
+        console.error(data.mensaje || "Error al obtener los clientes");
       }
     } catch (error) {
       console.error("Error de conexión con el servidor:", error);
-      alert("No se pudo conectar al servidor");
     }
   };
 
@@ -67,20 +69,25 @@ export const ClientesContent = () => {
           Gestión de Clientes
         </Typography>
 
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#25004D",
-            "&:hover": {
-              backgroundColor: "#25004D",
-            },
+        <Box
+          component="button"
+          style={{
+            backgroundColor: '#25004D',
+            color: '#fff',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
             width: isSmallScreen ? '100%' : 'auto'
           }}
-          startIcon={<PersonAddAltIcon />}
           onClick={() => setModalAbierto(true)}
         >
+          <PersonAddAltIcon />
           Añadir cliente
-        </Button>
+        </Box>
       </Stack>
 
       <TableContainer component={Paper}>
@@ -103,33 +110,21 @@ export const ClientesContent = () => {
                 <TableCell><strong>{p.telefono}</strong></TableCell>
                 <TableCell>
                   <Stack direction="row" spacing={1}>
-                    <Button
-                      variant="outlined"
-                      size={isSmallScreen ? "small" : "medium"}
-                    >
-                      Ver
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size={isSmallScreen ? "small" : "medium"}
-                      onClick={() => {
-                        setUsuarioEditar(p);
-                        setModalEditarAbierto(true);
-                      }}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      size={isSmallScreen ? "small" : "medium"}
-                      onClick={() => {
-                        setUsuarioSeleccionado(p);
-                        setModalEliminarAbierto(true);
-                      }}
-                    >
-                      Eliminar
-                    </Button>
+                    <IconButton color="info" onClick={() => console.log('Ver usuario', p)}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton color="primary" onClick={() => {
+                      setUsuarioEditar(p);
+                      setModalEditarAbierto(true);
+                    }}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="error" onClick={() => {
+                      setUsuarioSeleccionado(p);
+                      setModalEliminarAbierto(true);
+                    }}>
+                      <DeleteIcon />
+                    </IconButton>
                   </Stack>
                 </TableCell>
               </TableRow>

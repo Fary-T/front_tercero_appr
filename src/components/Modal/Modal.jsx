@@ -37,7 +37,7 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   const validarCampos = () => {
     const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     const soloNumeros10 = /^\d{10}$/;
-    const correoValido = /^[a-zA-Z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud|live|protonmail|zoho|gmx|aol|mail)\.(com|es|net|org|co|info|me|us)$/i;
+    const correoValido = /^[a-zA-Z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud|live|protonmail|zoho|gmx|aol|mail)\.(com|es|net|org|co|info|me|us)$/;
 
     if (!correoValido.test(formData.correo)) {
       alert("Correo inválido. Solo se permiten dominios como gmail, hotmail, yahoo, etc., y terminaciones como .com, .es, .net...");

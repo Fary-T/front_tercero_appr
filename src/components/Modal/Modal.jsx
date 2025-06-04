@@ -3,9 +3,12 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  TextField,
   DialogActions,
-  Button
+  TextField,
+  Button,
+  Grid,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 
 export const Modal = ({ open, onClose, onGuardar }) => {
@@ -22,6 +25,9 @@ export const Modal = ({ open, onClose, onGuardar }) => {
     rol: ''
   });
 
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm')); // Pantallas pequeñas
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -29,10 +35,12 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   const validarCampos = () => {
     const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     const soloNumeros10 = /^\d{10}$/;
-    if (!formData.correo.includes('@') || !formData.correo.trim()) {
-    alert("El correo debe contener un '@' y no puede estar vacío.");
-    return false; // Detener la ejecución si hay un error
-  }
+    const correoValido = /^[a-zA-Z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud|live|protonmail|zoho|gmx|aol|mail)\.(com|es|net|org|co|info|me|us)$/i;
+
+    if (!correoValido.test(formData.correo)) {
+      alert("Correo inválido. Solo se permiten dominios como gmail, hotmail, yahoo, etc., y terminaciones como .com, .es, .net...");
+      return false;
+    }
 
     if (!formData.username.trim()) {
       alert("El nombre de usuario es requerido.");
@@ -88,9 +96,7 @@ export const Modal = ({ open, onClose, onGuardar }) => {
     try {
       const response = await fetch("http://localhost:3030/usuario/agregar", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
 
@@ -98,7 +104,7 @@ export const Modal = ({ open, onClose, onGuardar }) => {
 
       if (response.ok) {
         alert("Cliente agregado correctamente");
-        onClose(); // cerrar modal
+        onClose();
         setFormData({
           nombre: '',
           correo: '',
@@ -111,9 +117,7 @@ export const Modal = ({ open, onClose, onGuardar }) => {
           cedula: '',
           rol: ''
         });
-        if (typeof onGuardar === 'function') {
-          onGuardar(); // refrescar lista desde ClientesContent
-        }
+        if (typeof onGuardar === 'function') onGuardar();
       } else {
         alert(data.error || "Error al agregar cliente");
       }
@@ -124,27 +128,50 @@ export const Modal = ({ open, onClose, onGuardar }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullScreen={fullScreen} maxWidth="sm" fullWidth>
       <DialogTitle>Agregar Usuario</DialogTitle>
       <DialogContent>
-        <TextField fullWidth margin="dense" label="Correo" name="correo" value={formData.correo} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Username" name="username" value={formData.username} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Password" type="password" name="password" value={formData.password} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Apellido" name="apellido" value={formData.apellido} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Tipo" name="tipo" value={formData.tipo} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Activo (1 o 0)" name="activo" value={formData.activo} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Cédula" name="cedula" value={formData.cedula} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} />
-        <TextField fullWidth margin="dense" label="Rol" name="rol" value={formData.rol} onChange={handleChange} />
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Apellido" name="apellido" value={formData.apellido} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Correo" name="correo" value={formData.correo} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Cédula" name="cedula" value={formData.cedula} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Username" name="username" value={formData.username} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Password" type="password" name="password" value={formData.password} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Rol" name="rol" value={formData.rol} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Tipo" name="tipo" value={formData.tipo} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Activo (1 o 0)" name="activo" value={formData.activo} onChange={handleChange} />
+          </Grid>
+        </Grid>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2 }}>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleGuardar} variant="contained" color="primary">Guardar</Button>
+        <Button onClick={handleGuardar} variant="contained" color="primary">
+          Guardar
+        </Button>
       </DialogActions>
     </Dialog>
   );
 };
-
 
 Modal.propTypes = {};

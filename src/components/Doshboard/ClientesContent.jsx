@@ -67,31 +67,20 @@ export const ClientesContent = () => {
           Gestión de Clientes
         </Typography>
 
-        <Stack direction={isSmallScreen ? 'column' : 'row'} spacing={1} width={isSmallScreen ? '100%' : 'auto'}>
-          <Button
-            variant="contained"
-            sx={{
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#25004D",
+            "&:hover": {
               backgroundColor: "#25004D",
-              "&:hover": {
-                backgroundColor: "#25004D",
-              },
-              width: isSmallScreen ? '100%' : 'auto'
-            }}
-            startIcon={<PersonAddAltIcon />}
-            onClick={() => setModalAbierto(true)}
-          >
-            Añadir cliente
-          </Button>
-
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => setModalEliminarAbierto(true)}
-            sx={{ width: isSmallScreen ? '100%' : 'auto' }}
-          >
-            Eliminar cliente
-          </Button>
-        </Stack>
+            },
+            width: isSmallScreen ? '100%' : 'auto'
+          }}
+          startIcon={<PersonAddAltIcon />}
+          onClick={() => setModalAbierto(true)}
+        >
+          Añadir cliente
+        </Button>
       </Stack>
 
       <TableContainer component={Paper}>
@@ -102,8 +91,7 @@ export const ClientesContent = () => {
               <TableCell><strong>Nombre</strong></TableCell>
               <TableCell><strong>Correo</strong></TableCell>
               <TableCell><strong>Teléfono</strong></TableCell>
-              <TableCell><strong>Acción</strong></TableCell>
-              <TableCell><strong>Edición</strong></TableCell>
+              <TableCell><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -114,24 +102,35 @@ export const ClientesContent = () => {
                 <TableCell><strong>{p.correo}</strong></TableCell>
                 <TableCell><strong>{p.telefono}</strong></TableCell>
                 <TableCell>
-                  <Button
-                    variant="outlined"
-                    size={isSmallScreen ? "small" : "medium"}
-                  >
-                    Ver
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    size={isSmallScreen ? "small" : "medium"}
-                    onClick={() => {
-                      setUsuarioEditar(p);
-                      setModalEditarAbierto(true);
-                    }}
-                  >
-                    Editar
-                  </Button>
+                  <Stack direction="row" spacing={1}>
+                    <Button
+                      variant="outlined"
+                      size={isSmallScreen ? "small" : "medium"}
+                    >
+                      Ver
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size={isSmallScreen ? "small" : "medium"}
+                      onClick={() => {
+                        setUsuarioEditar(p);
+                        setModalEditarAbierto(true);
+                      }}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size={isSmallScreen ? "small" : "medium"}
+                      onClick={() => {
+                        setUsuarioSeleccionado(p);
+                        setModalEliminarAbierto(true);
+                      }}
+                    >
+                      Eliminar
+                    </Button>
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}

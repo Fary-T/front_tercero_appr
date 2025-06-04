@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Button,
-  Modal,
-  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
-  FormHelperText
+  Button,
+  Grid,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 
 export const ModalEditarUsuario = ({ open, onClose, usuario, onGuardar }) => {
@@ -22,221 +25,146 @@ export const ModalEditarUsuario = ({ open, onClose, usuario, onGuardar }) => {
     rol: ''
   });
 
-  const [errors, setErrors] = useState({}); // Estado para los mensajes de error
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // Cargar datos cuando se abre el modal
   useEffect(() => {
-    if (usuario) {
-      setFormData(usuario);
-      setErrors({}); // Limpiar errores al cargar usuario
+    if (usuario && open) {
+      setFormData({ ...usuario });
     }
-  }, [usuario]);
+  }, [usuario, open]);
 
   const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-    setErrors(prev => ({ ...prev, [e.target.name]: '' })); // Limpiar el error al cambiar el valor
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
- const validarCampos = () => {
-  const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-  const soloNumeros10 = /^\d{10}$/;
-  const newErrors = [];
-  
-  if (!formData.username.trim()) {
-    newErrors.push("El nombre de usuario es requerido.");
-  }
+  const validarCampos = () => {
+    const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    const soloNumeros10 = /^\d{10}$/;
+    const correoValido = /^[a-zA-Z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|icloud|live|protonmail|zoho|gmx|aol|mail)\.(com|es|net|org|co|info|me|us)$/i;
 
-  if (!formData.password.trim()) {
-    newErrors.push("La contraseña es requerida.");
-  }
-
-  if (!soloLetras.test(formData.nombre)) {
-    newErrors.push("El nombre solo debe contener letras.");
-  }
-
-  if (!soloLetras.test(formData.apellido)) {
-    newErrors.push("El apellido solo debe contener letras.");
-  }
-
-
-  if (!soloNumeros10.test(formData.cedula)) {
-    newErrors.push("La cédula debe contener exactamente 10 números.");
-  }
-
-  if (!soloNumeros10.test(formData.telefono)) {
-    newErrors.push("El teléfono debe contener exactamente 10 números.");
-  }
-  if (!formData.correo.includes('@') || !formData.correo.trim()) {
-    newErrors.push("El correo debe contener un '@' y no puede estar vacío.");
-  }
-
-  return newErrors; // Devuelve un array de errores
-};
-
-const handleGuardar = async () => {
-  const validationErrors = validarCampos();
-  if (validationErrors.length > 0) {
-    alert(validationErrors.join('\n')); // Muestra una alerta con todos los errores
-    return; // No continuar si hay errores
-  }
-
-  try {
-    const response = await fetch(`http://localhost:3030/usuario/editar/${usuario.id_usuario}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert('Usuario editado correctamente');
-      onGuardar(); // actualizar lista
-      onClose();   // cerrar modal
-    } else {
-      alert(data.mensaje || 'Error al editar usuario');
+    if (!correoValido.test(formData.correo)) {
+      alert("Correo inválido. Solo se permiten dominios como gmail, hotmail, yahoo, etc., y terminaciones como .com, .es, .net...");
+      return false;
     }
-  } catch (error) {
-    console.error(error);
-    alert('Error de conexión');
-  }
-};
 
+    if (!formData.username.trim()) {
+      alert("El nombre de usuario es requerido.");
+      return false;
+    }
+
+    if (!formData.password.trim()) {
+      alert("La contraseña es requerida.");
+      return false;
+    }
+
+    if (!soloLetras.test(formData.nombre)) {
+      alert("El nombre solo debe contener letras.");
+      return false;
+    }
+
+    if (!soloLetras.test(formData.apellido)) {
+      alert("El apellido solo debe contener letras.");
+      return false;
+    }
+
+    if (!formData.tipo.trim()) {
+      alert("El campo 'tipo' es requerido.");
+      return false;
+    }
+
+    if (!["1", "0"].includes(formData.activo)) {
+      alert("El campo 'activo' debe ser 1 (activo) o 0 (inactivo).");
+      return false;
+    }
+
+    if (!soloNumeros10.test(formData.cedula)) {
+      alert("La cédula debe contener exactamente 10 números.");
+      return false;
+    }
+
+    if (!soloNumeros10.test(formData.telefono)) {
+      alert("El teléfono debe contener exactamente 10 números.");
+      return false;
+    }
+
+    if (!formData.rol.trim()) {
+      alert("El rol es requerido.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleGuardar = async () => {
+    if (!validarCampos()) return;
+
+    try {
+      const response = await fetch("http://localhost:3030/usuario/editar", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Usuario editado correctamente");
+        onClose();
+        if (typeof onGuardar === 'function') onGuardar();
+      } else {
+        alert(data.error || "Error al editar usuario");
+      }
+    } catch (error) {
+      console.error("Error al editar usuario:", error);
+      alert("No se pudo editar el usuario");
+    }
+  };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 500,
-          bgcolor: 'background.paper',
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 24,
-          maxHeight: '90vh',
-          overflowY: 'auto'
-        }}
-      >
-        <Typography variant="h6" mb={2}>Editar Usuario</Typography>
-
-        <TextField
-          label="Correo"
-          name="correo"
-          value={formData.correo}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.username} // Indica si hay un error
-        />
-        {errors.username && <FormHelperText error>{errors.username}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Password"
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.password} // Indica si hay un error
-        />
-        {errors.password && <FormHelperText error>{errors.password}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Nombre"
-          name="nombre"
-          value={formData.nombre}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.nombre} // Indica si hay un error
-        />
-        {errors.nombre && <FormHelperText error>{errors.nombre}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Apellido"
-          name="apellido"
-          value={formData.apellido}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.apellido} // Indica si hay un error
-        />
-        {errors.apellido && <FormHelperText error>{errors.apellido}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Tipo"
-          name="tipo"
-          value={formData.tipo}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.tipo} // Indica si hay un error
-        />
-        {errors.tipo && <FormHelperText error>{errors.tipo}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Activo"
-          name="activo"
-          value={formData.activo}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.activo} // Indica si hay un error
-        />
-        {errors.activo && <FormHelperText error>{errors.activo}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Cédula"
-          name="cedula"
-          value={formData.cedula}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.cedula} // Indica si hay un error
-        />
-        {errors.cedula && <FormHelperText error>{errors.cedula}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Teléfono"
-          name="telefono"
-          value={formData.telefono}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-          error={!!errors.telefono} // Indica si hay un error
-        />
-        {errors.telefono && <FormHelperText error>{errors.telefono}</FormHelperText>} {/* Mensaje de error */}
-
-        <TextField
-          label="Rol"
-          name="rol"
-          value={formData.rol}
-          onChange={handleChange}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button onClick={onClose} sx={{ mr: 1 }}>Cancelar</Button>
-          <Button variant="contained" color="primary" onClick={handleGuardar}>Guardar</Button>
-        </Box>
-      </Box>
-    </Modal>
+    <Dialog open={open} onClose={onClose} fullScreen={fullScreen} maxWidth="sm" fullWidth>
+      <DialogTitle>Editar Usuario</DialogTitle>
+      <DialogContent>
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Apellido" name="apellido" value={formData.apellido} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Correo" name="correo" value={formData.correo} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Cédula" name="cedula" value={formData.cedula} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Username" name="username" value={formData.username} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Password" type="password" name="password" value={formData.password} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Rol" name="rol" value={formData.rol} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Tipo" name="tipo" value={formData.tipo} onChange={handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label="Activo (1 o 0)" name="activo" value={formData.activo} onChange={handleChange} />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2 }}>
+        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={handleGuardar} variant="contained" color="primary">
+          Guardar
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

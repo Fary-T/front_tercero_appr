@@ -1,68 +1,95 @@
-import React, { useState } from 'react';
-import { 
-	Box, 
-	Button, 
-	Modal, 
-	Typography, 
-	TextField 
+import React from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Button,
+  IconButton,
+  useMediaQuery,
+  useTheme,
+  Box
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
-export const ModalEliminarUsuario = ({ open, onClose, onEliminar }) => {
-  const [idUsuario, setIdUsuario] = useState('');
+export const ModalEliminarUsuario = ({ open, onClose, usuario, onEliminar }) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleEliminar = async () => {
     try {
-      const response = await fetch(`http://localhost:3030/usuario/eliminar/${idUsuario}`, {
+      const response = await fetch(`http://localhost:3030/usuario/eliminar/${usuario.id_usuario}`, {
         method: 'DELETE'
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert('Usuario eliminado correctamente');
-        onEliminar(); // Actualizar lista
-        onClose();
+        alert('Cliente eliminado correctamente.');
+        onEliminar(); // Actualiza la lista
+        onClose();    // Cierra el modal
       } else {
-        alert(data.mensaje || 'Error al eliminar usuario');
+        alert(data.mensaje || 'Error al eliminar el cliente');
       }
     } catch (error) {
-      console.error(error);
-      alert('Error de conexión');
+      console.error("Error de conexión:", error);
+      alert("No se pudo conectar al servidor");
     }
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 24
-        }}
-      >
-        <Typography variant="h6" mb={2}>Eliminar Usuario</Typography>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen={isSmallScreen} // Ocupa toda la pantalla en móviles
+      fullWidth
+      maxWidth="xs" // Tamaño más compacto en escritorio
+    >
+      <DialogTitle sx={{ position: 'relative', pr: 5 }}>
+        Confirmar Eliminación
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-        <TextField
-          label="ID del usuario"
-          variant="outlined"
-          fullWidth
-          value={idUsuario}
-          onChange={(e) => setIdUsuario(e.target.value)}
-          sx={{ mb: 2 }}
-        />
+      <DialogContent>
+        <Typography textAlign="center" variant="body1">
+          ¿Estás seguro de que deseas eliminar al cliente{' '}
+          <strong>{usuario?.nombre}</strong>?
+        </Typography>
+      </DialogContent>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button onClick={onClose} sx={{ mr: 1 }}>Cancelar</Button>
-          <Button variant="contained" color="error" onClick={handleEliminar}>Eliminar</Button>
+      <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+        <Box display="flex" flexDirection={isSmallScreen ? 'column' : 'row'} gap={2}>
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            color="inherit"
+            fullWidth={isSmallScreen}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleEliminar}
+            variant="contained"
+            color="error"
+            fullWidth={isSmallScreen}
+          >
+            Aceptar
+          </Button>
         </Box>
-      </Box>
-    </Modal>
+      </DialogActions>
+    </Dialog>
   );
 };
 

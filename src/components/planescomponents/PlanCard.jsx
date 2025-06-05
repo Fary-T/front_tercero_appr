@@ -8,8 +8,9 @@ const PlanCard = ({ title, precio, puntos, tipo }) => {
   const navigate = useNavigate();
 
   const handleInfo = () => {
-    navigate(tipo === 'salud' ? '/CotizarS' : '/CotizarV');
-  };
+  const ruta = tipo === 'salud' ? '/CotizarS' : '/CotizarV';
+  navigate(ruta, { state: { title, precio, puntos } });
+};
 
   // Estilos según el tipo de plan
   const estilos = {
@@ -57,6 +58,7 @@ const PlanCard = ({ title, precio, puntos, tipo }) => {
         }}
         fullWidth
         variant="contained"
+        
       >
         Más información
       </Button>

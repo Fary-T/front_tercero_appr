@@ -1,44 +1,72 @@
-import React from 'react';
-import {Box,Typography,TextField,Checkbox,FormControlLabel,Button,Link,} from '@mui/material';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Box, Typography,Grid,Paper } from '@mui/material';
 import Header from '../../components/planescomponents/Header';
+import Formulario from '../../components/CotizarComponents/Formulario';
+import PlanesVida from '../../components/CotizarComponents/PlanesVida';
 
-const Cotizar = () => {
+
+const CotizarV = () => {
+ const { state } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (!state || !state.title) {
+    return (
+      <>
+        <Header />
+         <Box mt={4} />
+        <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>Plan no encontrado.</Typography>
+      </>
+    );
+  }
+
+  const plan = PlanesVida.find(p => p.title === state.title);
+
+  if (!plan) {
+    return (
+      <>
+        <Header />
+         <Box mt={4} />
+        <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>Plan no encontrado.</Typography>
+      </>
+    );
+  }
+
   return (
-     <>
+    <>
       <Header />
-    <Box
-      sx={{
-        width: 400,
-        bgcolor: '#fff',
-        boxShadow: 24,
-        borderRadius: 2,
-        p: 4,
-      }}
-    >
-      <Typography variant="h6" gutterBottom>
-        Cotiza tu Seguro de Vida en línea
-      </Typography>
-      <Typography variant="body2" mb={2}>
-        Completa este formulario para obtener un presupuesto personalizado y descubre cómo proteger tu futuro.
-      </Typography>
-      <TextField fullWidth label="Nombre" margin="normal" required />
-      <TextField fullWidth label="Apellido" margin="normal" required />
-      <TextField fullWidth label="Correo electrónico" margin="normal" required />
-      <TextField fullWidth label="Celular" margin="normal" required />
-      <FormControlLabel
-        control={<Checkbox required />}
-        label={
-          <Typography variant="caption">
-            He leído y acepto la Cláusula de Protección de Datos
-          </Typography>
-        }
-      />
-      <Button fullWidth variant="contained" sx={{ mt: 2, backgroundColor: '#25004D' }}>
-        Cotiza ahora
-      </Button>
-    </Box>
-     </>
+       <Box sx={{ backgroundColor: '#F4F1F8', py: 6, px: { xs: 2, md: 8 }, minHeight: '100vh' }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <Paper elevation={3} sx={{ p: 4, bgcolor: '#fff', borderRadius: 3 }}>
+              <Typography variant="h4" fontWeight="bold" gutterBottom color="#25004D">{plan.title}</Typography>
+              <Typography variant="h6" color="primary" gutterBottom>{plan.precio}</Typography>
+
+              <Typography variant="h5" mt={3} color="#25004D">Cobertura</Typography>
+              <ul>{plan.cobertura.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
+
+              <Typography variant="h5" mt={3} color="#25004D">Beneficios</Typography>
+              <ul>{plan.beneficios.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
+
+              <Typography variant="h5" mt={3} color="#25004D">Ventajas</Typography>
+              <ul>{plan.ventajas.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
+
+              <Typography variant="subtitle1" mt={3}><strong>Público Ideal:</strong> {plan.publico}</Typography>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3, bgcolor: '#fff', borderRadius: 3 }}>
+              <Formulario plan={plan.title} />
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
   );
 };
 
-export default Cotizar;
+export default CotizarV;

@@ -12,7 +12,6 @@ import { Box } from '@mui/material';
 export const Planes = () => {
   return (
     <>
-
       <Header />
       <HeroBanner />
       <PlanesSection />

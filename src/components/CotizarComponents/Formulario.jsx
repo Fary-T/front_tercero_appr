@@ -11,20 +11,55 @@ const Formulario = ({ plan = "Plan Básico Salud" }) => {
     nombre: '',
     apellido: '',
     correo: '',
-    celular: '',
+    telefono: '',
+    cedula: '',
+    username: '',
+    password: '',
+    activo:1,
+    tipo:2,
+    rol: 'cliente'
   });
 
-  const handleChange = (e) => {
+  const [correoError, setCorreoError] = useState('');
+  const [correoExiste, setCorreoExiste] = useState(false);
+
+  const handleChange = async (e) => {
     const { name, value } = e.target;
 
-    // Validar solo letras y espacios para nombre y apellido
+    // Validar letras
     if ((name === 'nombre' || name === 'apellido') && !/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$/.test(value)) {
       return;
     }
 
-    // Validar solo números para celular
-    if (name === 'celular' && !/^\d*$/.test(value)) {
+    // Validar números
+    if ((name === 'telefono' || name === 'cedula') && !/^\d*$/.test(value)) {
       return;
+    }
+
+    // Validar formato y existencia de correo
+    if (name === 'correo') {
+      const regexCorreo = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com|yahoo\.com)$/;
+
+      if (!regexCorreo.test(value)) {
+        setCorreoError('Correo inválido. Usa gmail, hotmail, outlook o yahoo.');
+        setCorreoExiste(false);
+      } else {
+        // Validación backend: verificar existencia
+        /*try {
+          const response = await fetch(`http://localhost:3030/usuario/verificar-correo?correo=${value}`);
+          const data = await response.json();
+          if (data.existe) {
+            setCorreoError('Este correo ya está registrado.');
+            setCorreoExiste(true);
+          } else {
+            setCorreoError('');
+            setCorreoExiste(false);
+          }
+        } catch (err) {
+          console.error('Error al verificar correo:', err);
+          setCorreoError('Error al verificar correo');
+        }*/
+      }
     }
 
     setFormData((prev) => ({
@@ -33,10 +68,58 @@ const Formulario = ({ plan = "Plan Básico Salud" }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Formulario enviado:', formData);
-    // Aquí se enviaría al backend
+    console.log('Iniciamos envio');
+    console.log(formData);
+     setFormData({...formData,password:formData.cedula});
+   /* if (correoError || correoExiste) {
+      alert('Corrige el campo de correo antes de enviar.');
+      return;
+    }
+*/
+    if (formData.cedula.length !== 10) {
+      alert('La cédula debe tener exactamente 10 dígitos.');
+      return;
+    }
+
+    if (formData.telefono.length !== 10) {
+      alert('El teléfono debe tener exactamente 10 dígitos.');
+      return;
+    }
+
+    try {
+      console.log('dentro del drive');
+      const response = await fetch('http://localhost:3030/usuario/agregar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al registrar el usuario');
+      }
+
+      const data = await response.json();
+      alert('¡Usuario registrado exitosamente!');
+      console.log(data);
+
+      // Limpiar
+      setFormData({
+        nombre: '',
+        apellido: '',
+        correo: '',
+        telefono: '',
+        cedula: '',
+        username: '',
+      });
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      alert('Hubo un error al registrar.');
+      console.log(formData);
+    }
   };
 
   return (
@@ -103,17 +186,52 @@ const Formulario = ({ plan = "Plan Básico Salud" }) => {
         fullWidth
         required
         size="small"
+        error={!!correoError}
+        helperText={correoError}
       />
 
       <TextField
-        placeholder="Celular *"
-        name="celular"
-        value={formData.celular}
+        placeholder="Teléfono *"
+        name="telefono"
+        value={formData.telefono}
         onChange={handleChange}
         fullWidth
         required
         size="small"
         inputProps={{ maxLength: 10 }}
+        error={formData.telefono.length > 0 && formData.telefono.length !== 10}
+        helperText={
+          formData.telefono.length > 0 && formData.telefono.length !== 10
+            ? 'El teléfono debe tener exactamente 10 dígitos'
+            : ''
+        }
+      />
+
+      <TextField
+        placeholder="Cédula *"
+        name="cedula"
+        value={formData.cedula}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
+        inputProps={{ maxLength: 10 }}
+        error={formData.cedula.length > 0 && formData.cedula.length !== 10}
+        helperText={
+          formData.cedula.length > 0 && formData.cedula.length !== 10
+            ? 'La cédula debe tener exactamente 10 dígitos'
+            : ''
+        }
+      />
+
+      <TextField
+        placeholder="Username *"
+        name="username"
+        value={formData.username}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
       />
 
       <Button

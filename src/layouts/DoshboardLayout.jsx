@@ -56,7 +56,7 @@ export const DoshboardLayout = () => {
         return <DashboardContent />;
       case "Polizas":
         return <PolizasContent />;
-      case "Clientes":
+      case "Usuarios":
         return <ClientesContent />;
       case "Reportes":
         return <Typography variant="h6">Visualización de Reportes</Typography>;

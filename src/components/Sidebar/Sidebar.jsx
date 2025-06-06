@@ -29,7 +29,7 @@ export const Sidebar = ({
   const secciones = [
     { texto: "Dashboard", icono: <DashboardIcon /> },
     { texto: "Polizas", icono: <AssignmentIcon /> },
-    { texto: "Clientes", icono: <PeopleIcon /> },
+    { texto: "Usuarios", icono: <PeopleIcon /> },
     { texto: "Reportes", icono: <BarChartIcon /> },
     { texto: "Cerrar Sesión", icono: <ExitToAppIcon /> },
   ];

@@ -37,6 +37,7 @@ import { useTheme } from "@mui/material/styles";
 import { ModalEditarUsuario } from "../ModalEditarUsuario/ModalEditarUsuario";
 import { ModalAgente } from "../ModalAgente/ModalAgente";
 import { ModalEliminarUsuarioAgente } from "../ModalEliminarUsuarioAgente/ModalEliminarUsuarioAgente";
+import { ModalContratarSeguro } from "../ModalContratarSeguro/ModalContratarSeguro";
 
 export const ClientesContent = () => {
   const [clientes, setClientes] = useState([]);
@@ -48,6 +49,8 @@ export const ClientesContent = () => {
   // Estados para el modal de ver usuario
   const [modalVerAbierto, setModalVerAbierto] = useState(false);
   const [usuarioVer, setUsuarioVer] = useState(null);
+  const [modalContratarAbierto, setModalContratarAbierto] = useState(false);
+  const [usuarioContratar, setUsuarioContratar] = useState(null);
   // Estado para controlar la pestaña activa
   const [tabValue, setTabValue] = useState(0);
   // Estados para filtros
@@ -84,13 +87,8 @@ export const ClientesContent = () => {
   const usuariosFiltrados = () => {
     if (filtroRol === "todos") {
       return clientes;
-    } else if (filtroRol === "solo-clientes") {
-      return clientes.filter(cliente => 
-        cliente.rol?.toLowerCase() === "cliente" || 
-        cliente.rol?.toLowerCase() === "usuario"
-      );
     } else {
-      return clientes.filter(cliente => 
+      return clientes.filter(cliente =>
         cliente.rol?.toLowerCase() === filtroRol.toLowerCase()
       );
     }
@@ -441,9 +439,9 @@ export const ClientesContent = () => {
   };
 
   // Componente para la vista de clientes (tabla original con filtros)
-  const VistaClientes = () => {
+  const VistaUsuarios = () => {
     const usuariosFilt = usuariosFiltrados();
-    
+
     return (
       <>
         <Stack
@@ -454,21 +452,21 @@ export const ClientesContent = () => {
           mb={2}
         >
           <Typography variant="h5" fontWeight="bold">
-            Gestión de Clientes
+            Gestión de Usuarios
           </Typography>
 
           <Stack direction={isSmallScreen ? "column" : "row"} spacing={2}>
             {/* Filtro por rol */}
-            <FormControl 
-              size="small" 
-              sx={{ 
+            <FormControl
+              size="small"
+              sx={{
                 minWidth: 200,
-                width: isSmallScreen ? "100%" : "auto" 
+                width: isSmallScreen ? "100%" : "auto"
               }}
             >
               <InputLabel id="filtro-rol-label">
                 <FilterListIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                Filtrar por rol
+                Filtrar rol
               </InputLabel>
               <Select
                 labelId="filtro-rol-label"
@@ -488,7 +486,6 @@ export const ClientesContent = () => {
                 }}
               >
                 <MenuItem value="todos">Todos los usuarios</MenuItem>
-                <MenuItem value="solo-clientes">Solo clientes</MenuItem>
                 {rolesUnicos().map((rol) => (
                   <MenuItem key={rol} value={rol}>
                     {rol.charAt(0).toUpperCase() + rol.slice(1)}
@@ -509,7 +506,7 @@ export const ClientesContent = () => {
               startIcon={<PersonAddAltIcon />}
               onClick={() => setModalAbierto(true)}
             >
-              Añadir cliente
+              Añadir usuario
             </Button>
           </Stack>
         </Stack>
@@ -520,11 +517,7 @@ export const ClientesContent = () => {
             Mostrando {usuariosFilt.length} de {clientes.length} usuarios
             {filtroRol !== "todos" && (
               <Chip
-                label={
-                  filtroRol === "solo-clientes" 
-                    ? "Solo clientes" 
-                    : filtroRol.charAt(0).toUpperCase() + filtroRol.slice(1)
-                }
+                label={filtroRol.charAt(0).toUpperCase() + filtroRol.slice(1)}
                 size="small"
                 onDelete={() => setFiltroRol("todos")}
                 sx={{ ml: 1, backgroundColor: "#25004D", color: "white" }}
@@ -620,6 +613,17 @@ export const ClientesContent = () => {
                         >
                           Eliminar
                         </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size={isSmallScreen ? "small" : "medium"}
+                          onClick={() => {
+                            setUsuarioContratar(p);
+                            setModalContratarAbierto(true);
+                          }}
+                        >
+                          Contratar Poliza
+                        </Button>
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -631,9 +635,9 @@ export const ClientesContent = () => {
 
         {/* Mensaje cuando no hay resultados */}
         {usuariosFilt.length === 0 && (
-          <Box 
-            sx={{ 
-              textAlign: "center", 
+          <Box
+            sx={{
+              textAlign: "center",
               py: 4,
               backgroundColor: "#f5f5f5",
               borderRadius: 2,
@@ -674,11 +678,11 @@ export const ClientesContent = () => {
           </Typography>
 
           {/* Filtro por rol también en vista de roles */}
-          <FormControl 
-            size="small" 
-            sx={{ 
+          <FormControl
+            size="small"
+            sx={{
               minWidth: 200,
-              width: isSmallScreen ? "100%" : "auto" 
+              width: isSmallScreen ? "100%" : "auto"
             }}
           >
             <InputLabel id="filtro-rol-roles-label">
@@ -703,7 +707,6 @@ export const ClientesContent = () => {
               }}
             >
               <MenuItem value="todos">Todos los roles</MenuItem>
-              <MenuItem value="solo-clientes">Solo clientes</MenuItem>
               {rolesUnicos().map((rol) => (
                 <MenuItem key={rol} value={rol}>
                   {rol.charAt(0).toUpperCase() + rol.slice(1)}
@@ -839,9 +842,9 @@ export const ClientesContent = () => {
 
         {/* Mensaje cuando no hay resultados en vista de roles */}
         {Object.keys(grupos).length === 0 && (
-          <Box 
-            sx={{ 
-              textAlign: "center", 
+          <Box
+            sx={{
+              textAlign: "center",
               py: 4,
               backgroundColor: "#f5f5f5",
               borderRadius: 2,
@@ -885,7 +888,7 @@ export const ClientesContent = () => {
             },
           }}
         >
-          <Tab label="Clientes" icon={<GroupIcon />} iconPosition="start" />
+          <Tab label="Usuarios" icon={<GroupIcon />} iconPosition="start" />
           <Tab
             label="Roles"
             icon={<AdminPanelSettingsIcon />}
@@ -895,7 +898,7 @@ export const ClientesContent = () => {
       </Box>
 
       {/* Contenido según la pestaña seleccionada */}
-      {tabValue === 0 && <VistaClientes />}
+      {tabValue === 0 && <VistaUsuarios />}
       {tabValue === 1 && <VistaRoles />}
 
       {/* Modales existentes */}
@@ -919,6 +922,13 @@ export const ClientesContent = () => {
 
       {/* Modal de Ver Usuario integrado */}
       <ModalVerUsuario />
+
+      <ModalContratarSeguro
+        open={modalContratarAbierto}
+        onClose={() => setModalContratarAbierto(false)}
+        usuario={usuarioContratar}
+        onContratar={consultarClientes}
+      />
     </Box>
   );
 };

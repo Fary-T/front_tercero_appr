@@ -1,0 +1,1 @@
+export { ModalEditarUsuarioAgente } from './ModalEditarUsuarioAgente';

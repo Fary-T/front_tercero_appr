@@ -21,7 +21,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { SidebarAgente } from '../../components/Sidebar/SidebarAgente';
 import { DashboardContent } from '../../components/Doshboard/DashboardContent';
 import { PolizasContent } from '../../components/Doshboard/PolizasContent';
-import { ClientesContent } from '../../components/Doshboard/ClientesContent';
+import { ClientesContentAgentes } from '../../components/Doshboard/ClientesContentAgentes'; 
 
 // Hook personalizado para evitar navegación hacia atrás
 const usePreventBackNavigation = () => {
@@ -76,7 +76,7 @@ export const DoshboardAgentes = () => {
       case 'Polizas':
         return <PolizasContent />;
       case 'Clientes':
-        return <ClientesContent />;
+        return <ClientesContentAgentes />;
       case 'Reportes':
         return <Typography variant="h6">Visualización de Reportes</Typography>;
       default:

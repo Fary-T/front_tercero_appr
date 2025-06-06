@@ -23,15 +23,20 @@ import {
   Tab,
   Card,
   CardContent,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
 } from "@mui/material";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import GroupIcon from "@mui/icons-material/Group";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { useTheme } from "@mui/material/styles";
-import { Modal } from "../Modal";
-import { ModalEliminarUsuario } from "../ModalEliminarUsuario/ModalEliminarUsuario";
 import { ModalEditarUsuario } from "../ModalEditarUsuario/ModalEditarUsuario";
+import { ModalAgente } from "../ModalAgente/ModalAgente";
+import { ModalEliminarUsuarioAgente } from "../ModalEliminarUsuarioAgente/ModalEliminarUsuarioAgente";
 
 export const ClientesContent = () => {
   const [clientes, setClientes] = useState([]);
@@ -45,6 +50,8 @@ export const ClientesContent = () => {
   const [usuarioVer, setUsuarioVer] = useState(null);
   // Estado para controlar la pestaña activa
   const [tabValue, setTabValue] = useState(0);
+  // Estados para filtros
+  const [filtroRol, setFiltroRol] = useState("todos");
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -71,6 +78,28 @@ export const ClientesContent = () => {
       console.error("Error de conexión con el servidor:", error);
       alert("No se pudo conectar al servidor");
     }
+  };
+
+  // Función para filtrar usuarios según el rol seleccionado
+  const usuariosFiltrados = () => {
+    if (filtroRol === "todos") {
+      return clientes;
+    } else if (filtroRol === "solo-clientes") {
+      return clientes.filter(cliente => 
+        cliente.rol?.toLowerCase() === "cliente" || 
+        cliente.rol?.toLowerCase() === "usuario"
+      );
+    } else {
+      return clientes.filter(cliente => 
+        cliente.rol?.toLowerCase() === filtroRol.toLowerCase()
+      );
+    }
+  };
+
+  // Función para obtener roles únicos
+  const rolesUnicos = () => {
+    const roles = [...new Set(clientes.map(cliente => cliente.rol?.toLowerCase()).filter(Boolean))];
+    return roles.sort();
   };
 
   // Función para obtener el color del rol
@@ -103,10 +132,11 @@ export const ClientesContent = () => {
     }
   };
 
-  // Función para agrupar usuarios por rol
+  // Función para agrupar usuarios por rol (usando usuarios filtrados)
   const usuariosPorRol = () => {
     const grupos = {};
-    clientes.forEach((cliente) => {
+    const usuariosFilt = usuariosFiltrados();
+    usuariosFilt.forEach((cliente) => {
       const rol = cliente.rol || "Sin rol";
       if (!grupos[rol]) {
         grupos[rol] = [];
@@ -410,143 +440,278 @@ export const ClientesContent = () => {
     );
   };
 
-  // Componente para la vista de clientes (tabla original)
-  const VistaClientes = () => (
-    <>
-      <Stack
-        direction={isSmallScreen ? "column" : "row"}
-        justifyContent="space-between"
-        alignItems={isSmallScreen ? "flex-start" : "center"}
-        spacing={2}
-        mb={2}
-      >
-        <Typography variant="h5" fontWeight="bold">
-          Gestión de Clientes
-        </Typography>
-
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#25004D",
-            "&:hover": {
-              backgroundColor: "#25004D",
-            },
-            width: isSmallScreen ? "100%" : "auto",
-          }}
-          startIcon={<PersonAddAltIcon />}
-          onClick={() => setModalAbierto(true)}
+  // Componente para la vista de clientes (tabla original con filtros)
+  const VistaClientes = () => {
+    const usuariosFilt = usuariosFiltrados();
+    
+    return (
+      <>
+        <Stack
+          direction={isSmallScreen ? "column" : "row"}
+          justifyContent="space-between"
+          alignItems={isSmallScreen ? "flex-start" : "center"}
+          spacing={2}
+          mb={2}
         >
-          Añadir cliente
-        </Button>
-      </Stack>
+          <Typography variant="h5" fontWeight="bold">
+            Gestión de Clientes
+          </Typography>
 
-      <TableContainer component={Paper}>
-        <Table size={isSmallScreen ? "small" : "medium"}>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <strong>ID</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Nombre</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Correo</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Teléfono</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Rol</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Acciones</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {clientes.map((p) => {
-              const rolColors = getRolColor(p.rol);
-              return (
-                <TableRow key={p.id_usuario}>
-                  <TableCell>
-                    <strong>{p.id_usuario}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{p.nombre}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{p.correo}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{p.telefono}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={p.rol || "Sin rol"}
-                      icon={getRolIcon(p.rol)}
-                      sx={{
-                        backgroundColor: rolColors.bg,
-                        color: rolColors.color,
-                        fontWeight: "bold",
-                        fontSize: "0.75rem",
-                      }}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="outlined"
-                        size={isSmallScreen ? "small" : "medium"}
-                        onClick={() => {
-                          setUsuarioVer(p);
-                          setModalVerAbierto(true);
-                        }}
-                      >
-                        Ver
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size={isSmallScreen ? "small" : "medium"}
-                        onClick={() => {
-                          setUsuarioEditar(p);
-                          setModalEditarAbierto(true);
-                        }}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size={isSmallScreen ? "small" : "medium"}
-                        onClick={() => {
-                          setUsuarioSeleccionado(p);
-                          setModalEliminarAbierto(true);
-                        }}
-                      >
-                        Eliminar
-                      </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
-  );
+          <Stack direction={isSmallScreen ? "column" : "row"} spacing={2}>
+            {/* Filtro por rol */}
+            <FormControl 
+              size="small" 
+              sx={{ 
+                minWidth: 200,
+                width: isSmallScreen ? "100%" : "auto" 
+              }}
+            >
+              <InputLabel id="filtro-rol-label">
+                <FilterListIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                Filtrar por rol
+              </InputLabel>
+              <Select
+                labelId="filtro-rol-label"
+                value={filtroRol}
+                label="Filtrar por rol"
+                onChange={(e) => setFiltroRol(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#25004D",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#25004D",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#25004D",
+                  },
+                }}
+              >
+                <MenuItem value="todos">Todos los usuarios</MenuItem>
+                <MenuItem value="solo-clientes">Solo clientes</MenuItem>
+                {rolesUnicos().map((rol) => (
+                  <MenuItem key={rol} value={rol}>
+                    {rol.charAt(0).toUpperCase() + rol.slice(1)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-  // Componente para la vista de roles
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#25004D",
+                "&:hover": {
+                  backgroundColor: "#25004D",
+                },
+                width: isSmallScreen ? "100%" : "auto",
+              }}
+              startIcon={<PersonAddAltIcon />}
+              onClick={() => setModalAbierto(true)}
+            >
+              Añadir cliente
+            </Button>
+          </Stack>
+        </Stack>
+
+        {/* Mostrar contador de resultados */}
+        <Box mb={2}>
+          <Typography variant="body2" color="textSecondary">
+            Mostrando {usuariosFilt.length} de {clientes.length} usuarios
+            {filtroRol !== "todos" && (
+              <Chip
+                label={
+                  filtroRol === "solo-clientes" 
+                    ? "Solo clientes" 
+                    : filtroRol.charAt(0).toUpperCase() + filtroRol.slice(1)
+                }
+                size="small"
+                onDelete={() => setFiltroRol("todos")}
+                sx={{ ml: 1, backgroundColor: "#25004D", color: "white" }}
+              />
+            )}
+          </Typography>
+        </Box>
+
+        <TableContainer component={Paper}>
+          <Table size={isSmallScreen ? "small" : "medium"}>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <strong>ID</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Nombre</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Correo</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Teléfono</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Rol</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Acciones</strong>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {usuariosFilt.map((p) => {
+                const rolColors = getRolColor(p.rol);
+                return (
+                  <TableRow key={p.id_usuario}>
+                    <TableCell>
+                      <strong>{p.id_usuario}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>{p.nombre}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>{p.correo}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>{p.telefono}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={p.rol || "Sin rol"}
+                        icon={getRolIcon(p.rol)}
+                        sx={{
+                          backgroundColor: rolColors.bg,
+                          color: rolColors.color,
+                          fontWeight: "bold",
+                          fontSize: "0.75rem",
+                        }}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" spacing={1}>
+                        <Button
+                          variant="outlined"
+                          size={isSmallScreen ? "small" : "medium"}
+                          onClick={() => {
+                            setUsuarioVer(p);
+                            setModalVerAbierto(true);
+                          }}
+                        >
+                          Ver
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size={isSmallScreen ? "small" : "medium"}
+                          onClick={() => {
+                            setUsuarioEditar(p);
+                            setModalEditarAbierto(true);
+                          }}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size={isSmallScreen ? "small" : "medium"}
+                          onClick={() => {
+                            setUsuarioSeleccionado(p);
+                            setModalEliminarAbierto(true);
+                          }}
+                        >
+                          Eliminar
+                        </Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Mensaje cuando no hay resultados */}
+        {usuariosFilt.length === 0 && (
+          <Box 
+            sx={{ 
+              textAlign: "center", 
+              py: 4,
+              backgroundColor: "#f5f5f5",
+              borderRadius: 2,
+              mt: 2
+            }}
+          >
+            <Typography variant="h6" color="textSecondary">
+              No se encontraron usuarios con el filtro seleccionado
+            </Typography>
+            <Button
+              variant="outlined"
+              onClick={() => setFiltroRol("todos")}
+              sx={{ mt: 2 }}
+            >
+              Mostrar todos los usuarios
+            </Button>
+          </Box>
+        )}
+      </>
+    );
+  };
+
+  // Componente para la vista de roles (también usa filtros)
   const VistaRoles = () => {
     const grupos = usuariosPorRol();
 
     return (
       <>
-        <Typography variant="h5" fontWeight="bold" mb={3}>
-          Gestión de Roles
-        </Typography>
+        <Stack
+          direction={isSmallScreen ? "column" : "row"}
+          justifyContent="space-between"
+          alignItems={isSmallScreen ? "flex-start" : "center"}
+          spacing={2}
+          mb={3}
+        >
+          <Typography variant="h5" fontWeight="bold">
+            Gestión de Roles
+          </Typography>
+
+          {/* Filtro por rol también en vista de roles */}
+          <FormControl 
+            size="small" 
+            sx={{ 
+              minWidth: 200,
+              width: isSmallScreen ? "100%" : "auto" 
+            }}
+          >
+            <InputLabel id="filtro-rol-roles-label">
+              <FilterListIcon sx={{ fontSize: 16, mr: 0.5 }} />
+              Filtrar por rol
+            </InputLabel>
+            <Select
+              labelId="filtro-rol-roles-label"
+              value={filtroRol}
+              label="Filtrar por rol"
+              onChange={(e) => setFiltroRol(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#25004D",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#25004D",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#25004D",
+                },
+              }}
+            >
+              <MenuItem value="todos">Todos los roles</MenuItem>
+              <MenuItem value="solo-clientes">Solo clientes</MenuItem>
+              {rolesUnicos().map((rol) => (
+                <MenuItem key={rol} value={rol}>
+                  {rol.charAt(0).toUpperCase() + rol.slice(1)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
 
         <Grid container spacing={3}>
           {Object.entries(grupos).map(([rol, usuarios]) => {
@@ -671,6 +836,30 @@ export const ClientesContent = () => {
             );
           })}
         </Grid>
+
+        {/* Mensaje cuando no hay resultados en vista de roles */}
+        {Object.keys(grupos).length === 0 && (
+          <Box 
+            sx={{ 
+              textAlign: "center", 
+              py: 4,
+              backgroundColor: "#f5f5f5",
+              borderRadius: 2,
+              mt: 2
+            }}
+          >
+            <Typography variant="h6" color="textSecondary">
+              No se encontraron usuarios con el filtro seleccionado
+            </Typography>
+            <Button
+              variant="outlined"
+              onClick={() => setFiltroRol("todos")}
+              sx={{ mt: 2 }}
+            >
+              Mostrar todos los roles
+            </Button>
+          </Box>
+        )}
       </>
     );
   };
@@ -710,12 +899,12 @@ export const ClientesContent = () => {
       {tabValue === 1 && <VistaRoles />}
 
       {/* Modales existentes */}
-      <Modal
+      <ModalAgente
         open={modalAbierto}
         onClose={() => setModalAbierto(false)}
         onGuardar={consultarClientes}
       />
-      <ModalEliminarUsuario
+      <ModalEliminarUsuarioAgente
         open={modalEliminarAbierto}
         onClose={() => setModalEliminarAbierto(false)}
         usuario={usuarioSeleccionado}

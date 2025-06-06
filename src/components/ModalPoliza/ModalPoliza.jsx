@@ -17,11 +17,8 @@ import {
   useTheme,
   ToggleButton,
   ToggleButtonGroup,
-  RadioGroup,
-  Radio,
-  FormControl,
-  FormLabel,
 } from '@mui/material';
+import './ModalPoliza.css';
 
 export const ModalPoliza = ({ open, onClose, onGuardar }) => {
   const [formData, setFormData] = useState({
@@ -34,24 +31,15 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
 
   const [requisitos, setRequisitos] = useState([]);
   const [requisitosCompletados, setRequisitosCompletados] = useState({});
-  const [respuestasCuestionario, setRespuestasCuestionario] = useState({});
   const [errors, setErrors] = useState({});
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const cuestionarioSalud = [
-    "¿Fuma actualmente?",
-    "¿Tiene enfermedades crónicas?",
-    "¿Ha sido hospitalizado en los últimos 5 años?",
-    "¿Toma medicamentos de forma regular?"
-  ];
-
   const requisitosVida = [
     "Cédula de identidad",
     "Papeleta de votación",
     "Recibo de luz",
-    "Cuestionario de salud",
     "Subida de historial clínico",
     "Subida de historial de ingresos",
     "Pago inicial"
@@ -63,7 +51,6 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
     "Papeleta de votación",
     "Tipo de sangre",
     "Historial clínico",
-    "Cuestionario de salud",
     "Certificado de ingresos",
     "Pago inicial"
   ];
@@ -119,7 +106,6 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
       setErrors({});
       setRequisitos([]);
       setRequisitosCompletados({});
-      setRespuestasCuestionario({});
       setPlanSeleccionado('');
     }
   }, [open]);
@@ -148,14 +134,6 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
       });
       setRequisitosCompletados(requisitosIniciales);
       
-      // Inicializar respuestas del cuestionario si es necesario
-      if (nuevosRequisitos.includes("Cuestionario de salud")) {
-        const respuestasIniciales = {};
-        cuestionarioSalud.forEach((_, index) => {
-          respuestasIniciales[index] = '';
-        });
-        setRespuestasCuestionario(respuestasIniciales);
-      }
     } else if (name === 'plan') {
       const planes = formData.tipo === 0 ? planesVida : planesSalud;
       const plan = planes[value];
@@ -187,25 +165,8 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
     }));
   };
 
-  const handleCuestionarioChange = (index, respuesta) => {
-    setRespuestasCuestionario(prev => ({
-      ...prev,
-      [index]: respuesta
-    }));
-  };
-
   const todosRequisitosCompletados = () => {
-    const requisitosBasicos = Object.values(requisitosCompletados).every(completado => completado);
-    
-    // Si hay cuestionario de salud, verificar que todas las preguntas estén respondidas
-    if (requisitos.includes("Cuestionario de salud")) {
-      const cuestionarioCompleto = cuestionarioSalud.every((_, index) => 
-        respuestasCuestionario[index] && respuestasCuestionario[index] !== ''
-      );
-      return requisitosBasicos && cuestionarioCompleto;
-    }
-    
-    return requisitosBasicos;
+    return Object.values(requisitosCompletados).every(completado => completado);
   };
 
   const validate = () => {
@@ -246,8 +207,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
           tiempo_pago: parseInt(tiempo_pago),
           descripcion,
           tipo,
-          requisitos_completados: requisitosCompletados,
-          respuestas_cuestionario: respuestasCuestionario
+          requisitos_completados: requisitosCompletados
         })
       });
 
@@ -277,7 +237,6 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
     setErrors({});
     setRequisitos([]);
     setRequisitosCompletados({});
-    setRespuestasCuestionario({});
     setPlanSeleccionado('');
     onClose();
   };
@@ -511,7 +470,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                   <TextField
                     fullWidth
                     name="precio"
-                    value={`$${formData.precio}`}
+                    value={`${formData.precio}`}
                     variant="outlined"
                     size="small"
                     disabled
@@ -577,65 +536,21 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                   </Typography>
                 )}
                 <FormGroup>
-                  {requisitos.map((req, index) => (
+                  {requisitos.map((requisito, index) => (
                     <FormControlLabel
                       key={index}
                       control={
                         <Checkbox 
-                          checked={requisitosCompletados[req] || false}
-                          onChange={(e) => handleRequisitoChange(req, e.target.checked)}
+                          checked={requisitosCompletados[requisito] || false}
+                          onChange={(e) => handleRequisitoChange(requisito, e.target.checked)}
                           sx={{ color: "#28044c" }} 
                         />
                       }
-                      label={req}
+                      label={requisito}
                       sx={{ color: "#28044c" }}
                     />
                   ))}
                 </FormGroup>
-                
-                {/* Cuestionario de salud si corresponde */}
-                {requisitos.includes("Cuestionario de salud") && (
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="subtitle2" sx={{ mb: 2, color: "#28044c", fontWeight: 600 }}>
-                      Cuestionario de salud
-                    </Typography>
-                    {cuestionarioSalud.map((pregunta, idx) => (
-                      <Box key={idx} sx={{ mb: 2 }}>
-                        <FormControl component="fieldset">
-                          <FormLabel 
-                            component="legend" 
-                            sx={{ 
-                              color: "#28044c", 
-                              fontSize: "0.9rem",
-                              "&.Mui-focused": { color: "#28044c" }
-                            }}
-                          >
-                            {pregunta}
-                          </FormLabel>
-                          <RadioGroup
-                            row
-                            value={respuestasCuestionario[idx] || ''}
-                            onChange={(e) => handleCuestionarioChange(idx, e.target.value)}
-                            sx={{ mt: 0.5 }}
-                          >
-                            <FormControlLabel 
-                              value="si" 
-                              control={<Radio sx={{ color: "#28044c" }} />} 
-                              label="Sí" 
-                              sx={{ color: "#28044c" }}
-                            />
-                            <FormControlLabel 
-                              value="no" 
-                              control={<Radio sx={{ color: "#28044c" }} />} 
-                              label="No" 
-                              sx={{ color: "#28044c" }}
-                            />
-                          </RadioGroup>
-                        </FormControl>
-                      </Box>
-                    ))}
-                  </Box>
-                )}
               </Grid>
             )}
           </Grid>

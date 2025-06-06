@@ -1,3 +1,57 @@
-.modalpoliza {
-  
+/* ModalPoliza.css - Archivo CSS complementario para estilos adicionales */
+
+/* Este archivo CSS está preparado para estilos adicionales si se necesitan en el futuro */
+/* Los estilos principales están definidos en el componente JSX usando Material-UI sx prop */
+
+.modal-poliza-container {
+  /* Estilos adicionales si se necesitan */
+}
+
+/* Estilos personalizados que no se pueden lograr con sx prop */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #28044c;
+  border-radius: 3px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #1f0336;
+}
+
+/* Animaciones adicionales */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Media queries para mejoras responsivas adicionales */
+@media (max-width: 600px) {
+  .mobile-spacing {
+    padding: 8px !important;
+  }
+}
+
+/* Utilidades adicionales */
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

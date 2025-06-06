@@ -9,7 +9,8 @@ const PlanesSalud = [
         beneficios: ['Atención médica asequible', 'Ideal para chequeos regulares', 'Red de clínicas locales'],
         ventajas: ['Bajo costo', 'Cobertura nacional', 'Atención inmediata'],
         publico: 'Estudiantes, jóvenes trabajadores, personas con bajo presupuesto',
-        popular: false
+        popular: false,
+        imagen: '/PSBasico.jpeg'
     },
     {
         tipo: 'salud',
@@ -20,7 +21,8 @@ const PlanesSalud = [
         beneficios: ['Acceso a médicos especialistas', 'Cobertura en tratamientos comunes', 'Apoyo hospitalario limitado'],
         ventajas: ['Cobertura amplia', 'Ideal para familias pequeñas', 'Red de hospitales asociados'],
         publico: 'Familias jóvenes, trabajadores con cargas familiares, personas con condiciones crónicas',
-        popular: true
+        popular: true,
+        imagen: '/PSFamiliar.jpg'
     },
     {
         tipo: 'salud',
@@ -31,7 +33,8 @@ const PlanesSalud = [
         beneficios: ['Cobertura total en situaciones médicas graves', 'Atención médica internacional', 'Beneficios VIP'],
         ventajas: ['Red privada de clínicas premium', 'Cobertura global', 'Atención sin límites de uso'],
         publico: 'Empresarios, ejecutivos, viajeros frecuentes, personas con alto riesgo médico',
-        popular: false
+        popular: false,
+        imagen: '/PSPremium.webp'
     }
 ];
 

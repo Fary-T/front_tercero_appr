@@ -4,15 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
-const PlanCard = ({ title, precio, puntos, tipo }) => {
+const PlanCard = ({ plan }) => {
+  const { title, precio, puntos, tipo } = plan;
   const navigate = useNavigate();
 
   const handleInfo = () => {
-  const ruta = tipo === 'salud' ? '/CotizarS' : '/CotizarV';
-  navigate(ruta, { state: { title, precio, puntos } });
-};
+    const ruta = tipo === 'salud' ? '/CotizarS' : '/CotizarV';
+    navigate(ruta, { state: { plan } });
+  };
 
-  // Estilos según el tipo de plan
   const estilos = {
     salud: {
       fondo: '#EFE4FA',
@@ -35,17 +35,21 @@ const PlanCard = ({ title, precio, puntos, tipo }) => {
       <Box display="flex" justifyContent="center" mb={2}>
         {icon}
       </Box>
+
       <Typography variant="h6" fontWeight="bold" gutterBottom>
         {title}
       </Typography>
+
       <Typography variant="subtitle1" color="textSecondary" gutterBottom>
         {precio}
       </Typography>
+
       {puntos.map((punto, i) => (
         <Typography key={i} variant="body2" sx={{ textAlign: 'left' }}>
           • {punto}
         </Typography>
       ))}
+
       <Button
         onClick={handleInfo}
         sx={{
@@ -58,7 +62,6 @@ const PlanCard = ({ title, precio, puntos, tipo }) => {
         }}
         fullWidth
         variant="contained"
-        
       >
         Más información
       </Button>

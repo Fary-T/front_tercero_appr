@@ -17,11 +17,13 @@ import {
   useTheme,
   ToggleButton,
   ToggleButtonGroup,
+  Alert,
 } from '@mui/material';
 import './ModalPoliza.css';
 
 export const ModalPoliza = ({ open, onClose, onGuardar }) => {
   const [formData, setFormData] = useState({
+    usuario: '',
     nombre: '',
     precio: '',
     tiempo_pago: '',
@@ -97,6 +99,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
   useEffect(() => {
     if (!open) {
       setFormData({
+        usuario: '',
         nombre: '',
         precio: '',
         tiempo_pago: '',
@@ -172,6 +175,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
   const validate = () => {
     const newErrors = {};
     
+    if (!formData.usuario.trim()) newErrors.usuario = "Campo requerido";
     if (formData.tipo === null) newErrors.tipo = "Selecciona un tipo de póliza";
     if (!planSeleccionado) newErrors.plan = "Selecciona un plan";
     if (!formData.tiempo_pago) {
@@ -195,13 +199,14 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
   const handleGuardar = async () => {
     if (!validate()) return;
 
-    const { nombre, precio, tiempo_pago, descripcion, tipo } = formData;
+    const { usuario, nombre, precio, tiempo_pago, descripcion, tipo } = formData;
 
     try {
       const response = await fetch("http://localhost:3030/seguro/agregar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          usuario,
           nombre,
           precio: parseFloat(precio),
           tiempo_pago: parseInt(tiempo_pago),
@@ -228,6 +233,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
 
   const handleClose = () => {
     setFormData({
+      usuario: '',
       nombre: '',
       precio: '',
       tiempo_pago: '',
@@ -247,17 +253,19 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
     return {};
   };
 
+  const camposHabilitados = todosRequisitosCompletados();
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       fullScreen={fullScreen}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: fullScreen ? 0 : 2,
-          m: fullScreen ? 0 : 1,
+          m: fullScreen ? 0 : 2,
         },
       }}
     >
@@ -265,13 +273,13 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
         sx={{
           background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
           color: "white",
-          py: 2,
+          py: 3,
           textAlign: "center",
           boxShadow: "0 4px 20px rgba(40, 4, 76, 0.2)",
         }}
       >
         <Typography
-          variant="h6"
+          variant="h5"
           fontWeight="bold"
           sx={{ letterSpacing: "0.5px" }}
         >
@@ -279,9 +287,49 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
         </Typography>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3, backgroundColor: "#f5f0f9" }}>
-        <Box sx={{ mt: 1 }}>
-          <Grid container spacing={2}>
+      <DialogContent sx={{ p: 4, backgroundColor: "#f5f0f9" }}>
+        <Box sx={{ mt: 2 }}>
+          <Grid container spacing={3}>
+            {/* Usuario */}
+            <Grid item xs={12}>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                gutterBottom
+                sx={{ color: "#28044c", fontWeight: 600 }}
+              >
+                Usuario
+              </Typography>
+              <TextField
+                fullWidth
+                name="usuario"
+                value={formData.usuario}
+                onChange={handleChange}
+                variant="outlined"
+                size="small"
+                placeholder="Ingrese el nombre del usuario"
+                error={!!errors.usuario}
+                helperText={errors.usuario}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    backgroundColor: "#ede5f2",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#8249a0",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#28044c",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#28044c",
+                    },
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "#28044c",
+                  },
+                }}
+              />
+            </Grid>
+
             {/* Tipo de Póliza */}
             <Grid item xs={12}>
               <Typography
@@ -335,46 +383,40 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
               )}
             </Grid>
 
-            {/* Tiempo de Pago - SIEMPRE VISIBLE */}
-            <Grid item xs={12}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                gutterBottom
-                sx={{ color: "#28044c", fontWeight: 600 }}
-              >
-                Tiempo de Pago (meses: 1-12)
-              </Typography>
-              <TextField
-                fullWidth
-                type="number"
-                name="tiempo_pago"
-                value={formData.tiempo_pago}
-                onChange={handleChange}
-                variant="outlined"
-                size="small"
-                inputProps={{ min: 1, max: 12 }}
-                error={!!errors.tiempo_pago}
-                helperText={errors.tiempo_pago}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ede5f2",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#28044c",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#28044c",
-                    },
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "#28044c",
-                  },
-                }}
-              />
-            </Grid>
+            {/* Mostrar requisitos dinámicos */}
+            {requisitos.length > 0 && (
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: "#28044c", fontWeight: 600 }}>
+                  Requisitos necesarios:
+                </Typography>
+                {!camposHabilitados && (
+                  <Alert severity="warning" sx={{ mb: 2 }}>
+                    Debe completar todos los requisitos para habilitar la selección del plan
+                  </Alert>
+                )}
+                <FormGroup>
+                  {requisitos.map((req, index) => (
+                    <FormControlLabel
+                      key={index}
+                      control={
+                        <Checkbox 
+                          checked={requisitosCompletados[req] || false}
+                          onChange={(e) => handleRequisitoChange(req, e.target.checked)}
+                          sx={{ color: "#28044c" }}
+                        />
+                      }
+                      label={req}
+                      sx={{ color: "#28044c" }}
+                    />
+                  ))}
+                </FormGroup>
+                {errors.requisitos && (
+                  <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                    {errors.requisitos}
+                  </Typography>
+                )}
+              </Grid>
+            )}
 
             {/* Selector de Plan */}
             {formData.tipo !== null && (
@@ -395,23 +437,24 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                   onChange={handleChange}
                   variant="outlined"
                   size="small"
+                  disabled={!camposHabilitados}
                   error={!!errors.plan}
                   helperText={errors.plan}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      backgroundColor: "#ede5f2",
+                      backgroundColor: camposHabilitados ? "#ede5f2" : "#f5f5f5",
                       "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: "#8249a0",
                       },
                       "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#28044c",
+                        borderColor: camposHabilitados ? "#28044c" : "#8249a0",
                       },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                         borderColor: "#28044c",
                       },
                     },
                     "& .MuiInputBase-input": {
-                      color: "#28044c",
+                      color: camposHabilitados ? "#28044c" : "#999",
                     },
                   }}
                 >
@@ -427,6 +470,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
             {/* Información del Plan Seleccionado */}
             {planSeleccionado && (
               <>
+                {/* Nombre del Seguro */}
                 <Grid item xs={12}>
                   <Typography
                     variant="body2"
@@ -434,7 +478,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                     gutterBottom
                     sx={{ color: "#28044c", fontWeight: 600 }}
                   >
-                    Nombre del Plan
+                    Nombre del Seguro
                   </Typography>
                   <TextField
                     fullWidth
@@ -458,7 +502,8 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                {/* Precio y Tiempo de Pago */}
+                <Grid item xs={12} sm={6}>
                   <Typography
                     variant="body2"
                     color="textSecondary"
@@ -489,6 +534,47 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                   />
                 </Grid>
 
+                <Grid item xs={12} sm={6}>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    gutterBottom
+                    sx={{ color: "#28044c", fontWeight: 600 }}
+                  >
+                    Tiempo de Pago (1-12 meses)
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    name="tiempo_pago"
+                    value={formData.tiempo_pago}
+                    onChange={handleChange}
+                    variant="outlined"
+                    size="small"
+                    inputProps={{ min: 1, max: 12 }}
+                    error={!!errors.tiempo_pago}
+                    helperText={errors.tiempo_pago}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        backgroundColor: "#ede5f2",
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#8249a0",
+                        },
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#28044c",
+                        },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#28044c",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        color: "#28044c",
+                      },
+                    }}
+                  />
+                </Grid>
+
+                {/* Descripción */}
                 <Grid item xs={12}>
                   <Typography
                     variant="body2"
@@ -523,43 +609,13 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                 </Grid>
               </>
             )}
-
-            {/* Mostrar requisitos */}
-            {requisitos.length > 0 && (
-              <Grid item xs={12}>
-                <Typography variant="subtitle2" sx={{ mt: 1, mb: 1, color: "#28044c", fontWeight: 600 }}>
-                  Requisitos necesarios:
-                </Typography>
-                {errors.requisitos && (
-                  <Typography variant="caption" color="error" sx={{ mb: 1, display: 'block' }}>
-                    {errors.requisitos}
-                  </Typography>
-                )}
-                <FormGroup>
-                  {requisitos.map((requisito, index) => (
-                    <FormControlLabel
-                      key={index}
-                      control={
-                        <Checkbox 
-                          checked={requisitosCompletados[requisito] || false}
-                          onChange={(e) => handleRequisitoChange(requisito, e.target.checked)}
-                          sx={{ color: "#28044c" }} 
-                        />
-                      }
-                      label={requisito}
-                      sx={{ color: "#28044c" }}
-                    />
-                  ))}
-                </FormGroup>
-              </Grid>
-            )}
           </Grid>
         </Box>
       </DialogContent>
 
       <DialogActions
         sx={{
-          p: 3,
+          p: 4,
           pt: 2,
           justifyContent: "space-between",
           backgroundColor: "#f5f0f9",
@@ -576,13 +632,13 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
               backgroundColor: "rgba(40, 4, 76, 0.04)",
             },
             borderRadius: 3,
-            px: 3,
-            py: 1,
-            fontSize: "0.9rem",
+            px: 4,
+            py: 1.5,
+            fontSize: "1rem",
             fontWeight: "bold",
             textTransform: "none",
             transition: "all 0.3s ease",
-            minWidth: fullScreen ? "100px" : "120px",
+            minWidth: fullScreen ? "120px" : "140px",
           }}
         >
           Cancelar
@@ -594,29 +650,25 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
           disabled={requisitos.length > 0 && !todosRequisitosCompletados()}
           sx={{
             background: requisitos.length > 0 && !todosRequisitosCompletados() 
-              ? "#cccccc" 
+              ? "linear-gradient(135deg, #999 0%, #666 100%)"
               : "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
-            "&:hover": {
-              background: requisitos.length > 0 && !todosRequisitosCompletados()
-                ? "#cccccc"
-                : "linear-gradient(135deg, #1f0336 0%, #3d1558 100%)",
-              transform: requisitos.length > 0 && !todosRequisitosCompletados() ? "none" : "translateY(-2px)",
-              boxShadow: requisitos.length > 0 && !todosRequisitosCompletados() 
-                ? "none" 
-                : "0 8px 25px rgba(40, 4, 76, 0.25)",
+            "&:hover": requisitos.length > 0 && !todosRequisitosCompletados() ? {} : {
+              background: "linear-gradient(135deg, #1f0336 0%, #3d1558 100%)",
+              transform: "translateY(-2px)",
+              boxShadow: "0 8px 25px rgba(40, 4, 76, 0.25)",
             },
             "&.Mui-disabled": {
-              background: "#cccccc",
-              color: "#666666",
+              background: "linear-gradient(135deg, #999 0%, #666 100%)",
+              color: "#ffffff",
             },
             borderRadius: 3,
-            px: 3,
-            py: 1,
-            fontSize: "0.9rem",
+            px: 4,
+            py: 1.5,
+            fontSize: "1rem",
             fontWeight: "bold",
             textTransform: "none",
             transition: "all 0.3s ease",
-            minWidth: fullScreen ? "100px" : "120px",
+            minWidth: fullScreen ? "120px" : "140px",
           }}
         >
           Guardar

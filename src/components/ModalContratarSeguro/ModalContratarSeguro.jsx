@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   Dialog,
@@ -16,6 +16,7 @@ import {
   MenuItem,
   Select,
   FormControl,
+  CircularProgress,
 } from "@mui/material";
 
 export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
@@ -28,21 +29,63 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
     estado_pago: "",
   });
 
+  const [usuarios, setUsuarios] = useState([]);
+  const [seguros, setSeguros] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Cargar usuarios y seguros cuando se abre el modal
+  useEffect(() => {
+    if (open) {
+      cargarDatos();
+    }
+  }, [open]);
+
+  const cargarDatos = async () => {
+    setLoading(true);
+    try {
+      // Cargar usuarios (usando POST según tu backend)
+      const responseUsuarios = await fetch("http://localhost:3030/usuario/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (responseUsuarios.ok) {
+        const dataUsuarios = await responseUsuarios.json();
+        setUsuarios(dataUsuarios);
+      } else {
+        console.error("Error al cargar usuarios:", responseUsuarios.status);
+      }
+
+      // Cargar seguros
+      const responseSeguros = await fetch("http://localhost:3030/seguro/");
+      if (responseSeguros.ok) {
+        const dataSeguros = await responseSeguros.json();
+        setSeguros(dataSeguros);
+      } else {
+        console.error("Error al cargar seguros:", responseSeguros.status);
+      }
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+      alert("Error al cargar los datos necesarios");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validarCampos = () => {
-    if (!formData.id_usuario_per.trim()) {
-      alert("El ID del usuario es requerido.");
+    if (!formData.id_usuario_per) {
+      alert("Debe seleccionar un usuario.");
       return false;
     }
 
-    if (!formData.id_seguro_per.trim()) {
-      alert("El ID del seguro es requerido.");
+    if (!formData.id_seguro_per) {
+      alert("Debe seleccionar un seguro.");
       return false;
     }
 
@@ -157,111 +200,143 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
       </DialogTitle>
 
       <DialogContent sx={{ p: 4, backgroundColor: "#f0f7f4" }}>
-        <Box sx={{ mt: 2 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <Typography sx={{ color: "#044c28", fontWeight: 600 }}>
-                ID del Usuario
-              </Typography>
-              <TextField
-                fullWidth
-                name="id_usuario_per"
-                value={formData.id_usuario_per}
-                onChange={handleChange}
-                variant="outlined"
-                size="small"
-                autoComplete="off"
-                sx={fieldStyle}
-              />
-            </Grid>
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+            <CircularProgress sx={{ color: "#044c28" }} />
+          </Box>
+        ) : (
+          <Box sx={{ mt: 2 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
+                  Seleccionar Usuario
+                </Typography>
+                <FormControl fullWidth size="small">
+                  <Select
+                    name="id_usuario_per"
+                    value={formData.id_usuario_per}
+                    onChange={handleChange}
+                    variant="outlined"
+                    sx={fieldStyle}
+                    displayEmpty
+                  >
+                    <MenuItem value="">
+                      <em>Seleccione un usuario</em>
+                    </MenuItem>
+                    {usuarios.map((usuario) => (
+                      <MenuItem key={usuario.id_usuario} value={usuario.id_usuario}>
+                        {usuario.nombre} {usuario.apellido} - {usuario.correo}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Typography sx={{ color: "#044c28", fontWeight: 600 }}>
-                ID del Seguro
-              </Typography>
-              <TextField
-                fullWidth
-                name="id_seguro_per"
-                value={formData.id_seguro_per}
-                onChange={handleChange}
-                variant="outlined"
-                size="small"
-                autoComplete="off"
-                sx={fieldStyle}
-              />
-            </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
+                  Seleccionar Plan de Seguro
+                </Typography>
+                <FormControl fullWidth size="small">
+                  <Select
+                    name="id_seguro_per"
+                    value={formData.id_seguro_per}
+                    onChange={handleChange}
+                    variant="outlined"
+                    sx={fieldStyle}
+                    displayEmpty
+                  >
+                    <MenuItem value="">
+                      <em>Seleccione un plan</em>
+                    </MenuItem>
+                    {seguros.map((seguro) => (
+                      <MenuItem key={seguro.id_seguro} value={seguro.id_seguro}>
+                        {seguro.nombre} - ${seguro.precio} ({seguro.tipo === 0 ? 'Vida' : 'Salud'})
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Typography sx={{ color: "#044c28", fontWeight: 600 }}>
-                Fecha de Contrato
-              </Typography>
-              <TextField
-                fullWidth
-                name="fecha_contrato"
-                type="date"
-                value={formData.fecha_contrato}
-                onChange={handleChange}
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
-                sx={fieldStyle}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Typography sx={{ color: "#044c28", fontWeight: 600 }}>
-                Fecha de Fin
-              </Typography>
-              <TextField
-                fullWidth
-                name="fecha_fin"
-                type="date"
-                value={formData.fecha_fin}
-                onChange={handleChange}
-                variant="outlined"
-                size="small"
-                InputLabelProps={{ shrink: true }}
-                sx={fieldStyle}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <Typography sx={{ color: "#044c28", fontWeight: 600 }}>
-                Estado del Contrato
-              </Typography>
-              <FormControl fullWidth size="small">
-                <Select
-                  name="estado"
-                  value={formData.estado}
+              <Grid item xs={12} sm={6}>
+                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
+                  Fecha de Contrato
+                </Typography>
+                <TextField
+                  fullWidth
+                  name="fecha_contrato"
+                  type="date"
+                  value={formData.fecha_contrato}
                   onChange={handleChange}
                   variant="outlined"
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
                   sx={fieldStyle}
-                >
-                  <MenuItem value="1">Activo</MenuItem>
-                  <MenuItem value="0">Inactivo</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+                />
+              </Grid>
 
-            <Grid item xs={12} sm={6}>
-              <Typography sx={{ color: "#044c28", fontWeight: 600 }}>
-                Estado de Pago
-              </Typography>
-              <FormControl fullWidth size="small">
-                <Select
-                  name="estado_pago"
-                  value={formData.estado_pago}
+              <Grid item xs={12} sm={6}>
+                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
+                  Fecha de Fin
+                </Typography>
+                <TextField
+                  fullWidth
+                  name="fecha_fin"
+                  type="date"
+                  value={formData.fecha_fin}
                   onChange={handleChange}
                   variant="outlined"
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
                   sx={fieldStyle}
-                >
-                  <MenuItem value="1">Pagado</MenuItem>
-                  <MenuItem value="0">Pendiente</MenuItem>
-                </Select>
-              </FormControl>
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
+                  Estado del Contrato
+                </Typography>
+                <FormControl fullWidth size="small">
+                  <Select
+                    name="estado"
+                    value={formData.estado}
+                    onChange={handleChange}
+                    variant="outlined"
+                    sx={fieldStyle}
+                    displayEmpty
+                  >
+                    <MenuItem value="">
+                      <em>Seleccione el estado</em>
+                    </MenuItem>
+                    <MenuItem value="1">Activo</MenuItem>
+                    <MenuItem value="0">Inactivo</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
+                  Estado de Pago
+                </Typography>
+                <FormControl fullWidth size="small">
+                  <Select
+                    name="estado_pago"
+                    value={formData.estado_pago}
+                    onChange={handleChange}
+                    variant="outlined"
+                    sx={fieldStyle}
+                    displayEmpty
+                  >
+                    <MenuItem value="">
+                      <em>Seleccione el estado</em>
+                    </MenuItem>
+                    <MenuItem value="1">Pagado</MenuItem>
+                    <MenuItem value="0">Pendiente</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions
@@ -298,12 +373,16 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
         <Button
           onClick={handleContratar}
           variant="contained"
+          disabled={loading}
           sx={{
             background: "linear-gradient(135deg, #044c28 0%, #1b6b4a 100%)",
             "&:hover": {
               background: "linear-gradient(135deg, #033420 0%, #155838 100%)",
               transform: "translateY(-2px)",
               boxShadow: "0 8px 25px rgba(4, 76, 40, 0.25)",
+            },
+            "&:disabled": {
+              background: "#ccc",
             },
             borderRadius: 3,
             px: 4,
@@ -315,11 +394,15 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
             minWidth: fullScreen ? "120px" : "140px",
           }}
         >
-          Contratar
+          {loading ? <CircularProgress size={20} color="inherit" /> : "Contratar"}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-ModalContratarSeguro.propTypes = {};
+ModalContratarSeguro.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onContratar: PropTypes.func,
+};

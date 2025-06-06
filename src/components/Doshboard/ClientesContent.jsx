@@ -12,11 +12,6 @@ import {
   Button,
   Stack,
   useMediaQuery,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   Grid,
   Chip,
   Tabs,
@@ -38,6 +33,7 @@ import { ModalEditarUsuario } from "../ModalEditarUsuario/ModalEditarUsuario";
 import { ModalAgente } from "../ModalAgente/ModalAgente";
 import { ModalEliminarUsuarioAgente } from "../ModalEliminarUsuarioAgente/ModalEliminarUsuarioAgente";
 import { ModalContratarSeguro } from "../ModalContratarSeguro/ModalContratarSeguro";
+import { ModalVerUsuario } from "../ModalVerUsuario";
 
 export const ClientesContent = () => {
   const [clientes, setClientes] = useState([]);
@@ -46,14 +42,11 @@ export const ClientesContent = () => {
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
   const [usuarioEditar, setUsuarioEditar] = useState(null);
-  // Estados para el modal de ver usuario
   const [modalVerAbierto, setModalVerAbierto] = useState(false);
   const [usuarioVer, setUsuarioVer] = useState(null);
   const [modalContratarAbierto, setModalContratarAbierto] = useState(false);
   const [usuarioContratar, setUsuarioContratar] = useState(null);
-  // Estado para controlar la pestaña activa
   const [tabValue, setTabValue] = useState(0);
-  // Estados para filtros
   const [filtroRol, setFiltroRol] = useState("todos");
 
   const theme = useTheme();
@@ -83,7 +76,6 @@ export const ClientesContent = () => {
     }
   };
 
-  // Función para filtrar usuarios según el rol seleccionado
   const usuariosFiltrados = () => {
     if (filtroRol === "todos") {
       return clientes;
@@ -94,13 +86,11 @@ export const ClientesContent = () => {
     }
   };
 
-  // Función para obtener roles únicos
   const rolesUnicos = () => {
     const roles = [...new Set(clientes.map(cliente => cliente.rol?.toLowerCase()).filter(Boolean))];
     return roles.sort();
   };
 
-  // Función para obtener el color del rol
   const getRolColor = (rol) => {
     switch (rol?.toLowerCase()) {
       case "admin":
@@ -118,7 +108,6 @@ export const ClientesContent = () => {
     }
   };
 
-  // Función para obtener el icono del rol
   const getRolIcon = (rol) => {
     switch (rol?.toLowerCase()) {
       case "admin":
@@ -130,7 +119,6 @@ export const ClientesContent = () => {
     }
   };
 
-  // Función para agrupar usuarios por rol (usando usuarios filtrados)
   const usuariosPorRol = () => {
     const grupos = {};
     const usuariosFilt = usuariosFiltrados();
@@ -144,301 +132,6 @@ export const ClientesContent = () => {
     return grupos;
   };
 
-  // Componente del Modal Ver Usuario integrado con colores púrpura
-  const ModalVerUsuario = () => {
-    if (!usuarioVer) return null;
-
-    return (
-      <Dialog
-        open={modalVerAbierto}
-        onClose={() => setModalVerAbierto(false)}
-        maxWidth="md"
-        fullWidth
-        fullScreen={isSmallScreen}
-        PaperProps={{
-          sx: {
-            borderRadius: isSmallScreen ? 0 : 2,
-            m: isSmallScreen ? 0 : 2,
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
-            color: "white",
-            py: 3,
-            textAlign: "center",
-            boxShadow: "0 4px 20px rgba(40, 4, 76, 0.2)",
-          }}
-        >
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{ letterSpacing: "0.5px" }}
-          >
-            👤 Información del Usuario
-          </Typography>
-        </DialogTitle>
-
-        <DialogContent sx={{ p: 4, backgroundColor: "#f5f0f9" }}>
-          <Box sx={{ mt: 2 }}>
-            <Grid container spacing={4}>
-              {/* Nombre */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Nombre
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.nombre || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Apellido */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Apellido
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.apellido || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Correo */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Correo
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.correo || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Teléfono */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Teléfono
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.telefono || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Cédula */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Cédula
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.cedula || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Username */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Username
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.username || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Rol */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Rol
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.rol || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
-
-        <DialogActions
-          sx={{
-            p: 4,
-            pt: 2,
-            justifyContent: "center",
-            backgroundColor: "#f5f0f9",
-          }}
-        >
-          <Button
-            onClick={() => setModalVerAbierto(false)}
-            variant="contained"
-            sx={{
-              background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
-              "&:hover": {
-                background: "linear-gradient(135deg, #1f0336 0%, #3d1558 100%)",
-                transform: "translateY(-2px)",
-                boxShadow: "0 8px 25px rgba(40, 4, 76, 0.25)",
-              },
-              borderRadius: 3,
-              px: 4,
-              py: 1.5,
-              fontSize: "1rem",
-              fontWeight: "bold",
-              textTransform: "none",
-              transition: "all 0.3s ease",
-              minWidth: isSmallScreen ? "120px" : "140px",
-            }}
-          >
-            Cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
-
-  // Componente para la vista de clientes (tabla original con filtros)
   const VistaUsuarios = () => {
     const usuariosFilt = usuariosFiltrados();
 
@@ -919,10 +612,12 @@ export const ClientesContent = () => {
         usuario={usuarioEditar}
         onGuardar={consultarClientes}
       />
-
       {/* Modal de Ver Usuario integrado */}
-      <ModalVerUsuario />
-
+      <ModalVerUsuario 
+        open={modalVerAbierto}
+        onClose={() => setModalVerAbierto(false)}
+        usuario={usuarioVer}
+      />
       <ModalContratarSeguro
         open={modalContratarAbierto}
         onClose={() => setModalContratarAbierto(false)}

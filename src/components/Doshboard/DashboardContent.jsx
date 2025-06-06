@@ -167,7 +167,7 @@ export const DashboardContent = () => {
           }
         }}
       >
-        Dashboard - Seguros de Vida y Salud
+        Contratos - Seguros de Vida y Salud
       </Typography>
 
       {/* Métricas - Grid responsivo centrado */}

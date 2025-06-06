@@ -7,16 +7,10 @@ import {
   TextField,
   Button,
   Grid,
-  MenuItem,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
   Typography,
   Box,
   useMediaQuery,
   useTheme,
-  ToggleButton,
-  ToggleButtonGroup,
   Alert,
 } from '@mui/material';
 
@@ -25,39 +19,16 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
     nombre: '',
     precio: '',
     tiempo_pago: '',
-    descripcion: '',
-    tipo: null
+    descripcion: ''
   });
 
-  const [requisitos, setRequisitos] = useState([]);
-  const [requisitosCompletados, setRequisitosCompletados] = useState({});
   const [errors, setErrors] = useState({});
+  const [planOriginal, setPlanOriginal] = useState(null);
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const requisitosVida = [
-    "Cédula de identidad",
-    "Papeleta de votación",
-    "Recibo de luz",
-    "Subida de historial clínico",
-    "Subida de historial de ingresos",
-    "Pago inicial"
-  ];
-
-  const requisitosSalud = [
-    "Cédula de identidad",
-    "Pago de luz",
-    "Papeleta de votación",
-    "Tipo de sangre",
-    "Historial clínico",
-    "Certificado de ingresos",
-    "Pago inicial"
-  ];
-
-  const [planSeleccionado, setPlanSeleccionado] = useState('');
-
-  // Planes predefinidos
+  // Planes predefinidos para referencia
   const planesSalud = {
     'basico': {
       nombre: 'Plan Básico Salud',
@@ -94,35 +65,42 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
     }
   };
 
+  // Combinar todos los planes disponibles
+  const todosLosPlanes = {
+    ...planesVida,
+    ...planesSalud,
+    'personalizado': {
+      nombre: 'Plan Personalizado',
+      precio: '',
+      descripcion: 'Configure su propio plan'
+    }
+  };
+
   useEffect(() => {
     if (poliza) {
-      const tipoNumerico = parseInt(poliza.tipo);
-      const requisitosPorTipo = tipoNumerico === 0 ? requisitosVida : requisitosSalud;
-      
       setFormData({
         nombre: poliza.nombre || '',
         precio: poliza.precio || '',
         tiempo_pago: poliza.tiempo_pago || '',
-        descripcion: poliza.descripcion || '',
-        tipo: tipoNumerico
+        descripcion: poliza.descripcion || ''
       });
-      
-      setRequisitos(requisitosPorTipo);
-      
-      // Inicializar requisitos completados
-      const requisitosIniciales = {};
-      requisitosPorTipo.forEach(req => {
-        requisitosIniciales[req] = false;
-      });
-      setRequisitosCompletados(requisitosIniciales);
 
-      // Determinar plan seleccionado basado en los datos existentes
-      const planes = tipoNumerico === 0 ? planesVida : planesSalud;
-      const planEncontrado = Object.entries(planes).find(([key, plan]) => 
-        plan.nombre === poliza.nombre
+      // Determinar el plan original y fijarlo
+      const planEncontrado = Object.entries(todosLosPlanes).find(([key, plan]) => 
+        plan.nombre === poliza.nombre && key !== 'personalizado'
       );
+      
       if (planEncontrado) {
-        setPlanSeleccionado(planEncontrado[0]);
+        setPlanOriginal({
+          key: planEncontrado[0],
+          ...planEncontrado[1]
+        });
+      } else {
+        setPlanOriginal({
+          key: 'personalizado',
+          nombre: 'Plan Personalizado',
+          descripcion: 'Plan creado de forma personalizada'
+        });
       }
     }
   }, [poliza]);
@@ -130,79 +108,65 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'tipo') {
-      const tipoNumerico = parseInt(value);
-      const nuevosRequisitos = tipoNumerico === 0 ? requisitosVida : requisitosSalud;
-      
-      setFormData(prev => ({
-        ...prev,
-        tipo: tipoNumerico,
-        nombre: '',
-        precio: '',
-        descripcion: ''
-      }));
-      
-      setRequisitos(nuevosRequisitos);
-      
-      // Reinicializar requisitos completados
-      const requisitosIniciales = {};
-      nuevosRequisitos.forEach(req => {
-        requisitosIniciales[req] = false;
-      });
-      setRequisitosCompletados(requisitosIniciales);
-      setPlanSeleccionado('');
-      
-    } else if (name === 'plan') {
-      const planes = formData.tipo === 0 ? planesVida : planesSalud;
-      const plan = planes[value];
-      
-      if (plan) {
-        setFormData(prev => ({
-          ...prev,
-          nombre: plan.nombre,
-          precio: plan.precio,
-          descripcion: plan.descripcion
-        }));
-        setPlanSeleccionado(value);
-      }
-    } else if (name === 'tiempo_pago') {
+    if (name === 'tiempo_pago') {
+      // Validar que esté entre 1 y 12 meses
       const tiempo = parseInt(value);
       if (value === '' || (tiempo >= 1 && tiempo <= 12)) {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    } else if (name === 'precio') {
+      // Validar que sea un número positivo
+      const precio = parseFloat(value);
+      if (value === '' || (precio > 0 && precio <= 10000)) {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    } else if (name === 'nombre') {
+      // Validar longitud del nombre
+      if (value.length <= 100) {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    } else if (name === 'descripcion') {
+      // Validar longitud de la descripción
+      if (value.length <= 500) {
         setFormData(prev => ({ ...prev, [name]: value }));
       }
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
-  };
 
-  const handleRequisitoChange = (requisito, completado) => {
-    setRequisitosCompletados(prev => ({
-      ...prev,
-      [requisito]: completado
-    }));
-  };
-
-  const todosRequisitosCompletados = () => {
-    return Object.values(requisitosCompletados).every(completado => completado);
+    // Limpiar errores cuando el usuario empiece a escribir
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.tipo && formData.tipo !== 0) newErrors.tipo = "Campo requerido";
-    if (!formData.precio) newErrors.precio = "Campo requerido";
+    
+    if (!formData.precio) {
+      newErrors.precio = "El precio es requerido";
+    } else {
+      const precio = parseFloat(formData.precio);
+      if (precio <= 0) {
+        newErrors.precio = "El precio debe ser mayor a 0";
+      } else if (precio > 10000) {
+        newErrors.precio = "El precio no puede ser mayor a $10,000";
+      }
+    }
+    
     if (!formData.tiempo_pago) {
-      newErrors.tiempo_pago = "Campo requerido";
+      newErrors.tiempo_pago = "El tiempo de pago es requerido";
     } else {
       const tiempo = parseInt(formData.tiempo_pago);
       if (tiempo < 1 || tiempo > 12) {
         newErrors.tiempo_pago = "Debe estar entre 1 y 12 meses";
       }
     }
-    if (!formData.descripcion) newErrors.descripcion = "Campo requerido";
     
-    // Validar que todos los requisitos estén completados
-    if (!todosRequisitosCompletados()) {
-      newErrors.requisitos = "Debe completar todos los requisitos";
+    if (!formData.descripcion.trim()) {
+      newErrors.descripcion = "La descripción es requerida";
+    } else if (formData.descripcion.length < 10) {
+      newErrors.descripcion = "La descripción debe tener al menos 10 caracteres";
     }
     
     setErrors(newErrors);
@@ -212,7 +176,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
   const handleGuardar = async () => {
     if (!validate()) return;
 
-    const { nombre, precio, tiempo_pago, descripcion, tipo } = formData;
+    const { nombre, precio, tiempo_pago, descripcion } = formData;
 
     try {
       const response = await fetch(`http://localhost:3030/seguro/editar/${poliza.id_seguro}`, {
@@ -221,12 +185,11 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          nombre,
+          nombre: nombre.trim(),
           precio: parseFloat(precio),
           tiempo_pago: parseInt(tiempo_pago),
-          descripcion,
-          tipo,
-          requisitos_completados: requisitosCompletados
+          descripcion: descripcion.trim(),
+          tipo: poliza.tipo // Mantener el tipo original
         })
       });
 
@@ -245,13 +208,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
     }
   };
 
-  const getPlanesDisponibles = () => {
-    if (formData.tipo === 0) return planesVida;
-    if (formData.tipo === 1) return planesSalud;
-    return {};
-  };
-
-  const camposHabilitados = todosRequisitosCompletados();
+  const esPlanPersonalizado = planOriginal?.key === 'personalizado';
 
   return (
     <Dialog
@@ -288,184 +245,31 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
       <DialogContent sx={{ p: 4, backgroundColor: "#f5f0f9" }}>
         <Box sx={{ mt: 2 }}>
           <Grid container spacing={3}>
-            {/* Tipo de Póliza */}
-            <Grid item xs={12}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                gutterBottom
-                sx={{ color: "#28044c", fontWeight: 600 }}
-              >
-                Tipo de Póliza
-              </Typography>
-              <ToggleButtonGroup
-                value={formData.tipo}
-                exclusive
-                onChange={(event, newTipo) => {
-                  if (newTipo !== null) {
-                    handleChange({ target: { name: 'tipo', value: newTipo } });
-                  }
-                }}
-                fullWidth
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  "& .MuiToggleButton-root": {
-                    backgroundColor: "#ede5f2",
-                    color: "#28044c",
-                    border: "1px solid #8249a0",
-                    "&:hover": {
-                      backgroundColor: "#dccce5",
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: "#28044c",
-                      color: "white",
-                      "&:hover": {
-                        backgroundColor: "#1f0336",
-                      },
-                    },
-                  },
-                }}
-              >
-                <ToggleButton value={0} sx={{ flex: 1 }}>
-                  💛 Vida
-                </ToggleButton>
-                <ToggleButton value={1} sx={{ flex: 1 }}>
-                  ✚ Salud
-                </ToggleButton>
-              </ToggleButtonGroup>
-              {errors.tipo && (
-                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
-                  {errors.tipo}
-                </Typography>
-              )}
-            </Grid>
-
-            {/* Mostrar requisitos dinámicos */}
-            {requisitos.length > 0 && (
+            {/* Información del Plan Base (Solo lectura) */}
+            {planOriginal && (
               <Grid item xs={12}>
-                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: "#28044c", fontWeight: 600 }}>
-                  Requisitos necesarios:
-                </Typography>
-                {!camposHabilitados && (
-                  <Alert severity="warning" sx={{ mb: 2 }}>
-                    Debe completar todos los requisitos para habilitar la edición del plan
-                  </Alert>
-                )}
-                <FormGroup>
-                  {requisitos.map((req, index) => (
-                    <FormControlLabel
-                      key={index}
-                      control={
-                        <Checkbox 
-                          checked={requisitosCompletados[req] || false}
-                          onChange={(e) => handleRequisitoChange(req, e.target.checked)}
-                          sx={{ color: "#28044c" }}
-                        />
-                      }
-                      label={req}
-                      sx={{ color: "#28044c" }}
-                    />
-                  ))}
-                </FormGroup>
-                {errors.requisitos && (
-                  <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
-                    {errors.requisitos}
-                  </Typography>
-                )}
-              </Grid>
-            )}
-
-            {/* Selector de Plan */}
-            {formData.tipo !== null && (
-              <Grid item xs={12}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Seleccionar Plan
-                </Typography>
-                <TextField
-                  fullWidth
-                  select
-                  name="plan"
-                  value={planSeleccionado}
-                  onChange={handleChange}
-                  variant="outlined"
-                  size="small"
-                  disabled={!camposHabilitados}
+                <Alert 
+                  severity="info"
                   sx={{
-                    "& .MuiOutlinedInput-root": {
-                      backgroundColor: camposHabilitados ? "#ede5f2" : "#f5f5f5",
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                      "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: camposHabilitados ? "#28044c" : "#8249a0",
-                      },
-                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#28044c",
-                      },
-                    },
-                    "& .MuiInputBase-input": {
-                      color: camposHabilitados ? "#28044c" : "#999",
-                    },
+                    backgroundColor: "#e3f2fd",
+                    color: "#0d47a1",
+                    "& .MuiAlert-icon": {
+                      color: "#1976d2"
+                    }
                   }}
                 >
-                  {Object.entries(getPlanesDisponibles()).map(([key, plan]) => (
-                    <MenuItem key={key} value={key}>
-                      {plan.nombre} - ${plan.precio}/mes
-                    </MenuItem>
-                  ))}
-                </TextField>
+                  <Typography variant="body2" fontWeight="600">
+                    Plan: {formData.nombre}
+                  </Typography>
+                  <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
+                    {planOriginal.descripcion}
+                    {planOriginal.precio && ` - Precio base: $${planOriginal.precio}/mes`}
+                  </Typography>
+                </Alert>
               </Grid>
             )}
 
-            {/* Nombre del Seguro */}
-            <Grid item xs={12}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                gutterBottom
-                sx={{ color: "#28044c", fontWeight: 600 }}
-              >
-                Nombre del Seguro
-              </Typography>
-              <TextField
-                fullWidth
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                variant="outlined"
-                size="small"
-                autoComplete="off"
-                disabled={!camposHabilitados}
-                InputProps={{
-                  readOnly: true,
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: camposHabilitados ? "#ede5f2" : "#f5f5f5",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
-                    },
-                  },
-                  "& .MuiInputBase-input": {
-                    color: camposHabilitados ? "#28044c" : "#999",
-                  },
-                }}
-              />
-            </Grid>
-
-            {/* Precio y Tiempo de Pago */}
+            {/* Precio */}
             <Grid item xs={12} sm={6}>
               <Typography
                 variant="body2"
@@ -473,7 +277,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
                 gutterBottom
                 sx={{ color: "#28044c", fontWeight: 600 }}
               >
-                Precio (USD/mes)
+                Precio (USD/mes) *
               </Typography>
               <TextField
                 fullWidth
@@ -483,32 +287,35 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
                 onChange={handleChange}
                 variant="outlined"
                 size="small"
-                disabled={!camposHabilitados}
-                InputProps={{
-                  readOnly: true,
+                placeholder="0.00"
+                inputProps={{ 
+                  min: 0.01, 
+                  max: 10000, 
+                  step: 0.01 
                 }}
                 error={!!errors.precio}
                 helperText={errors.precio}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: camposHabilitados ? "#ede5f2" : "#f5f5f5",
+                    backgroundColor: "#ede5f2",
                     "& .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#8249a0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
+                      borderColor: "#28044c",
                     },
                     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
+                      borderColor: "#28044c",
                     },
                   },
                   "& .MuiInputBase-input": {
-                    color: camposHabilitados ? "#28044c" : "#999",
+                    color: "#28044c",
                   },
                 }}
               />
             </Grid>
 
+            {/* Tiempo de Pago */}
             <Grid item xs={12} sm={6}>
               <Typography
                 variant="body2"
@@ -516,7 +323,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
                 gutterBottom
                 sx={{ color: "#28044c", fontWeight: 600 }}
               >
-                Tiempo de Pago (1-12 meses)
+                Tiempo de Pago (meses) *
               </Typography>
               <TextField
                 fullWidth
@@ -526,6 +333,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
                 onChange={handleChange}
                 variant="outlined"
                 size="small"
+                placeholder="1-12"
                 inputProps={{ min: 1, max: 12 }}
                 error={!!errors.tiempo_pago}
                 helperText={errors.tiempo_pago}
@@ -557,7 +365,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
                 gutterBottom
                 sx={{ color: "#28044c", fontWeight: 600 }}
               >
-                Descripción
+                Descripción *
               </Typography>
               <TextField
                 fullWidth
@@ -568,27 +376,24 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
                 onChange={handleChange}
                 variant="outlined"
                 size="small"
-                disabled={!camposHabilitados}
-                InputProps={{
-                  readOnly: true,
-                }}
+                placeholder="Describa las características y beneficios del seguro"
                 error={!!errors.descripcion}
                 helperText={errors.descripcion}
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    backgroundColor: camposHabilitados ? "#ede5f2" : "#f5f5f5",
+                    backgroundColor: "#ede5f2",
                     "& .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#8249a0",
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
+                      borderColor: "#28044c",
                     },
                     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
+                      borderColor: "#28044c",
                     },
                   },
                   "& .MuiInputBase-input": {
-                    color: camposHabilitados ? "#28044c" : "#999",
+                    color: "#28044c",
                   },
                 }}
               />
@@ -631,16 +436,13 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
         <Button
           onClick={handleGuardar}
           variant="contained"
-          disabled={!camposHabilitados}
           sx={{
-            background: camposHabilitados 
-              ? "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)"
-              : "linear-gradient(135deg, #999 0%, #666 100%)",
-            "&:hover": camposHabilitados ? {
+            background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
+            "&:hover": {
               background: "linear-gradient(135deg, #1f0336 0%, #3d1558 100%)",
               transform: "translateY(-2px)",
               boxShadow: "0 8px 25px rgba(40, 4, 76, 0.25)",
-            } : {},
+            },
             borderRadius: 3,
             px: 4,
             py: 1.5,
@@ -651,7 +453,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
             minWidth: fullScreen ? "120px" : "140px",
           }}
         >
-          Guardar
+          Guardar Cambios
         </Button>
       </DialogActions>
     </Dialog>

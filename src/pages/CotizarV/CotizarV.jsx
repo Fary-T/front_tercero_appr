@@ -1,70 +1,180 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, Typography,Grid,Paper } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Button,
+  Modal,
+  Grid,
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Header from '../../components/planescomponents/Header';
 import Formulario from '../../components/CotizarComponents/Formulario';
-import PlanesVida from '../../components/CotizarComponents/PlanesVida';
-
 
 const CotizarV = () => {
- const { state } = useLocation();
+  const { state } = useLocation();
+  const plan = state?.plan;
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  if (!state || !state.title) {
-    return (
-      <>
-        <Header />
-         <Box mt={4} />
-        <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>Plan no encontrado.</Typography>
-      </>
-    );
-  }
-
-  const plan = PlanesVida.find(p => p.title === state.title);
-
   if (!plan) {
     return (
       <>
         <Header />
-         <Box mt={4} />
-        <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>Plan no encontrado.</Typography>
+        <Box mt={4} />
+        <Typography variant="h6" sx={{ mt: 4, textAlign: 'center' }}>
+          Plan no encontrado.
+        </Typography>
       </>
     );
   }
 
+  const renderList = (items) => (
+    <List dense sx={{ textAlign: 'left' }}>
+      {items.map((item, idx) => (
+        <ListItem key={idx} disablePadding>
+          <ListItemIcon sx={{ color: '#25004D', minWidth: 32 }}>
+            <CheckCircleIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary={item} />
+        </ListItem>
+      ))}
+    </List>
+  );
+
   return (
     <>
       <Header />
-       <Box sx={{ backgroundColor: '#F4F1F8', py: 6, px: { xs: 2, md: 8 }, minHeight: '100vh' }}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={8}>
-            <Paper elevation={3} sx={{ p: 4, bgcolor: '#fff', borderRadius: 3 }}>
-              <Typography variant="h4" fontWeight="bold" gutterBottom color="#25004D">{plan.title}</Typography>
-              <Typography variant="h6" color="primary" gutterBottom>{plan.precio}</Typography>
 
-              <Typography variant="h5" mt={3} color="#25004D">Cobertura</Typography>
-              <ul>{plan.cobertura.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
-
-              <Typography variant="h5" mt={3} color="#25004D">Beneficios</Typography>
-              <ul>{plan.beneficios.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
-
-              <Typography variant="h5" mt={3} color="#25004D">Ventajas</Typography>
-              <ul>{plan.ventajas.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
-
-              <Typography variant="subtitle1" mt={3}><strong>Público Ideal:</strong> {plan.publico}</Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Paper elevation={3} sx={{ p: 3, bgcolor: '#fff', borderRadius: 3 }}>
-              <Formulario plan={plan.title} />
-            </Paper>
-          </Grid>
-        </Grid>
+      {/* Banner dinámico con imagen */}
+      <Box
+        sx={{
+          width: '100%',
+          height: 400,
+          backgroundImage: `url("${plan.imagen || '/fallback.jpg'}")`, // usa fallback si no tiene imagen
+          backgroundSize: 'cover',
+          backgroundPosition: 'center -100px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          textAlign: 'center',
+          mt: { xs: 8, md: 8.05 },
+        }}
+      >
+        <Box sx={{ bgcolor: 'rgba(0,0,0,0.5)', px: 4, py: 2, borderRadius: 2 }}>
+          <Typography variant="h4" fontWeight="bold">
+            {plan.title}
+          </Typography>
+          <Typography variant="h6">{plan.precio}</Typography>
+        </Box>
       </Box>
+
+      <Box
+        sx={{
+          backgroundColor: '#F4F1F8',
+          py: 6,
+          px: { xs: 2, md: 6 },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        {/* Contenido del plan */}
+        <Paper
+          elevation={3}
+          sx={{
+            width: '100%',
+            maxWidth: 900,
+            p: { xs: 3, md: 5 },
+            bgcolor: '#fff',
+            borderRadius: 4,
+            mb: 4,
+          }}
+        >
+          <Typography variant="h4" fontWeight="bold" color="#25004D" gutterBottom align="center">
+            {plan.title}
+          </Typography>
+          <Typography variant="h6" color="primary" gutterBottom align="center">
+            {plan.precio}
+          </Typography>
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* Secciones distribuidas en 3 columnas centradas */}
+          <Grid container spacing={4} justifyContent="center">
+            <Grid item xs={12} md={4}>
+              <Box textAlign="center">
+                <Typography variant="h6" color="#25004D" gutterBottom>
+                  Cobertura
+                </Typography>
+              </Box>
+              <Box display="flex" flexDirection="column" alignItems="center">
+                {renderList(plan.cobertura)}
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Box textAlign="center">
+                <Typography variant="h6" color="#25004D" gutterBottom>
+                  Beneficios
+                </Typography>
+              </Box>
+              <Box display="flex" flexDirection="column" alignItems="center">
+                {renderList(plan.beneficios)}
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Box textAlign="center">
+                <Typography variant="h6" color="#25004D" gutterBottom>
+                  Ventajas
+                </Typography>
+              </Box>
+              <Box display="flex" flexDirection="column" alignItems="center">
+                {renderList(plan.ventajas)}
+              </Box>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 3 }} />
+
+          {plan.publico && (
+            <Typography variant="subtitle1" gutterBottom align="center">
+              <strong>Público Ideal:</strong> {plan.publico}
+            </Typography>
+          )}
+
+          <Box textAlign="center" mt={4}>
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: '#25004D', px: 4, py: 1.5 }}
+              onClick={() => setOpen(true)}
+            >
+              Cotizar este plan
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
+
+      {/* Modal del formulario */}
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="formulario-modal"
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <Formulario plan={plan.title} />
+      </Modal>
     </>
   );
 };

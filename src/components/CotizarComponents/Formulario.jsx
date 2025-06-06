@@ -1,43 +1,258 @@
-import React from 'react';
-import {Box,Typography,TextField,Checkbox,FormControlLabel,Button} from '@mui/material';
-import Header from '../planescomponents/Header';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+} from '@mui/material';
 
-const Formulario = () => {
+const Formulario = ({ plan = "Plan Básico Salud" }) => {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    apellido: '',
+    correo: '',
+    telefono: '',
+    cedula: '',
+    username: '',
+    password: '',
+    activo:1,
+    tipo:2,
+    rol: 'cliente'
+  });
+
+  const [correoError, setCorreoError] = useState('');
+  const [correoExiste, setCorreoExiste] = useState(false);
+
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+
+    // Validar letras
+    if ((name === 'nombre' || name === 'apellido') && !/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]*$/.test(value)) {
+      return;
+    }
+
+    // Validar números
+    if ((name === 'telefono' || name === 'cedula') && !/^\d*$/.test(value)) {
+      return;
+    }
+
+    // Validar formato y existencia de correo
+    if (name === 'correo') {
+      const regexCorreo = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com|yahoo\.com)$/;
+
+      if (!regexCorreo.test(value)) {
+        setCorreoError('Correo inválido. Usa gmail, hotmail, outlook o yahoo.');
+        setCorreoExiste(false);
+      } else {
+        // Validación backend: verificar existencia
+        /*try {
+          const response = await fetch(`http://localhost:3030/usuario/verificar-correo?correo=${value}`);
+          const data = await response.json();
+          if (data.existe) {
+            setCorreoError('Este correo ya está registrado.');
+            setCorreoExiste(true);
+          } else {
+            setCorreoError('');
+            setCorreoExiste(false);
+          }
+        } catch (err) {
+          console.error('Error al verificar correo:', err);
+          setCorreoError('Error al verificar correo');
+        }*/
+      }
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log('Iniciamos envio');
+    console.log(formData);
+     setFormData({...formData,password:formData.cedula});
+   /* if (correoError || correoExiste) {
+      alert('Corrige el campo de correo antes de enviar.');
+      return;
+    }
+*/
+    if (formData.cedula.length !== 10) {
+      alert('La cédula debe tener exactamente 10 dígitos.');
+      return;
+    }
+
+    if (formData.telefono.length !== 10) {
+      alert('El teléfono debe tener exactamente 10 dígitos.');
+      return;
+    }
+
+    try {
+      console.log('dentro del drive');
+      const response = await fetch('http://localhost:3030/usuario/agregar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al registrar el usuario');
+      }
+
+      const data = await response.json();
+      alert('¡Usuario registrado exitosamente!');
+      console.log(data);
+
+      // Limpiar
+      setFormData({
+        nombre: '',
+        apellido: '',
+        correo: '',
+        telefono: '',
+        cedula: '',
+        username: '',
+      });
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      alert('Hubo un error al registrar.');
+      console.log(formData);
+    }
+  };
+
   return (
-     <>
-      <Header />
     <Box
+      component="form"
+      onSubmit={handleSubmit}
       sx={{
-        width: 400,
+        width: { xs: '90%', sm: 480 },
         bgcolor: '#fff',
-        boxShadow: 24,
-        borderRadius: 2,
+        borderRadius: 3,
         p: 4,
+        boxShadow: 5,
+        mx: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        Cotiza tu Seguro de Vida en línea
+      <Typography
+        variant="h6"
+        fontWeight="bold"
+        color="#25004D"
+        textAlign="center"
+        sx={{ fontSize: '1.4rem' }}
+      >
+        Activa tu {plan} de forma rápida y segura
       </Typography>
-      <Typography variant="body2" mb={2}>
-        Completa este formulario para obtener un presupuesto personalizado y descubre cómo proteger tu futuro.
+
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        textAlign="center"
+        sx={{ mb: 1 }}
+      >
+        Completa este formulario y da el primer paso hacia tu tranquilidad.
       </Typography>
-      <TextField fullWidth label="Nombre" margin="normal" required />
-      <TextField fullWidth label="Apellido" margin="normal" required />
-      <TextField fullWidth label="Correo electrónico" margin="normal" required />
-      <TextField fullWidth label="Celular" margin="normal" required />
-      <FormControlLabel
-        control={<Checkbox required />}
-        label={
-          <Typography variant="caption">
-            He leído y acepto la Cláusula de Protección de Datos
-          </Typography>
+
+      <TextField
+        placeholder="Nombre *"
+        name="nombre"
+        value={formData.nombre}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
+      />
+
+      <TextField
+        placeholder="Apellido *"
+        name="apellido"
+        value={formData.apellido}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
+      />
+
+      <TextField
+        placeholder="Correo electrónico *"
+        name="correo"
+        type="email"
+        value={formData.correo}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
+        error={!!correoError}
+        helperText={correoError}
+      />
+
+      <TextField
+        placeholder="Teléfono *"
+        name="telefono"
+        value={formData.telefono}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
+        inputProps={{ maxLength: 10 }}
+        error={formData.telefono.length > 0 && formData.telefono.length !== 10}
+        helperText={
+          formData.telefono.length > 0 && formData.telefono.length !== 10
+            ? 'El teléfono debe tener exactamente 10 dígitos'
+            : ''
         }
       />
-      <Button fullWidth variant="contained" sx={{ mt: 2, backgroundColor: '#25004D' }}>
-        Cotiza ahora
+
+      <TextField
+        placeholder="Cédula *"
+        name="cedula"
+        value={formData.cedula}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
+        inputProps={{ maxLength: 10 }}
+        error={formData.cedula.length > 0 && formData.cedula.length !== 10}
+        helperText={
+          formData.cedula.length > 0 && formData.cedula.length !== 10
+            ? 'La cédula debe tener exactamente 10 dígitos'
+            : ''
+        }
+      />
+
+      <TextField
+        placeholder="Username *"
+        name="username"
+        value={formData.username}
+        onChange={handleChange}
+        fullWidth
+        required
+        size="small"
+      />
+
+      <Button
+        type="submit"
+        variant="contained"
+        fullWidth
+        sx={{
+          mt: 2,
+          py: 1.2,
+          fontWeight: 'bold',
+          backgroundColor: '#25004D',
+          borderRadius: 2,
+          boxShadow: '0px 3px 5px rgba(0,0,0,0.2)',
+          ':hover': {
+            backgroundColor: '#1a0033',
+          },
+        }}
+      >
+        REGISTRARME
       </Button>
     </Box>
-     </>
   );
 };
 

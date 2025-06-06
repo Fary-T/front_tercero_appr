@@ -18,7 +18,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar/Sidebar";
-import { DashboardContent } from "../components/Doshboard/DashboardContent";
+import {DashboardContent} from "../components/Doshboard/DashboardContent";
 import { PolizasContent } from "../components/Doshboard/PolizasContent";
 import { ClientesContent } from "../components/Doshboard/ClientesContent";
 

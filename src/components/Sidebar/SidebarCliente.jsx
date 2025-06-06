@@ -15,11 +15,13 @@ import {
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PeopleIcon from '@mui/icons-material/People';
 
 const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon /> },
+  { text: 'Informacion Cliente', icon: <PeopleIcon /> },
   { text: 'Reportes', icon: <AssessmentIcon /> },
   { text: 'Cerrar Sesión', icon: <LogoutIcon /> },
 ];

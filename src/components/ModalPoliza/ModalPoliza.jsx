@@ -17,6 +17,10 @@ import {
   useTheme,
   ToggleButton,
   ToggleButtonGroup,
+  RadioGroup,
+  Radio,
+  FormControl,
+  FormLabel,
 } from '@mui/material';
 
 export const ModalPoliza = ({ open, onClose, onGuardar }) => {
@@ -29,6 +33,8 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
   });
 
   const [requisitos, setRequisitos] = useState([]);
+  const [requisitosCompletados, setRequisitosCompletados] = useState({});
+  const [respuestasCuestionario, setRespuestasCuestionario] = useState({});
   const [errors, setErrors] = useState({});
 
   const theme = useTheme();
@@ -112,6 +118,8 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
       });
       setErrors({});
       setRequisitos([]);
+      setRequisitosCompletados({});
+      setRespuestasCuestionario({});
       setPlanSeleccionado('');
     }
   }, [open]);
@@ -121,6 +129,8 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
 
     if (name === 'tipo') {
       const tipoNumerico = parseInt(value);
+      const nuevosRequisitos = tipoNumerico === 0 ? requisitosVida : requisitosSalud;
+      
       setFormData(prev => ({
         ...prev,
         tipo: tipoNumerico,
@@ -129,7 +139,23 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
         descripcion: ''
       }));
       setPlanSeleccionado('');
-      setRequisitos(tipoNumerico === 0 ? requisitosVida : requisitosSalud);
+      setRequisitos(nuevosRequisitos);
+      
+      // Inicializar todos los requisitos como no completados
+      const requisitosIniciales = {};
+      nuevosRequisitos.forEach(req => {
+        requisitosIniciales[req] = false;
+      });
+      setRequisitosCompletados(requisitosIniciales);
+      
+      // Inicializar respuestas del cuestionario si es necesario
+      if (nuevosRequisitos.includes("Cuestionario de salud")) {
+        const respuestasIniciales = {};
+        cuestionarioSalud.forEach((_, index) => {
+          respuestasIniciales[index] = '';
+        });
+        setRespuestasCuestionario(respuestasIniciales);
+      }
     } else if (name === 'plan') {
       const planes = formData.tipo === 0 ? planesVida : planesSalud;
       const plan = planes[value];
@@ -154,6 +180,34 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
     }
   };
 
+  const handleRequisitoChange = (requisito, completado) => {
+    setRequisitosCompletados(prev => ({
+      ...prev,
+      [requisito]: completado
+    }));
+  };
+
+  const handleCuestionarioChange = (index, respuesta) => {
+    setRespuestasCuestionario(prev => ({
+      ...prev,
+      [index]: respuesta
+    }));
+  };
+
+  const todosRequisitosCompletados = () => {
+    const requisitosBasicos = Object.values(requisitosCompletados).every(completado => completado);
+    
+    // Si hay cuestionario de salud, verificar que todas las preguntas estén respondidas
+    if (requisitos.includes("Cuestionario de salud")) {
+      const cuestionarioCompleto = cuestionarioSalud.every((_, index) => 
+        respuestasCuestionario[index] && respuestasCuestionario[index] !== ''
+      );
+      return requisitosBasicos && cuestionarioCompleto;
+    }
+    
+    return requisitosBasicos;
+  };
+
   const validate = () => {
     const newErrors = {};
     
@@ -166,6 +220,11 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
       if (tiempo < 1 || tiempo > 12) {
         newErrors.tiempo_pago = "Debe estar entre 1 y 12 meses";
       }
+    }
+    
+    // Validar que todos los requisitos estén completados
+    if (requisitos.length > 0 && !todosRequisitosCompletados()) {
+      newErrors.requisitos = "Debe completar todos los requisitos antes de continuar";
     }
     
     setErrors(newErrors);
@@ -186,7 +245,9 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
           precio: parseFloat(precio),
           tiempo_pago: parseInt(tiempo_pago),
           descripcion,
-          tipo
+          tipo,
+          requisitos_completados: requisitosCompletados,
+          respuestas_cuestionario: respuestasCuestionario
         })
       });
 
@@ -215,6 +276,8 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
     });
     setErrors({});
     setRequisitos([]);
+    setRequisitosCompletados({});
+    setRespuestasCuestionario({});
     setPlanSeleccionado('');
     onClose();
   };
@@ -230,12 +293,12 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
       open={open}
       onClose={handleClose}
       fullScreen={fullScreen}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: fullScreen ? 0 : 2,
-          m: fullScreen ? 0 : 2,
+          m: fullScreen ? 0 : 1,
         },
       }}
     >
@@ -243,13 +306,13 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
         sx={{
           background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
           color: "white",
-          py: 3,
+          py: 2,
           textAlign: "center",
           boxShadow: "0 4px 20px rgba(40, 4, 76, 0.2)",
         }}
       >
         <Typography
-          variant="h5"
+          variant="h6"
           fontWeight="bold"
           sx={{ letterSpacing: "0.5px" }}
         >
@@ -257,9 +320,9 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
         </Typography>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 4, backgroundColor: "#f5f0f9" }}>
-        <Box sx={{ mt: 2 }}>
-          <Grid container spacing={3}>
+      <DialogContent sx={{ p: 3, backgroundColor: "#f5f0f9" }}>
+        <Box sx={{ mt: 1 }}>
+          <Grid container spacing={2}>
             {/* Tipo de Póliza */}
             <Grid item xs={12}>
               <Typography
@@ -313,6 +376,47 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
               )}
             </Grid>
 
+            {/* Tiempo de Pago - SIEMPRE VISIBLE */}
+            <Grid item xs={12}>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                gutterBottom
+                sx={{ color: "#28044c", fontWeight: 600 }}
+              >
+                Tiempo de Pago (meses: 1-12)
+              </Typography>
+              <TextField
+                fullWidth
+                type="number"
+                name="tiempo_pago"
+                value={formData.tiempo_pago}
+                onChange={handleChange}
+                variant="outlined"
+                size="small"
+                inputProps={{ min: 1, max: 12 }}
+                error={!!errors.tiempo_pago}
+                helperText={errors.tiempo_pago}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    backgroundColor: "#ede5f2",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#8249a0",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#28044c",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#28044c",
+                    },
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "#28044c",
+                  },
+                }}
+              />
+            </Grid>
+
             {/* Selector de Plan */}
             {formData.tipo !== null && (
               <Grid item xs={12}>
@@ -364,7 +468,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
             {/* Información del Plan Seleccionado */}
             {planSeleccionado && (
               <>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <Typography
                     variant="body2"
                     color="textSecondary"
@@ -395,7 +499,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <Typography
                     variant="body2"
                     color="textSecondary"
@@ -438,7 +542,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
                   <TextField
                     fullWidth
                     multiline
-                    rows={4}
+                    rows={3}
                     name="descripcion"
                     value={formData.descripcion}
                     variant="outlined"
@@ -461,80 +565,76 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
               </>
             )}
 
-            {/* Tiempo de Pago */}
-            <Grid item xs={12} sm={6}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                gutterBottom
-                sx={{ color: "#28044c", fontWeight: 600 }}
-              >
-                Tiempo de Pago (meses: 1-12)
-              </Typography>
-              <TextField
-                fullWidth
-                type="number"
-                name="tiempo_pago"
-                value={formData.tiempo_pago}
-                onChange={handleChange}
-                variant="outlined"
-                size="small"
-                inputProps={{ min: 1, max: 12 }}
-                error={!!errors.tiempo_pago}
-                helperText={errors.tiempo_pago}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "#ede5f2",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#8249a0",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#28044c",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#28044c",
-                    },
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "#28044c",
-                  },
-                }}
-              />
-            </Grid>
-
             {/* Mostrar requisitos */}
             {requisitos.length > 0 && (
               <Grid item xs={12}>
-                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: "#28044c", fontWeight: 600 }}>
+                <Typography variant="subtitle2" sx={{ mt: 1, mb: 1, color: "#28044c", fontWeight: 600 }}>
                   Requisitos necesarios:
                 </Typography>
+                {errors.requisitos && (
+                  <Typography variant="caption" color="error" sx={{ mb: 1, display: 'block' }}>
+                    {errors.requisitos}
+                  </Typography>
+                )}
                 <FormGroup>
                   {requisitos.map((req, index) => (
                     <FormControlLabel
                       key={index}
-                      control={<Checkbox defaultChecked={false} sx={{ color: "#28044c" }} />}
+                      control={
+                        <Checkbox 
+                          checked={requisitosCompletados[req] || false}
+                          onChange={(e) => handleRequisitoChange(req, e.target.checked)}
+                          sx={{ color: "#28044c" }} 
+                        />
+                      }
                       label={req}
                       sx={{ color: "#28044c" }}
                     />
                   ))}
                 </FormGroup>
+                
                 {/* Cuestionario de salud si corresponde */}
                 {requisitos.includes("Cuestionario de salud") && (
-                  <>
-                    <Typography variant="subtitle2" sx={{ mt: 2, color: "#28044c", fontWeight: 600 }}>
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 2, color: "#28044c", fontWeight: 600 }}>
                       Cuestionario de salud
                     </Typography>
-                    <FormGroup>
-                      {cuestionarioSalud.map((q, idx) => (
-                        <FormControlLabel
-                          key={idx}
-                          control={<Checkbox sx={{ color: "#28044c" }} />}
-                          label={q}
-                          sx={{ color: "#28044c" }}
-                        />
-                      ))}
-                    </FormGroup>
-                  </>
+                    {cuestionarioSalud.map((pregunta, idx) => (
+                      <Box key={idx} sx={{ mb: 2 }}>
+                        <FormControl component="fieldset">
+                          <FormLabel 
+                            component="legend" 
+                            sx={{ 
+                              color: "#28044c", 
+                              fontSize: "0.9rem",
+                              "&.Mui-focused": { color: "#28044c" }
+                            }}
+                          >
+                            {pregunta}
+                          </FormLabel>
+                          <RadioGroup
+                            row
+                            value={respuestasCuestionario[idx] || ''}
+                            onChange={(e) => handleCuestionarioChange(idx, e.target.value)}
+                            sx={{ mt: 0.5 }}
+                          >
+                            <FormControlLabel 
+                              value="si" 
+                              control={<Radio sx={{ color: "#28044c" }} />} 
+                              label="Sí" 
+                              sx={{ color: "#28044c" }}
+                            />
+                            <FormControlLabel 
+                              value="no" 
+                              control={<Radio sx={{ color: "#28044c" }} />} 
+                              label="No" 
+                              sx={{ color: "#28044c" }}
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                      </Box>
+                    ))}
+                  </Box>
                 )}
               </Grid>
             )}
@@ -544,7 +644,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
 
       <DialogActions
         sx={{
-          p: 4,
+          p: 3,
           pt: 2,
           justifyContent: "space-between",
           backgroundColor: "#f5f0f9",
@@ -561,13 +661,13 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
               backgroundColor: "rgba(40, 4, 76, 0.04)",
             },
             borderRadius: 3,
-            px: 4,
-            py: 1.5,
-            fontSize: "1rem",
+            px: 3,
+            py: 1,
+            fontSize: "0.9rem",
             fontWeight: "bold",
             textTransform: "none",
             transition: "all 0.3s ease",
-            minWidth: fullScreen ? "120px" : "140px",
+            minWidth: fullScreen ? "100px" : "120px",
           }}
         >
           Cancelar
@@ -576,21 +676,32 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
         <Button
           onClick={handleGuardar}
           variant="contained"
+          disabled={requisitos.length > 0 && !todosRequisitosCompletados()}
           sx={{
-            background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
+            background: requisitos.length > 0 && !todosRequisitosCompletados() 
+              ? "#cccccc" 
+              : "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
             "&:hover": {
-              background: "linear-gradient(135deg, #1f0336 0%, #3d1558 100%)",
-              transform: "translateY(-2px)",
-              boxShadow: "0 8px 25px rgba(40, 4, 76, 0.25)",
+              background: requisitos.length > 0 && !todosRequisitosCompletados()
+                ? "#cccccc"
+                : "linear-gradient(135deg, #1f0336 0%, #3d1558 100%)",
+              transform: requisitos.length > 0 && !todosRequisitosCompletados() ? "none" : "translateY(-2px)",
+              boxShadow: requisitos.length > 0 && !todosRequisitosCompletados() 
+                ? "none" 
+                : "0 8px 25px rgba(40, 4, 76, 0.25)",
+            },
+            "&.Mui-disabled": {
+              background: "#cccccc",
+              color: "#666666",
             },
             borderRadius: 3,
-            px: 4,
-            py: 1.5,
-            fontSize: "1rem",
+            px: 3,
+            py: 1,
+            fontSize: "0.9rem",
             fontWeight: "bold",
             textTransform: "none",
             transition: "all 0.3s ease",
-            minWidth: fullScreen ? "120px" : "140px",
+            minWidth: fullScreen ? "100px" : "120px",
           }}
         >
           Guardar

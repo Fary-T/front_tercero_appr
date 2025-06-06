@@ -28,6 +28,7 @@ import { useTheme } from "@mui/material/styles";
 import { ModalAgente } from "../ModalAgente/ModalAgente";
 import { ModalEliminarUsuarioAgente } from "../ModalEliminarUsuarioAgente/ModalEliminarUsuarioAgente";
 import { ModalEditarUsuarioAgente } from "../ModalEditarUsuarioAgente/ModalEditarUsuarioAgente";
+import { ModalVerUsuario } from "../ModalVerUsuario";
 
 export const ClientesContentAgentes = () => {
   const [clientes, setClientes] = useState([]);
@@ -36,6 +37,7 @@ export const ClientesContentAgentes = () => {
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
   const [usuarioEditar, setUsuarioEditar] = useState(null);
+  
   // Estados para el modal de ver usuario
   const [modalVerAbierto, setModalVerAbierto] = useState(false);
   const [usuarioVer, setUsuarioVer] = useState(null);
@@ -97,300 +99,6 @@ export const ClientesContentAgentes = () => {
     }
   };
 
-  // Componente del Modal Ver Usuario integrado con colores púrpura
-  const ModalVerUsuario = () => {
-    if (!usuarioVer) return null;
-
-    return (
-      <Dialog
-        open={modalVerAbierto}
-        onClose={() => setModalVerAbierto(false)}
-        maxWidth="md"
-        fullWidth
-        fullScreen={isSmallScreen}
-        PaperProps={{
-          sx: {
-            borderRadius: isSmallScreen ? 0 : 2,
-            m: isSmallScreen ? 0 : 2,
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
-            color: "white",
-            py: 3,
-            textAlign: "center",
-            boxShadow: "0 4px 20px rgba(40, 4, 76, 0.2)",
-          }}
-        >
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{ letterSpacing: "0.5px" }}
-          >
-            👤 Información del Usuario
-          </Typography>
-        </DialogTitle>
-
-        <DialogContent sx={{ p: 4, backgroundColor: "#f5f0f9" }}>
-          <Box sx={{ mt: 2 }}>
-            <Grid container spacing={4}>
-              {/* Nombre */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Nombre
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.nombre || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Apellido */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Apellido
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.apellido || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Correo */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Correo
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.correo || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Teléfono */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Teléfono
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.telefono || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Cédula */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Cédula
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.cedula || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Username */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Username
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.username || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-
-              {/* Rol */}
-              <Grid item xs={12} sm={6}>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  gutterBottom
-                  sx={{ color: "#28044c", fontWeight: 600 }}
-                >
-                  Rol
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={usuarioVer.rol || ""}
-                  variant="outlined"
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                    sx: {
-                      backgroundColor: "#ede5f2",
-                      "& .MuiOutlinedInput-input": {
-                        cursor: "default",
-                        color: "#28044c",
-                      },
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#8249a0",
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
-
-        <DialogActions
-          sx={{
-            p: 4,
-            pt: 2,
-            justifyContent: "center",
-            backgroundColor: "#f5f0f9",
-          }}
-        >
-          <Button
-            onClick={() => setModalVerAbierto(false)}
-            variant="contained"
-            sx={{
-              background: "linear-gradient(135deg, #28044c 0%, #4a1b6b 100%)",
-              "&:hover": {
-                background: "linear-gradient(135deg, #1f0336 0%, #3d1558 100%)",
-                transform: "translateY(-2px)",
-                boxShadow: "0 8px 25px rgba(40, 4, 76, 0.25)",
-              },
-              borderRadius: 3,
-              px: 4,
-              py: 1.5,
-              fontSize: "1rem",
-              fontWeight: "bold",
-              textTransform: "none",
-              transition: "all 0.3s ease",
-              minWidth: isSmallScreen ? "120px" : "140px",
-            }}
-          >
-            Cerrar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
-
   return (
     <Box p={2}>
       <Stack
@@ -448,71 +156,71 @@ export const ClientesContentAgentes = () => {
             {clientes.map((p) => {
               const rolColors = getRolColor(p.rol);
               if (p.rol === "cliente") {
-              return (
-                <TableRow key={p.id_usuario}>
-                  <TableCell>
-                    <strong>{p.id_usuario}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{p.nombre}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{p.correo}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>{p.telefono}</strong>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={p.rol || "Sin rol"}
-                      icon={getRolIcon(p.rol)}
-                      sx={{
-                        backgroundColor: rolColors.bg,
-                        color: rolColors.color,
-                        fontWeight: "bold",
-                        fontSize: "0.75rem",
-                      }}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="outlined"
-                        size={isSmallScreen ? "small" : "medium"}
-                        onClick={() => {
-                          setUsuarioVer(p);
-                          setModalVerAbierto(true);
+                return (
+                  <TableRow key={p.id_usuario}>
+                    <TableCell>
+                      <strong>{p.id_usuario}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>{p.nombre}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>{p.correo}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>{p.telefono}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={p.rol || "Sin rol"}
+                        icon={getRolIcon(p.rol)}
+                        sx={{
+                          backgroundColor: rolColors.bg,
+                          color: rolColors.color,
+                          fontWeight: "bold",
+                          fontSize: "0.75rem",
                         }}
-                      >
-                        Ver
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size={isSmallScreen ? "small" : "medium"}
-                        onClick={() => {
-                          setUsuarioEditar(p);
-                          setModalEditarAbierto(true);
-                        }}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size={isSmallScreen ? "small" : "medium"}
-                        onClick={() => {
-                          setUsuarioSeleccionado(p);
-                          setModalEliminarAbierto(true);
-                        }}
-                      >
-                        Eliminar
-                      </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              );
-            }
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" spacing={1}>
+                        <Button
+                          variant="outlined"
+                          size={isSmallScreen ? "small" : "medium"}
+                          onClick={() => {
+                            setUsuarioVer(p);
+                            setModalVerAbierto(true);
+                          }}
+                        >
+                          Ver
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size={isSmallScreen ? "small" : "medium"}
+                          onClick={() => {
+                            setUsuarioEditar(p);
+                            setModalEditarAbierto(true);
+                          }}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size={isSmallScreen ? "small" : "medium"}
+                          onClick={() => {
+                            setUsuarioSeleccionado(p);
+                            setModalEliminarAbierto(true);
+                          }}
+                        >
+                          Eliminar
+                        </Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                );
+              }
             })}
           </TableBody>
         </Table>
@@ -538,7 +246,11 @@ export const ClientesContentAgentes = () => {
       />
 
       {/* Modal de Ver Usuario integrado */}
-      <ModalVerUsuario />
+      <ModalVerUsuario
+        open={modalVerAbierto}
+        onClose={() => setModalVerAbierto(false)}
+        usuario={usuarioVer}
+      />
     </Box>
   );
 };

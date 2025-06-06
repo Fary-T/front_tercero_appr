@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   Dialog,
@@ -10,13 +10,95 @@ import {
   Grid,
   Box,
   Button,
-  useMediaQuery
+  useMediaQuery,
+  Divider,
+  CircularProgress,
+  Alert
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 export const ModalVerUsuario = ({ open, onClose, usuario }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  
+  const [polizasData, setPolizasData] = useState([]);
+  const [segurosData, setSegurosData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Función para obtener datos de pólizas del usuario
+  const fetchPolizasUsuario = async (idUsuario) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Obtener todas las relaciones usuario-seguro
+      const responseUsuarioSeguro = await fetch('http://localhost:3030/usuario_seguro/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!responseUsuarioSeguro.ok) {
+        throw new Error('Error al obtener datos de usuario_seguro');
+      }
+      
+      const allUsuarioSeguro = await responseUsuarioSeguro.json();
+      
+      // Filtrar las pólizas del usuario actual
+      const polizasUsuario = allUsuarioSeguro.filter(
+        poliza => poliza.id_usuario_per === idUsuario
+      );
+      
+      // Obtener información de todos los seguros
+      const responseSeguros = await fetch('http://localhost:3030/seguro/');
+      
+      if (!responseSeguros.ok) {
+        throw new Error('Error al obtener datos de seguros');
+      }
+      
+      const allSeguros = await responseSeguros.json();
+      
+      setPolizasData(polizasUsuario);
+      setSegurosData(allSeguros);
+      
+    } catch (err) {
+      console.error('Error al cargar datos de pólizas:', err);
+      setError('Error al cargar información de pólizas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Obtener nombre del seguro por ID
+  const getNombreSeguro = (idSeguro) => {
+    const seguro = segurosData.find(s => s.id_seguro === idSeguro);
+    return seguro ? seguro.nombre : 'Seguro no encontrado';
+  };
+
+  // Formatear fecha
+  const formatearFecha = (fecha) => {
+    if (!fecha) return '';
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-ES');
+  };
+
+  // Obtener estado del pago en texto
+  const getEstadoPago = (estado) => {
+    return estado === 1 ? 'Pagado' : 'Pendiente';
+  };
+
+  // Obtener estado de la póliza en texto
+  const getEstadoPoliza = (estado) => {
+    return estado === 1 ? 'Activa' : 'Inactiva';
+  };
+
+  useEffect(() => {
+    if (open && usuario && usuario.id_usuario) {
+      fetchPolizasUsuario(usuario.id_usuario);
+    }
+  }, [open, usuario]);
 
   if (!usuario) return null;
 
@@ -58,7 +140,7 @@ export const ModalVerUsuario = ({ open, onClose, usuario }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
       fullScreen={isSmallScreen}
       PaperProps={{
@@ -88,6 +170,20 @@ export const ModalVerUsuario = ({ open, onClose, usuario }) => {
 
       <DialogContent sx={{ p: 4, backgroundColor: "#f5f0f9" }}>
         <Box sx={{ mt: 2 }}>
+          {/* Información Personal */}
+          <Typography
+            variant="h6"
+            sx={{ 
+              color: "#28044c", 
+              fontWeight: 700, 
+              mb: 3,
+              borderBottom: "2px solid #8249a0",
+              pb: 1
+            }}
+          >
+            📋 Información Personal
+          </Typography>
+          
           <Grid container spacing={4}>
             <Grid item xs={12} sm={6}>
               {renderTextField("Nombre", usuario.nombre)}
@@ -111,6 +207,89 @@ export const ModalVerUsuario = ({ open, onClose, usuario }) => {
               {renderTextField("Rol", usuario.rol)}
             </Grid>
           </Grid>
+
+          {/* Divider decorativo */}
+          <Divider sx={{ my: 4, borderColor: "#8249a0" }} />
+
+          {/* Información de Pólizas de Seguro */}
+          <Typography
+            variant="h6"
+            sx={{ 
+              color: "#28044c", 
+              fontWeight: 700, 
+              mb: 3,
+              borderBottom: "2px solid #8249a0",
+              pb: 1
+            }}
+          >
+            🛡️ Pólizas de Seguro Contratadas
+          </Typography>
+
+          {loading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <CircularProgress sx={{ color: "#28044c" }} />
+            </Box>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+
+          {!loading && !error && polizasData.length === 0 && (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              Este usuario no tiene pólizas de seguro contratadas.
+            </Alert>
+          )}
+
+          {!loading && !error && polizasData.length > 0 && (
+            <Grid container spacing={4}>
+              {polizasData.map((poliza, index) => (
+                <Grid item xs={12} key={poliza.id_usuario_seguro}>
+                  <Box
+                    sx={{
+                      border: "2px solid #8249a0",
+                      borderRadius: 2,
+                      p: 3,
+                      backgroundColor: "#ffffff",
+                      mb: 2
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ 
+                        color: "#28044c", 
+                        fontWeight: 700, 
+                        mb: 2,
+                        textAlign: "center"
+                      }}
+                    >
+                      📄 Póliza #{index + 1}
+                    </Typography>
+                    
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} sm={6}>
+                        {renderTextField("Plan de Seguro", getNombreSeguro(poliza.id_seguro_per))}
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        {renderTextField("Estado de la Póliza", getEstadoPoliza(poliza.estado))}
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        {renderTextField("Fecha de Contrato", formatearFecha(poliza.fecha_contrato))}
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        {renderTextField("Fecha Fin del Contrato", formatearFecha(poliza.fecha_fin))}
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        {renderTextField("Estado de Pago", getEstadoPago(poliza.estado_pago))}
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Box>
       </DialogContent>
 
@@ -149,4 +328,8 @@ export const ModalVerUsuario = ({ open, onClose, usuario }) => {
   );
 };
 
-ModalVerUsuario.propTypes = {};
+ModalVerUsuario.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  usuario: PropTypes.object
+};

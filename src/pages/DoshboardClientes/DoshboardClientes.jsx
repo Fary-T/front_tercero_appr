@@ -19,6 +19,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarCliente } from "../../components/Sidebar/SidebarCliente";
 import { DashboardContent } from "../../components/Doshboard/DashboardContent";
+import { ClientesContentClientes } from "../../components/Doshboard/ClientesContentClientes";
+
 
 export const DoshboardClientes = () => {
   const [seccionActiva, setSeccionActiva] = useState("Dashboard");
@@ -66,6 +68,8 @@ export const DoshboardClientes = () => {
     switch (seccionActiva) {
       case "Dashboard":
         return <DashboardContent />;
+      case "Informacion Cliente":
+        return <ClientesContentClientes/>;
       case "Reportes":
         return <Typography variant="h6">Visualización de Reportes</Typography>;
       default:

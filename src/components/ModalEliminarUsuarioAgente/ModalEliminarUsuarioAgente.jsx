@@ -1,0 +1,96 @@
+import React from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Button,
+  IconButton,
+  useMediaQuery,
+  useTheme,
+  Box
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+
+export const ModalEliminarUsuarioAgente = ({ open, onClose, usuario, onEliminar }) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const handleEliminar = async () => {
+    try {
+      const response = await fetch(`http://localhost:3030/usuario/eliminar/${usuario.id_usuario}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Cliente eliminado correctamente.');
+        onEliminar(); // Actualiza la lista
+        onClose();    // Cierra el modal
+      } else {
+        alert(data.mensaje || 'Error al eliminar el cliente');
+      }
+    } catch (error) {
+      console.error("Error de conexión:", error);
+      alert("No se pudo conectar al servidor");
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen={isSmallScreen} // Ocupa toda la pantalla en móviles
+      fullWidth
+      maxWidth="xs" // Tamaño más compacto en escritorio
+    >
+      <DialogTitle sx={{ position: 'relative', pr: 5 }}>
+        Confirmar Eliminación
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent>
+        <Typography textAlign="center" variant="body1">
+          ¿Estás seguro de que deseas eliminar al cliente{' '}
+          <strong>{usuario?.nombre}</strong>?
+        </Typography>
+      </DialogContent>
+
+      <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+        <Box display="flex" flexDirection={isSmallScreen ? 'column' : 'row'} gap={2}>
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            color="inherit"
+            fullWidth={isSmallScreen}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleEliminar}
+            variant="contained"
+            color="error"
+            fullWidth={isSmallScreen}
+          >
+            Aceptar
+          </Button>
+        </Box>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+ModalEliminarUsuarioAgente.propTypes = {};

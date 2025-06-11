@@ -14,10 +14,10 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTheme } from "@mui/material/styles";
 import { ModalEditarUsuario } from "../ModalEditarUsuario/ModalEditarUsuario";
-import { ModalAgente } from "../ModalAgente/ModalAgente";
 import { ModalEliminarUsuarioAgente } from "../ModalEliminarUsuarioAgente/ModalEliminarUsuarioAgente";
 import { ModalContratarSeguro } from "../ModalContratarSeguro/ModalContratarSeguro";
 import { ModalVerUsuario } from "../ModalVerUsuario";
+import { Modal } from "../Modal/Modal";
 
 // Modal para eliminar seguros específicos de un usuario
 const ModalEliminarSegurosUsuario = ({ open, onClose, usuario, onEliminar }) => {
@@ -511,7 +511,7 @@ export const ClientesContent = () => {
       {tabValue === 1 && <VistaRoles />}
 
       {/* Modales */}
-      <ModalAgente open={modalAbierto} onClose={() => setModalAbierto(false)} onGuardar={consultarClientes} />
+      <Modal open={modalAbierto} onClose={() => setModalAbierto(false)} onGuardar={consultarClientes} />
       <ModalEliminarUsuarioAgente open={modalEliminarAbierto} onClose={() => setModalEliminarAbierto(false)} usuario={usuarioSeleccionado} onEliminar={consultarClientes} />
       <ModalEditarUsuario open={modalEditarAbierto} onClose={() => setModalEditarAbierto(false)} usuario={usuarioEditar} onGuardar={consultarClientes} />
       <ModalVerUsuario open={modalVerAbierto} onClose={() => setModalVerAbierto(false)} usuario={usuarioVer} />

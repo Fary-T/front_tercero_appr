@@ -23,7 +23,6 @@ export const ClientesContentClientes = () => {
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     consultarClientes();

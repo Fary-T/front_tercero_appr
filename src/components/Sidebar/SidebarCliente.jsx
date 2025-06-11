@@ -11,18 +11,17 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleIcon from '@mui/icons-material/People';
 
 const drawerWidth = 240;
 
 const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon /> },
-  { text: 'Informacion Cliente', icon: <PeopleIcon /> },
-  { text: 'Reportes', icon: <AssessmentIcon /> },
+  { text: 'Información Cliente', icon: <PeopleIcon /> },
+  { text: 'Notificaciones', icon: <NotificationsIcon/> },
+  { text: 'Subida de archivos', icon: <UploadFileIcon/> },
   { text: 'Cerrar Sesión', icon: <LogoutIcon /> },
 ];
 

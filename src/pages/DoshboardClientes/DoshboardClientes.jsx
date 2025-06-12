@@ -19,6 +19,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarCliente } from "../../components/Sidebar/SidebarCliente";
 import { ClientesContentClientes } from "../../components/Doshboard/ClientesContentClientes";
+import { SubirArchivoCliente } from "../../components/SubirArchivosCliente/SubirArchivoCliente";
 
 export const DoshboardClientes = () => {
   const [seccionActiva, setSeccionActiva] = useState("Dashboard");
@@ -65,9 +66,9 @@ export const DoshboardClientes = () => {
   const renderContenido = () => {
     switch (seccionActiva) {
       case "Información Cliente":
-        return <ClientesContentClientes/>;
-      case "Reportes":
-        return <Typography variant="h6">Visualización de Reportes</Typography>;
+        return <ClientesContentClientes />;
+      case "Subida de archivos":
+        return <SubirArchivoCliente />;
       default:
         return <Typography variant="h6">Selecciona una opción</Typography>;
     }
@@ -108,6 +109,11 @@ export const DoshboardClientes = () => {
           p: { xs: 2, md: 3 },
           width: "100%",
           mt: isMobile ? 8 : 0,
+          minHeight: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'auto', // Permite scroll solo si es necesario
         }}
       >
         {renderContenido()}
@@ -139,4 +145,4 @@ export const DoshboardClientes = () => {
   );
 };
 
-DoshboardClientes.propTypes = {};
+

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Box,
   Typography,
   TextField,
   Button,
 } from '@mui/material';
+import emailjs from "emailjs-com";
 
 const Formulario = ({ plan = "Plan Básico Salud" }) => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ const Formulario = ({ plan = "Plan Básico Salud" }) => {
     tipo: 2,
     rol: 'cliente'
   });
-
+  const res = useRef();
   const [correoError, setCorreoError] = useState('');
   const [correoExiste, setCorreoExiste] = useState(false);
 
@@ -70,7 +71,7 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    console.log('dentro del drive');
+    console.log('dentro del try');
     const response = await fetch('http://localhost:3030/usuario/agregar', {
       method: 'POST',
       headers: {
@@ -78,6 +79,12 @@ const handleSubmit = async (e) => {
       },
       body: JSON.stringify(formData),
     });
+    console.log("antes del envio correo: ",res.current);
+    //const emplay = {cedula:formData.cedula, correo:formData.correo, username:formData.username, nombre:formData.nombre};
+    emailjs.sendForm("service_cquby3k", "template_32dzbrp", res.current , "5Uzo8zQ0Bqi8lpb_w").then(
+      (result)=>{console.log ("correo enviado exitosamente")},
+      (error)=>{console.log("existio un error")}
+    )
 
     if (!response.ok) {
       throw new Error('Error al registrar el usuario');
@@ -105,6 +112,7 @@ const handleSubmit = async (e) => {
 
 return (
   <Box
+  ref={res}  
     component="form"
     onSubmit={handleSubmit}
     sx={{

@@ -59,7 +59,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   console.log('Iniciamos envio');
   console.log(formData);
-  setFormData({ ...formData, password: formData.cedula });
+  //setFormData({ ...formData, password: formData.cedula });
   if (formData.cedula.length !== 10) {
     alert('La cédula debe tener exactamente 10 dígitos.');
     return;

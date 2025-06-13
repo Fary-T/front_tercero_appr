@@ -80,14 +80,14 @@ const handleSubmit = async (e) => {
 
     console.log("antes del envio correo: ",res.current);
     //const emplay = {cedula:formData.cedula, correo:formData.correo, username:formData.username, nombre:formData.nombre};
-    /*emailjs.sendForm("service_cquby3k", "template_32dzbrp", res.current , "5Uzo8zQ0Bqi8lpb_w").then(
+    emailjs.sendForm("service_cquby3k", "template_32dzbrp", res.current , "5Uzo8zQ0Bqi8lpb_w").then(
       (result)=>{console.log ("correo enviado exitosamente")},
       (error)=>{console.log("existio un error")}
-    )*/
+    )
 
-   /* if (!response.ok) {
+   if (!response.ok) {
       throw new Error('Error al registrar el usuario');
-    }*/
+    }
 
     const data = await response.json();
     alert('¡Usuario registrado exitosamente!');

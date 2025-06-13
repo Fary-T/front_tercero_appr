@@ -48,10 +48,13 @@ export const SubirArchivoCliente = ({ idUsuario }) => {
       const formData = new FormData();
       formData.append('archivo', archivo);
       formData.append('id_usuario', idUsuario);
-
+///AQUI YA NO SE
       const response = await fetch('/api/documentos/subir', {
         method: 'POST',
-        body: formData
+        body: JSON.stringify({
+          archivo: formData,
+          id: idUsuario
+        })
       });
 
       if (!response.ok) throw new Error('Error al subir el archivo');
@@ -89,7 +92,7 @@ export const SubirArchivoCliente = ({ idUsuario }) => {
               type="file"
               onChange={handleFileChange}
               className="uploadInput"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              accept=".pdf"
             />
             
             {archivo ? (

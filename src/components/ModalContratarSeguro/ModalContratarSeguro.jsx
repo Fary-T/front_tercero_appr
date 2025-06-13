@@ -17,7 +17,23 @@ import {
   Select,
   FormControl,
   CircularProgress,
+  Chip,
+  IconButton,
+  Divider,
+  FormLabel,
+  InputAdornment,
 } from "@mui/material";
+import {
+  Security,
+  Person,
+  Event,
+  Payment,
+  CheckCircle,
+  Close,
+  BusinessCenter,
+  CalendarToday,
+  AssignmentTurnedIn,
+} from "@mui/icons-material";
 
 export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
   const [formData, setFormData] = useState({
@@ -34,7 +50,7 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
   const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   // Cargar usuarios y seguros cuando se abre el modal
   useEffect(() => {
@@ -123,6 +139,7 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
   const handleContratar = async () => {
     if (!validarCampos()) return;
 
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:3030/usuario_seguro/agregar", {
         method: "POST",
@@ -150,24 +167,45 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
     } catch (error) {
       console.error("Error al contratar seguro:", error);
       alert("No se pudo contratar el seguro");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fieldStyle = {
+  // Estilos para los inputs
+  const textFieldStyle = {
     "& .MuiOutlinedInput-root": {
-      backgroundColor: "#e5f2ed",
+      backgroundColor: "#ffffff",
+      borderRadius: 2,
       "& .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#49a082",
+        borderColor: "#e0e0e0",
+        borderWidth: 2,
       },
       "&:hover .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#044c28",
+        borderColor: "#28044c",
       },
       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#044c28",
+        borderColor: "#28044c",
+        borderWidth: 2,
       },
     },
-    "& .MuiInputBase-input": {
-      color: "#044c28",
+    "& .MuiInputLabel-root": {
+      color: "#666",
+      fontWeight: 600,
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "#28044c",
+    },
+  };
+
+  const selectStyle = {
+    ...textFieldStyle,
+    "& .MuiSelect-select": {
+      color: "#28044c",
+      fontWeight: 500,
+    },
+    "& .MuiSelect-icon": {
+      color: "#28044c",
     },
   };
 
@@ -180,221 +218,376 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: fullScreen ? 0 : 2,
+          borderRadius: fullScreen ? 0 : 3,
           m: fullScreen ? 0 : 2,
+          boxShadow: "0 10px 40px rgba(40, 4, 76, 0.12)",
+          overflow: 'hidden',
+          border: '1px solid #e0e0e0',
         },
       }}
     >
       <DialogTitle
         sx={{
-          background: "linear-gradient(135deg, #044c28 0%, #1b6b4a 100%)",
+          backgroundColor: "#28044c",
           color: "white",
           py: 3,
-          textAlign: "center",
-          boxShadow: "0 4px 20px rgba(4, 76, 40, 0.2)",
+          px: 4,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
-        <Typography variant="h5" fontWeight="bold" sx={{ letterSpacing: "0.5px" }}>
-          🛡️ Contratar Seguro
-        </Typography>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Security sx={{ fontSize: 28 }} />
+          <Typography variant="h5" fontWeight="600" letterSpacing="0.5px">
+            Contratar Seguro
+          </Typography>
+        </Box>
+        
+        <IconButton
+          onClick={onClose}
+          sx={{ 
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+            }
+          }}
+          size="small"
+        >
+          <Close />
+        </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 4, backgroundColor: "#f0f7f4" }}>
+      <DialogContent sx={{ p: 0, backgroundColor: "#fafafa" }}>
         {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress sx={{ color: "#044c28" }} />
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 8 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+              <CircularProgress
+                size={48}
+                sx={{
+                  color: "#28044c",
+                  "& .MuiCircularProgress-circle": {
+                    strokeLinecap: "round",
+                  },
+                }}
+              />
+              <Typography sx={{ color: "#28044c", fontWeight: 600 }}>
+                Cargando información...
+              </Typography>
+            </Box>
           </Box>
         ) : (
-          <Box sx={{ mt: 2 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
-                  Seleccionar Usuario
+          <Box sx={{ p: 4 }}>
+            {/* Información del Cliente */}
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Person sx={{ color: '#28044c', fontSize: 24 }} />
+                <Typography variant="h6" fontWeight="700" color="#28044c">
+                  Información del Cliente
                 </Typography>
-                <FormControl fullWidth size="small">
-                  <Select
-                    name="id_usuario_per"
-                    value={formData.id_usuario_per}
+              </Box>
+              <Divider sx={{ mb: 3, borderColor: '#e0e0e0' }} />
+              
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <FormLabel sx={{ fontWeight: '700', color: '#28044c', mb: 2, fontSize: '1rem', display: 'block' }}>
+                    Seleccionar Usuario
+                  </FormLabel>
+                  <FormControl fullWidth>
+                    <Select
+                      name="id_usuario_per"
+                      value={formData.id_usuario_per}
+                      onChange={handleChange}
+                      variant="outlined"
+                      sx={selectStyle}
+                      displayEmpty
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <Person sx={{ color: '#28044c', fontSize: 20 }} />
+                        </InputAdornment>
+                      }
+                    >
+                      <MenuItem value="">
+                        <em>Seleccione un usuario</em>
+                      </MenuItem>
+                      {usuarios.map((usuario) => (
+                        <MenuItem key={usuario.id_usuario} value={usuario.id_usuario}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Person fontSize="small" />
+                            {usuario.nombre} {usuario.apellido} - {usuario.correo}
+                          </Box>
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <FormLabel sx={{ fontWeight: '700', color: '#28044c', mb: 2, fontSize: '1rem', display: 'block' }}>
+                    Plan de Seguro
+                  </FormLabel>
+                  <FormControl fullWidth>
+                    <Select
+                      name="id_seguro_per"
+                      value={formData.id_seguro_per}
+                      onChange={handleChange}
+                      variant="outlined"
+                      sx={selectStyle}
+                      displayEmpty
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <BusinessCenter sx={{ color: '#28044c', fontSize: 20 }} />
+                        </InputAdornment>
+                      }
+                    >
+                      <MenuItem value="">
+                        <em>Seleccione un plan</em>
+                      </MenuItem>
+                      {seguros.map((seguro) => (
+                        <MenuItem key={seguro.id_seguro} value={seguro.id_seguro}>
+                          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <BusinessCenter fontSize="small" />
+                              {seguro.nombre}
+                            </Box>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                              <Chip
+                                label={seguro.tipo === 0 ? 'Vida' : 'Salud'}
+                                size="small"
+                                sx={{
+                                  backgroundColor: seguro.tipo === 0 ? '#e3f2fd' : '#f3e5f5',
+                                  color: seguro.tipo === 0 ? '#1976d2' : '#7b1fa2',
+                                  fontWeight: 600,
+                                }}
+                              />
+                              <Typography sx={{ fontWeight: 700, color: "#28044c" }}>
+                                ${seguro.precio}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </Box>
+
+            {/* Período de Cobertura */}
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Event sx={{ color: '#28044c', fontSize: 24 }} />
+                <Typography variant="h6" fontWeight="700" color="#28044c">
+                  Período de Cobertura
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 3, borderColor: '#e0e0e0' }} />
+              
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <FormLabel sx={{ fontWeight: '700', color: '#28044c', mb: 2, fontSize: '1rem', display: 'block' }}>
+                    Fecha de Inicio
+                  </FormLabel>
+                  <TextField
+                    fullWidth
+                    name="fecha_contrato"
+                    type="date"
+                    value={formData.fecha_contrato}
                     onChange={handleChange}
                     variant="outlined"
-                    sx={fieldStyle}
-                    displayEmpty
-                  >
-                    <MenuItem value="">
-                      <em>Seleccione un usuario</em>
-                    </MenuItem>
-                    {usuarios.map((usuario) => (
-                      <MenuItem key={usuario.id_usuario} value={usuario.id_usuario}>
-                        {usuario.nombre} {usuario.apellido} - {usuario.correo}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CalendarToday sx={{ color: '#28044c', fontSize: 20 }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={textFieldStyle}
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
-                  Seleccionar Plan de Seguro
-                </Typography>
-                <FormControl fullWidth size="small">
-                  <Select
-                    name="id_seguro_per"
-                    value={formData.id_seguro_per}
+                <Grid item xs={12} md={6}>
+                  <FormLabel sx={{ fontWeight: '700', color: '#28044c', mb: 2, fontSize: '1rem', display: 'block' }}>
+                    Fecha de Finalización
+                  </FormLabel>
+                  <TextField
+                    fullWidth
+                    name="fecha_fin"
+                    type="date"
+                    value={formData.fecha_fin}
                     onChange={handleChange}
                     variant="outlined"
-                    sx={fieldStyle}
-                    displayEmpty
-                  >
-                    <MenuItem value="">
-                      <em>Seleccione un plan</em>
-                    </MenuItem>
-                    {seguros.map((seguro) => (
-                      <MenuItem key={seguro.id_seguro} value={seguro.id_seguro}>
-                        {seguro.nombre} - ${seguro.precio} ({seguro.tipo === 0 ? 'Vida' : 'Salud'})
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CalendarToday sx={{ color: '#28044c', fontSize: 20 }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={textFieldStyle}
+                  />
+                </Grid>
               </Grid>
+            </Box>
 
-              <Grid item xs={12} sm={6}>
-                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
-                  Fecha de Contrato
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="fecha_contrato"
-                  type="date"
-                  value={formData.fecha_contrato}
-                  onChange={handleChange}
-                  variant="outlined"
-                  size="small"
-                  InputLabelProps={{ shrink: true }}
-                  sx={fieldStyle}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
-                  Fecha de Fin
-                </Typography>
-                <TextField
-                  fullWidth
-                  name="fecha_fin"
-                  type="date"
-                  value={formData.fecha_fin}
-                  onChange={handleChange}
-                  variant="outlined"
-                  size="small"
-                  InputLabelProps={{ shrink: true }}
-                  sx={fieldStyle}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
+            {/* Estado del Contrato */}
+            <Box>
+              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <AssignmentTurnedIn sx={{ color: '#28044c', fontSize: 24 }} />
+                <Typography variant="h6" fontWeight="700" color="#28044c">
                   Estado del Contrato
                 </Typography>
-                <FormControl fullWidth size="small">
-                  <Select
-                    name="estado"
-                    value={formData.estado}
-                    onChange={handleChange}
-                    variant="outlined"
-                    sx={fieldStyle}
-                    displayEmpty
-                  >
-                    <MenuItem value="">
-                      <em>Seleccione el estado</em>
-                    </MenuItem>
-                    <MenuItem value="1">Activo</MenuItem>
-                    <MenuItem value="0">Inactivo</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+              </Box>
+              <Divider sx={{ mb: 3, borderColor: '#e0e0e0' }} />
+              
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <FormLabel sx={{ fontWeight: '700', color: '#28044c', mb: 2, fontSize: '1rem', display: 'block' }}>
+                    Estado del Contrato
+                  </FormLabel>
+                  <FormControl fullWidth>
+                    <Select
+                      name="estado"
+                      value={formData.estado}
+                      onChange={handleChange}
+                      variant="outlined"
+                      sx={selectStyle}
+                      displayEmpty
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <CheckCircle sx={{ color: '#28044c', fontSize: 20 }} />
+                        </InputAdornment>
+                      }
+                    >
+                      <MenuItem value="">
+                        <em>Seleccione el estado</em>
+                      </MenuItem>
+                      <MenuItem value="1">
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Box sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#4caf50" }} />
+                          Activo
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="0">
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Box sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#f44336" }} />
+                          Inactivo
+                        </Box>
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <Typography sx={{ color: "#044c28", fontWeight: 600, mb: 1 }}>
-                  Estado de Pago
-                </Typography>
-                <FormControl fullWidth size="small">
-                  <Select
-                    name="estado_pago"
-                    value={formData.estado_pago}
-                    onChange={handleChange}
-                    variant="outlined"
-                    sx={fieldStyle}
-                    displayEmpty
-                  >
-                    <MenuItem value="">
-                      <em>Seleccione el estado</em>
-                    </MenuItem>
-                    <MenuItem value="1">Pagado</MenuItem>
-                    <MenuItem value="0">Pendiente</MenuItem>
-                  </Select>
-                </FormControl>
+                <Grid item xs={12} md={6}>
+                  <FormLabel sx={{ fontWeight: '700', color: '#28044c', mb: 2, fontSize: '1rem', display: 'block' }}>
+                    Estado de Pago
+                  </FormLabel>
+                  <FormControl fullWidth>
+                    <Select
+                      name="estado_pago"
+                      value={formData.estado_pago}
+                      onChange={handleChange}
+                      variant="outlined"
+                      sx={selectStyle}
+                      displayEmpty
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <Payment sx={{ color: '#28044c', fontSize: 20 }} />
+                        </InputAdornment>
+                      }
+                    >
+                      <MenuItem value="">
+                        <em>Seleccione el estado</em>
+                      </MenuItem>
+                      <MenuItem value="1">
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Payment sx={{ color: "#4caf50", fontSize: 16 }} />
+                          Pagado
+                        </Box>
+                      </MenuItem>
+                      <MenuItem value="0">
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Payment sx={{ color: "#ff9800", fontSize: 16 }} />
+                          Pendiente
+                        </Box>
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
               </Grid>
-            </Grid>
+            </Box>
           </Box>
         )}
       </DialogContent>
 
       <DialogActions
         sx={{
-          p: 4,
-          pt: 2,
-          justifyContent: "space-between",
-          backgroundColor: "#f0f7f4",
+          p: 3,
+          backgroundColor: "#ffffff",
+          borderTop: "1px solid #e0e0e0",
+          gap: 2,
         }}
       >
         <Button
           onClick={onClose}
           variant="outlined"
+          size="large"
           sx={{
-            borderColor: "#044c28",
-            color: "#044c28",
+            borderColor: "#28044c",
+            color: "#28044c",
+            borderWidth: 2,
             "&:hover": {
-              borderColor: "#033420",
-              backgroundColor: "rgba(4, 76, 40, 0.04)",
+              borderColor: "#28044c",
+              backgroundColor: "rgba(40, 4, 76, 0.04)",
+              borderWidth: 2,
             },
-            borderRadius: 3,
+            borderRadius: 2,
             px: 4,
             py: 1.5,
             fontSize: "1rem",
-            fontWeight: "bold",
             textTransform: "none",
-            transition: "all 0.3s ease",
-            minWidth: fullScreen ? "120px" : "140px",
+            fontWeight: '700',
+            minWidth: "140px",
+            transition: 'all 0.3s ease',
           }}
         >
           Cancelar
         </Button>
-
         <Button
           onClick={handleContratar}
           variant="contained"
+          size="large"
           disabled={loading}
           sx={{
-            background: "linear-gradient(135deg, #044c28 0%, #1b6b4a 100%)",
+            backgroundColor: "#28044c",
             "&:hover": {
-              background: "linear-gradient(135deg, #033420 0%, #155838 100%)",
-              transform: "translateY(-2px)",
-              boxShadow: "0 8px 25px rgba(4, 76, 40, 0.25)",
+              backgroundColor: "rgba(40, 4, 76, 0.9)",
+              transform: "translateY(-1px)",
+              boxShadow: "0 6px 20px rgba(40, 4, 76, 0.3)",
             },
             "&:disabled": {
-              background: "#ccc",
+              backgroundColor: "#ccc",
             },
-            borderRadius: 3,
+            borderRadius: 2,
             px: 4,
             py: 1.5,
             fontSize: "1rem",
-            fontWeight: "bold",
+            fontWeight: "700",
             textTransform: "none",
             transition: "all 0.3s ease",
-            minWidth: fullScreen ? "120px" : "140px",
+            minWidth: "140px",
           }}
         >
-          {loading ? <CircularProgress size={20} color="inherit" /> : "Contratar"}
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Security fontSize="small" />
+              Contratar Seguro
+            </Box>
+          )}
         </Button>
       </DialogActions>
     </Dialog>

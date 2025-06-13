@@ -59,7 +59,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   console.log('Iniciamos envio');
   console.log(formData);
-  //setFormData({ ...formData, password: formData.cedula });
+  setFormData({ ...formData, password: formData.cedula, tipo: 2, rol: "cliente", activo: 1});
   if (formData.cedula.length !== 10) {
     alert('La cédula debe tener exactamente 10 dígitos.');
     return;
@@ -72,23 +72,22 @@ const handleSubmit = async (e) => {
 
   try {
     console.log('dentro del try');
-    const response = await fetch('http://localhost:3030/usuario/agregar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+   const response = await fetch('http://localhost:3030/usuario/agregar', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
+
     console.log("antes del envio correo: ",res.current);
     //const emplay = {cedula:formData.cedula, correo:formData.correo, username:formData.username, nombre:formData.nombre};
-    emailjs.sendForm("service_cquby3k", "template_32dzbrp", res.current , "5Uzo8zQ0Bqi8lpb_w").then(
+    /*emailjs.sendForm("service_cquby3k", "template_32dzbrp", res.current , "5Uzo8zQ0Bqi8lpb_w").then(
       (result)=>{console.log ("correo enviado exitosamente")},
       (error)=>{console.log("existio un error")}
-    )
+    )*/
 
-    if (!response.ok) {
+   /* if (!response.ok) {
       throw new Error('Error al registrar el usuario');
-    }
+    }*/
 
     const data = await response.json();
     alert('¡Usuario registrado exitosamente!');
@@ -96,12 +95,16 @@ const handleSubmit = async (e) => {
 
     // Limpiar
     setFormData({
-      nombre: '',
-      apellido: '',
-      correo: '',
-      telefono: '',
-      cedula: '',
-      username: '',
+    nombre: '',
+    apellido: '',
+    correo: '',
+    telefono: '',
+    cedula: '',
+    username: '',
+    password: '',
+    activo: 1,
+    tipo: 2,
+    rol: 'cliente'
     });
   } catch (error) {
     console.error('Error en el registro:', error);

@@ -6,6 +6,7 @@ import {
   Button,
 } from '@mui/material';
 import emailjs from "emailjs-com";
+ 
 
 const Formulario = ({ plan = "Plan Básico Salud" }) => {
   const [formData, setFormData] = useState({
@@ -80,10 +81,16 @@ const handleSubmit = async (e) => {
 
     console.log("antes del envio correo: ",res.current);
     //const emplay = {cedula:formData.cedula, correo:formData.correo, username:formData.username, nombre:formData.nombre};
-    emailjs.sendForm("service_cquby3k", "template_32dzbrp", res.current , "5Uzo8zQ0Bqi8lpb_w").then(
+    const mensaje = await fetch (`http://localhost:3030/usuario_seguro/mensaje/${formData.correo}`,{
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({password:formData.cedula}),
+
+    });
+    /*emailjs.sendForm("service_cquby3k", "template_32dzbrp", res.current , "5Uzo8zQ0Bqi8lpb_w").then(
       (result)=>{console.log ("correo enviado exitosamente")},
       (error)=>{console.log("existio un error")}
-    )
+    )*/
 
    if (!response.ok) {
       throw new Error('Error al registrar el usuario');

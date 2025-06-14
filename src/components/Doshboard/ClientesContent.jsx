@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box, Typography, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Button, Stack, useMediaQuery, Grid, Chip, Tabs,
-  Tab, Card, CardContent, FormControl, Select, MenuItem, InputLabel,
-  Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress,
-  Checkbox, Alert
-} from "@mui/material";
-import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import GroupIcon from "@mui/icons-material/Group";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import GroupIcon from "@mui/icons-material/Group";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import {
+  Alert, Box, Button, Card, CardContent, Checkbox, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
+  DialogTitle, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Stack, Tab,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs, Typography, useMediaQuery
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import { Modal } from "../Modal/Modal";
+import { ModalContratarSeguro } from "../ModalContratarSeguro/ModalContratarSeguro";
 import { ModalEditarUsuario } from "../ModalEditarUsuario/ModalEditarUsuario";
 import { ModalEliminarUsuarioAgente } from "../ModalEliminarUsuarioAgente/ModalEliminarUsuarioAgente";
-import { ModalContratarSeguro } from "../ModalContratarSeguro/ModalContratarSeguro";
 import { ModalVerUsuario } from "../ModalVerUsuario";
-import { Modal } from "../Modal/Modal";
 
 // Modal para eliminar seguros específicos de un usuario
 const ModalEliminarSegurosUsuario = ({ open, onClose, usuario, onEliminar }) => {

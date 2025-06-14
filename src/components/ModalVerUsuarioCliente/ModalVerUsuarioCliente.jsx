@@ -1,15 +1,13 @@
-import React from "react";
-import PropTypes from "prop-types";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-  TextField,
-  Grid,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  TextField,
+  Typography,
   useMediaQuery
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";

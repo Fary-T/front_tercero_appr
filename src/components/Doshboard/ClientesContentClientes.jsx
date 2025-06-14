@@ -1,31 +1,16 @@
-import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Box,
-  Typography,
-  Paper,
-  TextField,
-  Grid,
-  useMediaQuery,
-  Skeleton,
-  Alert,
-  Avatar,
-  Divider,
-  Chip,
-  Card,
-  CardContent,
-  IconButton,
-  Fade,
-  Container,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { useUser } from "../../context/UserContext";
-import { ModalEditarUsuarioCliente } from "../ModalEditarUsuario/ModalEditarUsuarioCliente";
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonIcon from '@mui/icons-material/Person';
-import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 import SecurityIcon from '@mui/icons-material/Security';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import {
+  Alert, Avatar, Box, Button, Card, CardContent, Chip, Container, Divider, Fade, Grid,
+  IconButton, Skeleton, TextField, Typography, useMediaQuery
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import { useUser } from "../../context/UserContext";
+import { ModalEditarUsuarioCliente } from "../ModalEditarUsuario/ModalEditarUsuarioCliente";
 
 export const ClientesContentClientes = () => {
   const { usuario } = useUser();

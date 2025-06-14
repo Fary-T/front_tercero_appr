@@ -1,6 +1,10 @@
 "use client";
-import React from 'react';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PeopleIcon from '@mui/icons-material/People';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
+  Box,
   Drawer,
   List,
   ListItem,
@@ -9,17 +13,12 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  Box,
 } from '@mui/material';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PeopleIcon from '@mui/icons-material/People';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Información Cliente', icon: <PeopleIcon /> },
-  { text: 'Comprar Seguro', icon: <AddShoppingCartIcon/>},
+  { text: 'Contratar Seguro', icon: <AddShoppingCartIcon/>},
   { text: 'Subida de archivos', icon: <UploadFileIcon/> },
   { text: 'Cerrar Sesión', icon: <LogoutIcon /> },
 ];

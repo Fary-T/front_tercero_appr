@@ -13,9 +13,9 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import PeopleIcon from "@mui/icons-material/People";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const drawerWidth = 240;
 
@@ -30,6 +30,7 @@ export const Sidebar = ({
     { texto: "Dashboard", icono: <DashboardIcon /> },
     { texto: "Polizas", icono: <AssignmentIcon /> },
     { texto: "Usuarios", icono: <PeopleIcon /> },
+    { texto: "Revisión Archivos", icono: <DescriptionIcon /> },
     { texto: "Reportes", icono: <BarChartIcon /> },
     { texto: "Cerrar Sesión", icono: <ExitToAppIcon /> },
   ];

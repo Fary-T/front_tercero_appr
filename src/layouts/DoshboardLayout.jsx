@@ -21,6 +21,8 @@ import { Sidebar } from "../components/Sidebar/Sidebar";
 import {DashboardContent} from "../components/Doshboard/DashboardContent";
 import { PolizasContent } from "../components/Doshboard/PolizasContent";
 import { ClientesContent } from "../components/Doshboard/ClientesContent";
+import { RevisionArchivos } from "../components/Doshboard/RevisionArchivosAdmin";
+
 
 export const DoshboardLayout = () => {
   const [seccionActiva, setSeccionActiva] = useState("Dashboard");
@@ -60,6 +62,8 @@ export const DoshboardLayout = () => {
         return <ClientesContent />;
       case "Reportes":
         return <Typography variant="h6">Visualización de Reportes</Typography>;
+      case "Revisión Archivos":
+        return <RevisionArchivos/>;
       default:
         return <Typography variant="h6">Selecciona una opción</Typography>;
     }

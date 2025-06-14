@@ -11,16 +11,15 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleIcon from '@mui/icons-material/People';
-
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Información Cliente', icon: <PeopleIcon /> },
-  { text: 'Notificaciones', icon: <NotificationsIcon/> },
+  { text: 'Comprar Seguro', icon: <AddShoppingCartIcon/>},
   { text: 'Subida de archivos', icon: <UploadFileIcon/> },
   { text: 'Cerrar Sesión', icon: <LogoutIcon /> },
 ];

@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Header from '../../components/planescomponents/Header';
-import Formulario from '../../components/CotizarComponents/Formulario';
+import Formulario from '../../components/CotizarComponents/Formulario/Formulario';
 
 const CotizarV = () => {
   const { state } = useLocation();

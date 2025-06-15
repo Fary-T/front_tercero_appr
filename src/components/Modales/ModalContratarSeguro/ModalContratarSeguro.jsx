@@ -6,18 +6,11 @@ import './ModalContratarSeguro.css';
 export const ModalContratarSeguro = ({ open, onClose, plan, userData }) => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [idRequisito, setIdRequisito] = useState('');
 
   useEffect(() => {
     if (!open) {
       setFile(null);
       setFileName('');
-      setUploadError(null);
-      setUploadSuccess(false);
-      setIdRequisito('');
     }
   }, [open]);
 
@@ -26,13 +19,13 @@ export const ModalContratarSeguro = ({ open, onClose, plan, userData }) => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setUploadError(null);
       setFile(selectedFile);
       setFileName(selectedFile.name);
     }
   };
 
   const handleSubmit = async() => {
+    
   }
     
   return (
@@ -44,7 +37,7 @@ export const ModalContratarSeguro = ({ open, onClose, plan, userData }) => {
         </div>
 
         <div className="plan-info-modal">
-          <h3 className="selected-plan">Estás contratando: {plan.title}</h3>
+          <h3 className="selected-plan">Estás contratando: {plan.nombre}</h3>
         </div>
 
         <div className="file-upload-section">

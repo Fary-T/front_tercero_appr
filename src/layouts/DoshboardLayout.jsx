@@ -21,7 +21,7 @@ import { Sidebar } from "../components/Sidebar/Sidebar";
 import {DashboardContent} from "../components/Doshboard/DashboardContent";
 import { PolizasContent } from "../components/Doshboard/PolizasContent";
 import { ClientesContent } from "../components/Doshboard/ClientesContent";
-import { RevisionArchivos } from "../components/Doshboard/RevisionArchivosAdmin";
+import { RevisionArchivos } from "../components/Doshboard/RevisionArchivosAdmi";
 
 
 export const DoshboardLayout = () => {

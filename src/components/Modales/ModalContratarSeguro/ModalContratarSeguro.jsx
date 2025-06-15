@@ -24,10 +24,36 @@ export const ModalContratarSeguro = ({ open, onClose, plan, userData }) => {
     }
   };
 
-  const handleSubmit = async() => {
-    
+ const handleSubmit = async () => {
+  if (!file) return;
+
+  try {
+    const formData = new FormData();
+    formData.append("archivo", file);
+    formData.append("id_usuario_per", userData.id_usuario_per);
+    formData.append("cedula", userData.cedula);
+    formData.append("nombre_documento", `Formulario-${plan.nombre}`); 
+    formData.append("id_seguro_per", plan.id_seguro_per);
+
+    const response = await fetch("http://localhost:3030/documentos/formulario", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert("Documento enviado correctamente");
+      onClose();
+    } else {
+      const data = await response.json();
+      console.error("Error al enviar:", data);
+      alert("Error al enviar el documento");
+    }
+  } catch (error) {
+    console.error("Error de conexión:", error);
+    alert("Error de conexión al enviar el documento");
   }
-    
+};
+   
   return (
     <Modal open={open} onClose={onClose}>
       <Box className="modal-content">

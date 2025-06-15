@@ -1,8 +1,7 @@
-import React from 'react';
-import { Grid, Box, Typography } from '@mui/material';
-import PlanCard from './PlanCard';
+import { Box, Grid, Typography } from '@mui/material';
 import PlanesSalud from '../../components/CotizarComponents/PlanesSalud';
 import PlanesVida from '../../components/CotizarComponents/PlanesVida';
+import PlanCard from './PlanCard';
 
 const Planes = () => {
   return (

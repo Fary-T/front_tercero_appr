@@ -1,9 +1,8 @@
 "use client";
-import React, { useContext } from 'react';
-import './Login.css';
-import PropTypes from 'prop-types';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
+import './Login.css';
 
 export const Login = ({}) => {
 	const navigate = useNavigate();

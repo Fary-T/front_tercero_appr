@@ -1,0 +1,1 @@
+export { ContratarSeguro } from './ContratarSeguro';

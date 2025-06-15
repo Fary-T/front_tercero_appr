@@ -20,6 +20,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarCliente } from "../../components/Sidebar/SidebarCliente";
 import { ClientesContentClientes } from "../../components/Doshboard/ClientesContentClientes";
 import { SubirArchivoCliente } from "../../components/SubirArchivosCliente/SubirArchivoCliente";
+import { ContratarSeguro } from "../../components/Doshboard/ContratarSeguro";
 
 export const DoshboardClientes = () => {
   const [seccionActiva, setSeccionActiva] = useState("Dashboard");
@@ -67,6 +68,8 @@ export const DoshboardClientes = () => {
     switch (seccionActiva) {
       case "Información Cliente":
         return <ClientesContentClientes />;
+      case "Contratar Seguro":
+        return <ContratarSeguro />;
       case "Subida de archivos":
         return <SubirArchivoCliente />;
       default:

@@ -1,0 +1,1 @@
+export { ModalContratarSeguro } from './ModalContratarSeguro';

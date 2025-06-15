@@ -1,12 +1,11 @@
 "use client";
-import React, { useContext } from 'react';
-import './Home.css';
-import PropTypes from 'prop-types';
-import { replace, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Footer } from '../../components/Home Componets/Footer';
 import { Header } from '../../components/Home Componets/Header';
 import { HeroandServices } from '../../components/Home Componets/HeroandServices';
-import { Footer } from '../../components/Home Componets/Footer';
 import { UserContext } from '../../context/UserContext';
+import './Home.css';
 
 
 

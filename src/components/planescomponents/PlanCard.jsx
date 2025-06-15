@@ -1,8 +1,7 @@
-import React from 'react';
-import { Typography, Paper, Button, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import { Box, Button, Paper, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const PlanCard = ({ plan }) => {
   const { title, precio, puntos, tipo } = plan;

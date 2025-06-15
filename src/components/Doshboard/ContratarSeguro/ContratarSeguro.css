@@ -1,0 +1,135 @@
+.contratarseguro {
+  padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.salud-title {
+  color: #25004D;
+   margin-top: 1px;
+}
+
+.vida-title {
+  color: #FFCC00;
+  margin-top: 20px;
+}
+
+.plan-item {
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.plan-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #000000;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.price-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #4CAF50;
+  margin-top: 1px;
+  margin-bottom: 10px;
+}
+
+.plan-details-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.plan-detail-card {
+  background-color: #f3f0fa;
+  border-radius: 10px;
+  padding: 14px 20px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  width: 280px;
+}
+
+.plan-icon {
+  font-size: 1.4rem;
+  margin-bottom: 6px;
+}
+
+.detail-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #25004D;
+  margin-bottom: 8px;
+}
+
+.plan-detail-card ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.plan-detail-card ul li {
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.plan-button {
+  background-color: #25004D;
+  color: white;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.plan-button:hover {
+  background-color: #1a0033;
+}
+.main-download-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.main-download-button {
+  background-color: #16045a;
+  color: white;
+  padding: 15px 28px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.main-download-button:hover {
+  background-color: #560c92;
+}
+.instrucciones-container {
+  background-color: #dcd8ec;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.instrucciones-text {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: 450;
+}
+

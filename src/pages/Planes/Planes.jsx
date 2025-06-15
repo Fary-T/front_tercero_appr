@@ -1,13 +1,10 @@
 "use client";
-import React from 'react';
-import './Planes.css';
-import PropTypes from 'prop-types';
+import Footer from '../../components/planescomponents/Footer';
 import Header from '../../components/planescomponents/Header';
 import HeroBanner from '../../components/planescomponents/HeroBanner';
 import PlanesSection from '../../components/planescomponents/PlanesSection';
 import Testimonios from '../../components/planescomponents/Testimonios';
-import Footer from '../../components/planescomponents/Footer';
-import { Box } from '@mui/material';
+import './Planes.css';
 
 export const Planes = () => {
   return (

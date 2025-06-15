@@ -7,9 +7,14 @@ export const UserProvider = ({ children }) => {
     id_usuario: 0,
     correo: "",
     username: "",
+    password: "",
     nombre: "s/n",
+    apellido: "s/n",
     tipo: 0,
     activo: 0,
+    cedula: "",
+    telefono: "",
+    rol: "",
   });
 
   return (

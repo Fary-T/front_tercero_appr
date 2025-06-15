@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import "./RevisionArchivos.css";
 import PropTypes from "prop-types";
+import { ModalRevisionArchivosAdmin } from "../../Modales/ModalRevisionArchivosAdmin";
+
 
 export const RevisionArchivos = ({}) => {
   const [clientes, setClientes] = useState([]);
@@ -133,6 +135,13 @@ export const RevisionArchivos = ({}) => {
           )}
         </tbody>
       </table>
+      {/*Modal para ver documentos*/}
+      <ModalRevisionArchivosAdmin
+      isOpen={modalVerDocumentoAbierto}
+        onClose={() => setModalVerDocumentoAbierto(false)}
+        cliente={documentoClienteSeleccionado}
+        setCliente={setDocumentoClienteSeleccionado}/>
+        
     </div>
   );
 };

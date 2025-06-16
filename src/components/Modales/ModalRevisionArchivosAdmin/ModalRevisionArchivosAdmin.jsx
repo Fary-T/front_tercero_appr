@@ -1,9 +1,14 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./ModalRevisionArchivosAdmin.css";
-import PropTypes from "prop-types";
 
-export const ModalRevisionArchivosAdmin = ({ isOpen, onClose, cliente,setCliente }) => {
+export const ModalRevisionArchivosAdmin = ({ 
+  isOpen, 
+  onClose, 
+  cliente, 
+  setCliente,
+  setEstadosSeguros
+}) => {
   const requisitos = [
     "Formulario de solicitud",
     "Cédula de identidad",
@@ -12,76 +17,81 @@ export const ModalRevisionArchivosAdmin = ({ isOpen, onClose, cliente,setCliente
     "Certificado médico",
   ];
 
-  // Cargar requisitos desde la API al abrir el modal
-  const descargarArchivo = async (nombreArchivo) => {
-    try {
-      const response = await fetch(
-        "http://localhost:3030/documentos/descargar",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ nombre: nombreArchivo }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Error al descargar el archivo");
-      }
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", nombreArchivo);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Error al descargar el archivo:", error);
-      alert("No se pudo descargar el archivo. Inténtalo de nuevo más tarde.");
-    }
-  };
-  //Funcion para eliminar archivos
-  const eliminarArchivo = async (idUsuario, nombreArchivo) => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar este archivo?"))
+  const aceptarUsuario = async () => {
+    if (!cliente.id_usuario_seguro) {
+      alert("No se encontró un ID de seguro válido.");
       return;
+    }
 
+    // Simular petición PUT
     try {
-      const response = await fetch(
-        "http://localhost:3030/documentos/eliminar",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id_usuario: idUsuario,
-            nombre: nombreArchivo,
-          }),
-        }
-      );
+      // Aquí iría tu fetch real con la API
 
-      if (!response.ok) {
-        throw new Error("Error al eliminar el archivo");
-      }
-
-      // Actualizar el estado local SOLO si la eliminación fue exitosa
+      // Actualizar en frontend
       setCliente((prev) => ({
         ...prev,
-        archivos: prev.archivos.filter((archivo) => archivo !== nombreArchivo),
+        estado: 1
       }));
 
-      alert("Archivo eliminado correctamente");
+      // Actualizar también en estadosSeguros
+      setEstadosSeguros((prevList) => {
+        // ✅ Asegúrate de que prevList sea un array
+        if (!Array.isArray(prevList)) {
+          console.error("prevList no es un array", prevList);
+          return [{ id_usuario: cliente.id_usuario, estado: 1 }];
+        }
+
+        return prevList.map((seguro) =>
+          seguro.id_usuario === cliente.id_usuario
+            ? { ...seguro, estado: 1 }
+            : seguro
+        );
+      });
+
+      alert("Usuario aceptado correctamente.");
     } catch (error) {
-      console.error("Error al eliminar:", error);
-      alert("No se pudo eliminar el archivo.");
+      console.error("Error al aceptar usuario:", error);
+      alert("No se pudo aceptar el usuario. Inténtalo de nuevo.");
     }
   };
-  // Función para verificar si el cliente ya ha subido el archivo
+
+  const negarUsuario = async () => {
+    if (!cliente.id_usuario_seguro) {
+      alert("No se encontró un ID de seguro válido.");
+      return;
+    }
+
+    try {
+      // Simular petición PUT
+      setCliente((prev) => ({
+        ...prev,
+        estado: 0
+      }));
+
+      setEstadosSeguros((prevList) => {
+        if (!Array.isArray(prevList)) {
+          return [{ id_usuario: cliente.id_usuario, estado: 0 }];
+        }
+
+        return prevList.map((seguro) =>
+          seguro.id_usuario === cliente.id_usuario
+            ? { ...seguro, estado: 0 }
+            : seguro
+        );
+      });
+
+      alert("Usuario negado correctamente.");
+    } catch (error) {
+      console.error("Error al negar usuario:", error);
+      alert("No se pudo negar el usuario. Inténtalo de nuevo.");
+    }
+  };
+
+  // Función para verificar si subió el archivo
   const archivoSubido = (requisito) => {
     return cliente.archivos && cliente.archivos.includes(requisito);
   };
+
   if (!isOpen || !cliente) return null;
 
   return (
@@ -97,21 +107,8 @@ export const ModalRevisionArchivosAdmin = ({ isOpen, onClose, cliente,setCliente
           {cliente.archivos && cliente.archivos.length > 0 ? (
             <ul>
               {cliente.archivos.map((archivo, index) => (
-                <li key={archivo} className="archivo-item">
+                <li key={index}>
                   <span>{archivo}</span>
-                  <div className="acciones">
-                    <button onClick={() => descargarArchivo(archivo)}>
-                      Descargar
-                    </button>
-                    {/* Botòn Eliminar*/}
-                    <button
-                      onClick={() =>
-                        eliminarArchivo(cliente.id_usuario, archivo)
-                      }
-                    >
-                      Eliminar
-                    </button>
-                  </div>
                 </li>
               ))}
             </ul>
@@ -124,15 +121,24 @@ export const ModalRevisionArchivosAdmin = ({ isOpen, onClose, cliente,setCliente
         <div className="listado-requisitos">
           <strong>Requisitos:</strong>
           <ul>
-            {requisitos.map((requisito, index) => (
+            {requisitos.map((req, index) => (
               <li key={index}>
                 <span>
-                  {archivoSubido(requisito) ? "✅" : "❌"}
-                  {requisito}
+                  {archivoSubido(req) ? "✅" : "❌"} {req}
                 </span>
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Botones de acción */}
+        <div className="modal-footer">
+          <button className="btn-negar" onClick={negarUsuario}>
+            Negar
+          </button>
+          <button className="btn-aceptar" onClick={aceptarUsuario}>
+            Aceptar
+          </button>
         </div>
 
         {/* Botón cerrar */}
@@ -143,5 +149,3 @@ export const ModalRevisionArchivosAdmin = ({ isOpen, onClose, cliente,setCliente
     </div>
   );
 };
-
-ModalRevisionArchivosAdmin.propTypes = {};

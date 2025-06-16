@@ -11,11 +11,11 @@ import {
   Paper,
   Button,
   Typography,
-  TextField,
-  CircularProgress
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import { ModalSubirArchivoCliente } from '../Modales/ModalSubirArchivoCliente/ModalSubirArchivoCliente';
-import { UserContext, useUser } from '../../context/UserContext';
+import { UserContext } from '../../context/UserContext';
 
 export const SubirArchivoCliente = () => {
   const [requisitos, setRequisitos] = useState([]);
@@ -23,29 +23,62 @@ export const SubirArchivoCliente = () => {
   const [error, setError] = useState(null);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [requisitoActual, setRequisitoActual] = useState(null);
-  const [archivo, setArchivo] = useState(null);
-  const [idSeguro, setIdSeguro] = useState('');
-  let id_usuario_seguro_per = 0;
-  const {usuario, setUsuario} = useContext(UserContext);
+  const [seguroInfo, setSeguroInfo] = useState(null);
+  const { usuario } = useContext(UserContext);
 
-  const cargarRequisitos = async () => {
+
+  const cargarRequisitosUsuario = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3030/requisitos/', {
-        method: 'POST',
+      setError(null);
+
+      if (!usuario?.id_usuario) {
+        throw new Error('No se pudo identificar al usuario');
+      }
+
+      const response = await fetch(`http://localhost:3030/requisitos/${usuario.id_usuario}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id_seguro: idSeguro }),
       });
 
       if (!response.ok) {
-        throw new Error('Error al obtener los requisitos');
+        throw new Error(`Error al obtener los requisitos: ${response.statusText}`);
       }
 
       const data = await response.json();
-      setRequisitos(data);
+
+      if (!Array.isArray(data) || data.length === 0) {
+        setSeguroInfo(null);
+        setRequisitos([]);
+        throw new Error('No se encontraron requisitos para tu seguro');
+      }
+
+      const primerRegistro = data[0];
+      if (!primerRegistro) {
+        throw new Error('Datos de requisitos incompletos');
+      }
+
+      setSeguroInfo({
+        id_seguro: primerRegistro.id_seguro,
+        id_usuario_seguro: primerRegistro.id_usuario_seguro,
+        nombre: primerRegistro.nombre_seguro || 'Sin nombre',
+        precio: primerRegistro.precio || 0,
+        tiempo_pago: primerRegistro.tiempo_pago || 'No especificado',
+        descripcion: primerRegistro.descripcion || 'Sin descripción'
+      });
+
+      setRequisitos(data.map(item => ({
+        id: item.id_seguro_requisito,
+        id_seguro_requisito: item.id_seguro_requisito,
+        nombre: item.nombre_requisito || 'Sin nombre',
+        detalle: item.detalle || 'Sin detalle',
+        estado: item.estado || 0
+      })));
+
     } catch (err) {
+      console.error('Error al cargar requisitos:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -53,31 +86,25 @@ export const SubirArchivoCliente = () => {
   };
 
   useEffect(() => {
-    if (idSeguro) {
-      cargarRequisitos();
+    if (usuario?.id_usuario) {
+      cargarRequisitosUsuario();
     }
-  }, [idSeguro]);
+  }, [usuario]);
 
   const manejarClickArchivos = (requisito) => {
+    if (!usuario?.cedula) {
+      setError('Complete su información de cédula en su perfil');
+      return;
+    }
     setRequisitoActual(requisito);
     setModalAbierto(true);
   };
 
-  const cerrarModal = () => setModalAbierto(false);
-
-  const handleArchivoChange = (event) => {
-    setArchivo(event.target.files[0]);
-  };
-
-  const handleConfirmarSubida = () => {
-    if (archivo) {
-      const requisitosActualizados = requisitos.map(req => 
-        req.id_seguro_requisito === requisitoActual.id_seguro_requisito 
-          ? { ...req, estado: 1 }
-          : req
-      );
-      setRequisitos(requisitosActualizados);
-      cerrarModal();
+  const cerrarModal = (recargar = false) => {
+    setModalAbierto(false);
+    setRequisitoActual(null);
+    if (recargar) {
+      cargarRequisitosUsuario();
     }
   };
 
@@ -89,33 +116,22 @@ export const SubirArchivoCliente = () => {
     return estado === 1 ? 'Completado' : 'Pendiente';
   };
 
-  if (loading && !idSeguro) {
-    return (
-      <Box p={3}>
-        <Typography variant="h5" gutterBottom>
-          Gestión de Requisitos de Seguro
-        </Typography>
-        <TextField
-          fullWidth
-          label="ID del Seguro"
-          variant="outlined"
-          value={idSeguro}
-          onChange={(e) => setIdSeguro(e.target.value)}
-          placeholder="Ingrese el ID del seguro"
-          sx={{ mb: 3 }}
-        />
-        <Typography>Ingrese un ID de seguro para cargar los requisitos</Typography>
-      </Box>
+  const handleUploadSuccess = (requisitoId, fileName) => {
+    setRequisitos(prevRequisitos =>
+      prevRequisitos.map(req =>
+        req.id === requisitoId
+          ? { ...req, estado: 1 }
+          : req
+      )
     );
-  }
+    cerrarModal(false);
+  };
 
   if (loading) {
     return (
       <Box p={3} display="flex" flexDirection="column" alignItems="center">
-        <Typography variant="h5" gutterBottom>
-          Cargando requisitos...
-        </Typography>
         <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Cargando requisitos...</Typography>
       </Box>
     );
   }
@@ -123,10 +139,10 @@ export const SubirArchivoCliente = () => {
   if (error) {
     return (
       <Box p={3}>
-        <Typography variant="h5" gutterBottom color="error">
-          Error: {error}
-        </Typography>
-        <Button variant="contained" onClick={cargarRequisitos}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button variant="contained" onClick={cargarRequisitosUsuario}>
           Reintentar
         </Button>
       </Box>
@@ -138,87 +154,79 @@ export const SubirArchivoCliente = () => {
       <Typography variant="h5" gutterBottom>
         Gestión de Requisitos de Seguro
       </Typography>
-      
-      <TextField
-        fullWidth
-        label="ID del Seguro"
-        variant="outlined"
-        value={idSeguro}
-        onChange={(e) => setIdSeguro(e.target.value)}
-        placeholder="Ingrese el ID del seguro"
-        sx={{ mb: 3 }}
-      />
 
-      {requisitos.length > 0 ? (
+      {seguroInfo && (
         <>
           <Typography variant="h6" gutterBottom>
-            Seguro: {requisitos[0].nombre} - {requisitos[0].descripcion}
+            Seguro: {seguroInfo.nombre} - {seguroInfo.descripcion}
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
-            Precio: ${requisitos[0].precio} - Tiempo de pago: {requisitos[0].tiempo_pago}
+            Precio: ${seguroInfo.precio} - Tiempo de pago: {seguroInfo.tiempo_pago}
           </Typography>
-
-          <TableContainer component={Paper} elevation={3} sx={{ mt: 3 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Requisito</TableCell>
-                  <TableCell>Detalle</TableCell>
-                  <TableCell>Estado</TableCell>
-                  <TableCell>Acciones</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {requisitos.map((requisito) => (
-                  <TableRow 
-                    key={requisito.id_seguro_requisito}
-                    sx={{
-                      backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
-                      '&:hover': {
-                        backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.2)'
-                      }
-                    }}
-                  >
-                    <TableCell>{requisito.nombre}</TableCell>
-                    <TableCell>{requisito.detalle}</TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="contained" 
-                        color={obtenerColorEstado(requisito.estado || 0)} 
-                        size="small"
-                      >
-                        {obtenerTextoEstado(requisito.estado || 0)}
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button 
-                        variant="outlined" 
-                        onClick={() => manejarClickArchivos(requisito)}
-                        disabled={requisito.estado === 1}
-                      >
-                        Subir Archivo
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
         </>
-      ) : (
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          No se encontraron requisitos para este seguro.
-        </Typography>
       )}
 
-      {/* Modal separado */}
+      {requisitos.length > 0 ? (
+        <TableContainer component={Paper} elevation={3} sx={{ mt: 3 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Requisito</TableCell>
+                <TableCell>Detalle</TableCell>
+                <TableCell>Estado</TableCell>
+                <TableCell>Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {requisitos.map((requisito) => (
+                <TableRow
+                  key={requisito.id}
+                  sx={{
+                    backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
+                    '&:hover': {
+                      backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.2)'
+                    }
+                  }}
+                >
+                  <TableCell>{requisito.nombre}</TableCell>
+                  <TableCell>{requisito.detalle}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color={obtenerColorEstado(requisito.estado)}
+                      size="small"
+                    >
+                      {obtenerTextoEstado(requisito.estado)}
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      onClick={() => manejarClickArchivos(requisito)}
+                      disabled={requisito.estado === 1}
+                    >
+                      Subir Archivo
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <Alert severity="info" sx={{ mt: 2 }}>
+          No se encontraron requisitos para mostrar.
+        </Alert>
+      )}
+
       <ModalSubirArchivoCliente
         open={modalAbierto}
-        onClose={cerrarModal}
+        onClose={() => cerrarModal(false)}
         requisito={requisitoActual}
-        onFileChange={handleArchivoChange}
-        onConfirm={handleConfirmarSubida}
+        idUsuarioSeguro={seguroInfo?.id_usuario_seguro} 
+        nombreSeguro={seguroInfo?.nombre}
         userData={usuario}
+        onUploadSuccess={handleUploadSuccess}
       />
     </Box>
   );

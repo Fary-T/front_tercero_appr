@@ -12,7 +12,7 @@ const modalStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 300,
-  bgcolor: "#25004D", 
+  bgcolor: "#25004D",
   borderRadius: 4,
   boxShadow: 24,
   p: 4,
@@ -23,18 +23,18 @@ export const Header = () => {
   const [open, setOpen] = useState(false);
   const [correo, setCorreo] = useState("");
   const [contrasenia, setContrasenia] = useState("");
-  const {usuario, setUsuario} = useContext(UserContext);
+  const { usuario, setUsuario } = useContext(UserContext);
   // Estados para manejo de errores
   const [errores, setErrores] = useState({
     correo: "",
     contrasenia: "",
     general: ""
   });
-  
+
   const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
-  
+
   const handleClose = () => {
     setCorreo("");
     setContrasenia("");
@@ -60,18 +60,18 @@ export const Header = () => {
   const handleLogin = async () => {
     // Resetear errores
     setErrores({ correo: "", contrasenia: "", general: "" });
-    
+
     let nuevosErrores = {};
-    
+
     // Validar campos vacíos
     if (!correo.trim()) {
       nuevosErrores.correo = "El correo electrónico es obligatorio";
     }
-    
+
     if (!contrasenia.trim()) {
       nuevosErrores.contrasenia = "La contraseña es obligatoria";
     }
-    
+
     // Si hay errores de validación, mostrarlos y salir
     if (Object.keys(nuevosErrores).length > 0) {
       setErrores(prev => ({ ...prev, ...nuevosErrores }));
@@ -86,24 +86,33 @@ export const Header = () => {
         },
         body: JSON.stringify({ correo, contrasenia })
       });
-      
+
       const data = await response.json();
 
-   if (response.ok) {
-        setUsuario({...usuario,id_usuario:data.usuario.id_usuario,correo:data.usuario.correo,username:data.usuario.username,
-          nombre:data.usuario.nombre,tipo:data.usuario.tipo,activo:data.usuario.activo
+      if (response.ok) {
+        setUsuario({
+          ...usuario, 
+          id_usuario: data.usuario.id_usuario, 
+          correo: data.usuario.correo, 
+          username: data.usuario.username,
+          nombre: data.usuario.nombre, 
+          tipo: data.usuario.tipo, 
+          activo: data.usuario.activo, 
+          cedula: data.usuario.cedula,
+          rol: data.usuario.rol,
+          telefono: data.usuario.telefono,
         })
         console.log("Login exitoso:", data);
-        
+
         // Redireccionar según la respuesta del backend
         if (data.usuario.tipo == 0) {
           navigate('/doshboard', { replace: true });
-        } else if(data.usuario.tipo == 1){
+        } else if (data.usuario.tipo == 1) {
           navigate('/doshboardAgentes', { replace: true });
-        }else if(data.usuario.tipo ==2){
+        } else if (data.usuario.tipo == 2) {
           navigate('/doshboardClientes', { replace: true });
-        }else{
-          navigate('/home',{ replace: true });
+        } else {
+          navigate('/home', { replace: true });
         }
         handleClose();
       } else {
@@ -178,7 +187,7 @@ export const Header = () => {
           >
             Iniciar sesión
           </Typography>
-          
+
           {/* Campo de correo */}
           <Box sx={{ mt: 2 }}>
             <TextField
@@ -186,8 +195,8 @@ export const Header = () => {
               variant="filled"
               fullWidth
               error={!!errores.correo}
-              sx={{ 
-                backgroundColor: "white", 
+              sx={{
+                backgroundColor: "white",
                 borderRadius: 1,
                 '& .MuiFilledInput-root': {
                   '&.Mui-error': {
@@ -199,11 +208,11 @@ export const Header = () => {
               onChange={handleCorreoChange}
             />
             {errores.correo && (
-              <Typography 
-                variant="caption" 
-                sx={{ 
-                  color: '#f44336', 
-                  display: 'block', 
+              <Typography
+                variant="caption"
+                sx={{
+                  color: '#f44336',
+                  display: 'block',
                   mt: 0.5,
                   textAlign: 'left'
                 }}
@@ -221,8 +230,8 @@ export const Header = () => {
               variant="filled"
               fullWidth
               error={!!errores.contrasenia}
-              sx={{ 
-                backgroundColor: "white", 
+              sx={{
+                backgroundColor: "white",
                 borderRadius: 1,
                 '& .MuiFilledInput-root': {
                   '&.Mui-error': {
@@ -234,11 +243,11 @@ export const Header = () => {
               onChange={handleContraseniaChange}
             />
             {errores.contrasenia && (
-              <Typography 
-                variant="caption" 
-                sx={{ 
-                  color: '#f44336', 
-                  display: 'block', 
+              <Typography
+                variant="caption"
+                sx={{
+                  color: '#f44336',
+                  display: 'block',
                   mt: 0.5,
                   textAlign: 'left'
                 }}
@@ -250,11 +259,11 @@ export const Header = () => {
 
           {/* Error general */}
           {errores.general && (
-            <Typography 
-              variant="caption" 
-              sx={{ 
-                color: '#f44336', 
-                display: 'block', 
+            <Typography
+              variant="caption"
+              sx={{
+                color: '#f44336',
+                display: 'block',
                 mt: 1,
                 textAlign: 'center'
               }}
@@ -262,7 +271,7 @@ export const Header = () => {
               {errores.general}
             </Typography>
           )}
-          
+
           <Button
             variant="contained"
             sx={{

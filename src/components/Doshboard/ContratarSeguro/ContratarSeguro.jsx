@@ -1,14 +1,16 @@
 import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useUser } from "../../../context/UserContext";
+import { UserContext, UserProvider, useUser } from "../../../context/UserContext";
 import { ModalContratarSeguro } from '../../Modales/ModalContratarSeguro/ModalContratarSeguro';
 import './ContratarSeguro.css';
+import { useContext } from 'react';
 
 export const ContratarSeguro = () => {
+  const {usuario, setUsuario} = useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [planes, setPlanes] = useState([]);
-  const { usuario } = useUser();
+  //const { usuario } = useUser();
 
   
   useEffect(() => {

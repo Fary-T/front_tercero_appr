@@ -19,7 +19,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarCliente } from "../../components/Sidebar/SidebarCliente";
 import { ClientesContentClientes } from "../../components/Doshboard/ClientesContentClientes";
-import { SubirArchivoCliente } from "../../components/SubirArchivosCliente/SubirArchivoCliente";
+import { SubirArchivoCliente } from "../../components/SubirArchivoCliente";
 import { ContratarSeguro } from "../../components/Doshboard/ContratarSeguro";
 
 export const DoshboardClientes = () => {
@@ -147,5 +147,3 @@ export const DoshboardClientes = () => {
     </Box>
   );
 };
-
-

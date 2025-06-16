@@ -1,73 +1,107 @@
-.contratarseguro {
-  padding: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
+.plan-item {
+  margin-bottom: 30px;
+  text-align: center;
+  background-color: #f9f7fc; /* Fondo general de la tarjeta */
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
 }
 
+.contratarseguro {
+  padding: 30px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* TITULARES */
 .section-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 25px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
   text-align: center;
+  color: #25004D;
 }
 
 .salud-title {
   color: #25004D;
-   margin-top: 1px;
+  margin-top: 10px;
+  font-size: 2.15rem;
+  text-align: center;
+  position: relative;
 }
 
 .vida-title {
   color: #FFCC00;
-  margin-top: 20px;
+  margin-top: 30px;
+  font-size: 2.15rem;
+  text-align: center;
+  position: relative;
 }
 
+.salud-title::after,
+.vida-title::after {
+  content: '';
+  display: block;
+  height: 3px;
+  width: 60px;
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+.salud-title::after {
+  background: linear-gradient(90deg, #25004D, #4a0080);
+}
+
+.vida-title::after {
+  background: linear-gradient(90deg, #FFCC00, #ffdd33);
+}
+
+/* BLOQUES PLANES */
 .plan-item {
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   text-align: center;
 }
 
 .plan-title {
   font-size: 1.6rem;
-  font-weight: bold;
-  color: #000000;
-  margin-top: 1px;
-  margin-bottom: 1px;
+  font-weight: 700;
+  color: #000;
+  margin: 10px 0 4px;
 }
 
 .price-text {
   font-size: 1.2rem;
   font-weight: 700;
   color: #4CAF50;
-  margin-top: 1px;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 10px;
 }
 
+/* DETALLES DE PLAN */
 .plan-details-container {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.plan-detail-card {
-  background-color: #f3f0fa;
-  border-radius: 10px;
-  padding: 14px 20px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  width: 280px;
+  margin-bottom: 30px;
 }
 
 .plan-icon {
-  font-size: 1.4rem;
-  margin-bottom: 6px;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: #25004D;
 }
 
 .detail-title {
   font-size: 1.1rem;
-  font-weight: bold;
+  font-weight: 700;
   color: #25004D;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .plan-detail-card ul {
@@ -77,25 +111,32 @@
 
 .plan-detail-card ul li {
   font-size: 0.95rem;
-  color: #333;
-  margin-bottom: 5px;
-  text-align: left;
+  color: #444;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  list-style: disc;
 }
 
+/* BOTONES */
 .plan-button {
   background-color: #25004D;
   color: white;
-  padding: 10px 22px;
+  padding: 12px 24px;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .plan-button:hover {
   background-color: #1a0033;
 }
+
+/* DESCARGA */
 .main-download-container {
   text-align: center;
   margin-bottom: 30px;
@@ -108,28 +149,34 @@
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
   transition: background-color 0.3s ease;
+  letter-spacing: 0.5px;
 }
 
 .main-download-button:hover {
   background-color: #560c92;
 }
+
+/* INSTRUCCIONES */
 .instrucciones-container {
   background-color: #dcd8ec;
-  padding: 20px;
-  margin-bottom: 30px;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  padding: 25px;
+  margin-bottom: 35px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
   text-align: center;
 }
 
 .instrucciones-text {
   font-size: 1.2rem;
   color: #333;
-  margin-bottom: 30px;
-  font-weight: 450;
+  margin-bottom: 20px;
+  font-weight: 500;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
 }
-

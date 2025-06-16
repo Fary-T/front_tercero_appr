@@ -6,87 +6,36 @@ import { ModalRevisionArchivosAdmin } from "../../Modales/ModalRevisionArchivosA
 
 export const RevisionArchivos = ({}) => {
   const [clientes, setClientes] = useState([]);
-  const [modalVerDocumentoAbierto, setModalVerDocumentoAbierto] = useState(false);
-  const [documentoClienteSeleccionado, setDocumentoClienteSeleccionado] = useState(null);
-  const [nombreClienteSeleccionado, setNombreClienteSeleccionado] = useState("");
-  const [estadosSeguros, setEstadosSeguros] = useState([]);
-
-  // Datos quemados simulando /usuario
-  const mockUsuarios = [
-    {
-      id_usuario: 9,
-      nombre: "asasasasasl",
-      apellido: "sasasssasas",
-      correo: "sas@gmail.com",
-      cedula: "1234567899",
-      rol: "cliente"
-    },
-  ];
-
-  // Datos quemados simulando /usuario_seguro
-  const mockUsuarioSeguro = [
-    {
-      id_usuario_seguro: 19,
-      id_usuario_per: 9,
-      id_seguro_per: 1,
-      fecha_contrato: "2025-06-05",
-      fecha_fin: "2027-06-05",
-      estado: 0,
-      estado_pago: 1
-    },
-  ];
+  const [modalVerDocumentoAbierto, setModalVerDocumentoAbierto] =
+    useState(false);
+  const [documentoClienteSeleccionado, setDocumentoClienteSeleccionado] =
+    useState(null);
+  const [nombreClienteSeleccionado, setNombreClienteSeleccionado] =
+    useState("");
 
   useEffect(() => {
     consultarClientes();
-    cargarEstadosSeguros();
   }, []);
 
   const consultarClientes = async () => {
     try {
-      const data = mockUsuarios;
-      if (data) {
-        setClientes(data);
-      } else {
-        alert("Error al obtener los clientes");
+      const response = await fetch(`http://localhost:3030/usuario_revision/`);
+      console.log("Respuesta de la API:", response);
+      if (!response.ok) {
+        throw new Error("Error al consultar los clientes");
       }
+      const data = await response.json();
+      setClientes(data);
+      
     } catch (error) {
       console.error("Error de conexión:", error);
+      alert("Error al obtener los clientes");
       alert("No se pudo conectar al servidor");
     }
   };
-
-  const cargarEstadosSeguros = async () => {
-    try {
-      const data = mockUsuarioSeguro;
-
-      if (data) {
-        const estadosProcesados = data.map((seguro) => ({
-          id_usuario: seguro.id_usuario_per,
-          estado: seguro.estado,
-        }));
-        setEstadosSeguros(estadosProcesados); // ✅ Esto es un array
-      } else {
-        alert("Error al obtener los estados de seguro");
-      }
-    } catch (error) {
-      console.error("Error de conexión:", error);
-      alert("No se pudo conectar al servidor");
-    }
-  };
-
   const clientesFiltrados = clientes.filter(
     (cliente) => cliente.rol === "cliente"
   );
-
-  const clientesConEstado = clientesFiltrados.map((cliente) => {
-    const estado = estadosSeguros.find(
-      (seguro) => seguro.id_usuario === cliente.id_usuario
-    );
-    return {
-      ...cliente,
-      estado: estado?.estado ?? 0,
-    };
-  });
 
   return (
     <div className="revisionarchivos">
@@ -108,14 +57,14 @@ export const RevisionArchivos = ({}) => {
         <tbody>
           {clientes.length === 0 && (
             <tr>
-              <td colSpan={6} style={{ textAlign: "center" }}>
+              <td colSpan={7} style={{ textAlign: "center" }}>
                 Cargando datos...
               </td>
             </tr>
           )}
 
-          {clientesConEstado.length > 0 ? (
-            clientesConEstado.map((cliente) => (
+          {clientesFiltrados.length > 0 ? (
+            clientesFiltrados.map((cliente) => (
               <tr
                 key={cliente.id_usuario}
                 className={
@@ -134,25 +83,11 @@ export const RevisionArchivos = ({}) => {
                   <button
                     className="btn-ver-documento"
                     onClick={() => {
-                      const seguroData = mockUsuarioSeguro.find(
-                        (u) => u.id_usuario_per === cliente.id_usuario
-                      );
-
-                      const clienteConDatosCompletos = {
-                        ...cliente,
-
-                        id_usuario_seguro: seguroData?.id_usuario_seguro || null,
-                        id_seguro_per: seguroData?.id_seguro_per || null,
-                        fecha_contrato: seguroData?.fecha_contrato || null,
-                        fecha_fin: seguroData?.fecha_fin || null,
-                        estado_pago: seguroData?.estado_pago || null,
-                      };
-
-                      setDocumentoClienteSeleccionado(clienteConDatosCompletos);
+                      setDocumentoClienteSeleccionado(cliente);
+                      setModalVerDocumentoAbierto(true);
                       setNombreClienteSeleccionado(
                         `${cliente.nombre} ${cliente.apellido}`
                       );
-                      setModalVerDocumentoAbierto(true);
                     }}
                   >
                     Ver Documento
@@ -175,8 +110,16 @@ export const RevisionArchivos = ({}) => {
         isOpen={modalVerDocumentoAbierto}
         onClose={() => setModalVerDocumentoAbierto(false)}
         cliente={documentoClienteSeleccionado}
-        setCliente={setDocumentoClienteSeleccionado}
-        setEstadosSeguros={setEstadosSeguros} // ✅ Pasamos el setter al modal
+        setCliente={(clienteActualizado) => {
+          setDocumentoClienteSeleccionado(clienteActualizado);
+          setClientes((prevClientes) =>
+            prevClientes.map((c) =>
+              c.id_usuario === clienteActualizado.id_usuario
+                ? clienteActualizado
+                : c
+            )
+          );
+        }}
       />
     </div>
   );

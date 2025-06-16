@@ -43,11 +43,18 @@ export const ContratarSeguro = () => {
       <div className="contratarseguro" style={{ textAlign: "center" }}>
       <div className="instrucciones-container">
       <h3 className="instrucciones-text">
-      Para poder contratar el seguro descargue el formulario, llénelo y súbalo en el seguro que desea contratar:
+      Para poder contratar el seguro descargue el formulario, llénelo y súbalo en el seguro que desea contratar. 
+      Después descargue el contrato y subalo en "Subida de archivos"
       </h3>
     <div className="main-download-container">
       <a href="/Formulario/Formulario.pdf" download className="main-download-button">
         Descargar Formulario
+      </a>
+    </div>
+    <br />
+    <div className="main-download-container">
+      <a href="/Formulario/Formulario.pdf" download className="main-download-button">
+        Descargar Contrato
       </a>
     </div>
   </div>

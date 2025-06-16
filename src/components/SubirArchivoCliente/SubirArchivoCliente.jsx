@@ -70,8 +70,7 @@ export const SubirArchivoCliente = () => {
       });
 
       setRequisitos(data.map(item => ({
-        id: item.id_seguro_requisito,
-        id_seguro_requisito: item.id_seguro_requisito,
+        id: item.id_requisito, 
         nombre: item.nombre_requisito || 'Sin nombre',
         detalle: item.detalle || 'Sin detalle',
         estado: item.estado || 0
@@ -223,7 +222,7 @@ export const SubirArchivoCliente = () => {
         open={modalAbierto}
         onClose={() => cerrarModal(false)}
         requisito={requisitoActual}
-        idUsuarioSeguro={seguroInfo?.id_usuario_seguro} 
+        idUsuarioSeguro={seguroInfo?.id_usuario_seguro}
         nombreSeguro={seguroInfo?.nombre}
         userData={usuario}
         onUploadSuccess={handleUploadSuccess}

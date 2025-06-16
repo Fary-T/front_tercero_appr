@@ -50,8 +50,8 @@ export const ModalSubirArchivoCliente = ({
 			return;
 		}
 		console.log("ID del usuario seguro:", idUsuarioSeguro);
-		console.log("Requisito actual:", requisito?.id_seguro_requisito);
-		if (!requisito?.id_seguro_requisito || !idUsuarioSeguro) {
+		console.log("ID del requisito:", requisito?.id);
+		if (!requisito?.id || !idUsuarioSeguro) {
 			setError('Información del requisito o seguro incompleta');
 			return;
 		}
@@ -63,10 +63,8 @@ export const ModalSubirArchivoCliente = ({
 			const formData = new FormData();
 			formData.append('archivo', selectedFile);
 			formData.append('id_usuario_seguro_per', idUsuarioSeguro);
-			console.log("Cédula del usuario:", userData.cedula);
 			formData.append("cedula", userData.cedula);
 			formData.append('nombre_documento', requisito.nombre);
-			console.log("ID del requisito:", requisito.id);
 			formData.append('id_requisito_per', requisito.id);
 
 			const response = await fetch('http://localhost:3030/documentos/', {
@@ -83,7 +81,7 @@ export const ModalSubirArchivoCliente = ({
 			setSuccess('Documento subido exitosamente');
 
 			if (onUploadSuccess) {
-				onUploadSuccess(requisito.id_seguro_requisito, data.nombreArchivo);
+				onUploadSuccess(requisito.id, data.nombreArchivo);
 			}
 
 			setTimeout(() => {
@@ -175,4 +173,5 @@ export const ModalSubirArchivoCliente = ({
 		</Dialog>
 	);
 };
+
 ModalSubirArchivoCliente.propTypes = {};

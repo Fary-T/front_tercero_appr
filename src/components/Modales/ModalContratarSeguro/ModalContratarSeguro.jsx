@@ -30,11 +30,12 @@ export const ModalContratarSeguro = ({ open, onClose, plan, userData }) => {
   try {
     const formData = new FormData();
     formData.append("archivo", file);
-    formData.append("id_usuario_per", userData.id_usuario_per);
+    formData.append("id_usuario_per", userData.id_usuario);
     formData.append("cedula", userData.cedula);
-    formData.append("nombre_documento", `Formulario-${plan.nombre}`); 
-    formData.append("id_seguro_per", plan.id_seguro_per);
-
+    formData.append("nombre_documento", `formulario-${plan.nombre}`); 
+    formData.append("id_seguro_per", plan.id_seguro);
+    console.log(userData);
+    console.log(formData);
     const response = await fetch("http://localhost:3030/documentos/formulario", {
       method: "POST",
       body: formData,

@@ -53,7 +53,7 @@ export const ContratarSeguro = () => {
     </div>
     <br />
     <div className="main-download-container">
-      <a href="/Formulario/Formulario.pdf" download className="main-download-button">
+      <a href="/Formulario/Contrato.pdf" download className="main-download-button">
         Descargar Contrato
       </a>
     </div>

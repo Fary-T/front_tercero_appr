@@ -23,7 +23,7 @@ export const ModalRevisionArchivosAdmin = ({
 
   // Cargar archivos al abrir el modal
   useEffect(() => {
-    if (isOpen && cliente?.id_usuario) {
+    if (isOpen && cliente?.id_usuario_seguro) {
       listarArchivosCliente();
     }
   }, [isOpen, cliente]);
@@ -37,18 +37,13 @@ export const ModalRevisionArchivosAdmin = ({
 
       const data = await response.json();
 
-      console.log("Datos recibidos:", data); // 👈 Depuración
-
-      // Aseguramos que cada archivo tenga un campo "key" (minúscula)
-      const archivosConKey = data.map((archivo) => ({
-        ...archivo,
-        key: archivo.key || archivo.Key || "archivo-sin-nombre",
-      }));
-
-      // Filtrar por cliente
-      const archivosDelCliente = archivosConKey.filter((archivo) =>
-        archivo.key.includes(`cliente-${cliente.id_usuario}`)
-      );
+      // Filtrar por cliente usando id_usuario_seguro (primera parte de la key)
+      const archivosDelCliente = data.filter((archivo) => {
+        if (!archivo.key) return false;
+        
+        const partesKey = archivo.key.split('/');
+        return partesKey[0] === cliente.id_usuario_seguro.toString();
+      });
 
       setArchivos(archivosDelCliente);
     } catch (error) {
@@ -105,7 +100,7 @@ export const ModalRevisionArchivosAdmin = ({
 
       // Actualizar lista localmente
       setArchivos((prevList) =>
-        prevList.filter((archivo) => archivo.key !== key)
+        prevList.filter((archivo) => archivo.Key !== key)
       );
 
       alert("Archivo eliminado correctamente.");
@@ -117,7 +112,7 @@ export const ModalRevisionArchivosAdmin = ({
 
   // Verifica si el archivo cumple con el requisito
   const archivoCumpleRequisito = (requisito) => {
-    return archivos.some((archivo) => archivo.key.includes(requisito));
+    return archivos.some((archivo) => archivo.Key.includes(requisito));
   };
 
   // Aceptar usuario_seguro
@@ -244,12 +239,12 @@ export const ModalRevisionArchivosAdmin = ({
             <ul>
               {archivos.map((archivo, index) => (
                 <li key={index} className="archivo-item">
-                  <span>{archivo.key}</span>
+                  <span>{archivo.Key}</span>
                   <div className="acciones">
-                    <button onClick={() => descargarArchivo(archivo.key)}>
+                    <button onClick={() => descargarArchivo(archivo.Key)}>
                       Descargar
                     </button>
-                    <button onClick={() => eliminarArchivo(archivo.key)}>
+                    <button onClick={() => eliminarArchivo(archivo.Key)}>
                       Eliminar
                     </button>
                   </div>

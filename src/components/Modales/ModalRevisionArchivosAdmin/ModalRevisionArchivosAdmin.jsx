@@ -23,26 +23,27 @@ export const ModalRevisionArchivosAdmin = ({
 
   // Cargar archivos al abrir el modal
   useEffect(() => {
-    if (isOpen && cliente?.id_usuario_seguro) {
+    if (isOpen && cliente?.id_usuario) {
       listarArchivosCliente();
     }
   }, [isOpen, cliente]);
 
   const listarArchivosCliente = async () => {
+    console.log("hola");
     try {
       setCargandoArchivos(true);
       const response = await fetch("http://localhost:3030/documentos/lista");
-
+      console.log("Respuesta de listar archivos:", response);
       if (!response.ok) throw new Error("Error al cargar los archivos");
 
       const data = await response.json();
-
+      console.log("Datos de archivos:", data);
       // Filtrar por cliente usando id_usuario_seguro (primera parte de la key)
       const archivosDelCliente = data.filter((archivo) => {
-        if (!archivo.key) return false;
-        
-        const partesKey = archivo.key.split('/');
-        return partesKey[0] === cliente.id_usuario_seguro.toString();
+        if (!archivo.nombre) return false;
+        console.log("Archivo:", archivo.nombre.split('/'));
+        const partesKey = archivo.nombre.split('/');
+        return partesKey[0] === cliente.id_usuario.toString();
       });
 
       setArchivos(archivosDelCliente);
@@ -112,7 +113,7 @@ export const ModalRevisionArchivosAdmin = ({
 
   // Verifica si el archivo cumple con el requisito
   const archivoCumpleRequisito = (requisito) => {
-    return archivos.some((archivo) => archivo.Key.includes(requisito));
+    return archivos.some((archivo) => archivo.nombre.includes(requisito));
   };
 
   // Aceptar usuario_seguro
@@ -239,7 +240,8 @@ export const ModalRevisionArchivosAdmin = ({
             <ul>
               {archivos.map((archivo, index) => (
                 <li key={index} className="archivo-item">
-                  <span>{archivo.Key}</span>
+                  <span>{archivo.nombre.split('/')[2]}</span>
+                  <span>{archivo.nombre.split('/')[3]}</span>
                   <div className="acciones">
                     <button onClick={() => descargarArchivo(archivo.Key)}>
                       Descargar

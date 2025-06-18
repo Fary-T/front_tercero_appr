@@ -12,10 +12,17 @@ import {
   Button,
   Typography,
   CircularProgress,
-  Alert
+  Alert,
+  Checkbox,
+  FormControlLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { ModalSubirArchivoCliente } from '../Modales/ModalSubirArchivoCliente/ModalSubirArchivoCliente';
 import { UserContext } from '../../context/UserContext';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 export const SubirArchivoCliente = () => {
   const [requisitos, setRequisitos] = useState([]);
@@ -24,8 +31,11 @@ export const SubirArchivoCliente = () => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [requisitoActual, setRequisitoActual] = useState(null);
   const [seguroInfo, setSeguroInfo] = useState(null);
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [mostrarAlertaCompletado, setMostrarAlertaCompletado] = useState(false);
   const { usuario } = useContext(UserContext);
 
+  const todosCompletados = requisitos.length > 0 && requisitos.every(req => req.estado === 1);
 
   const cargarRequisitosUsuario = async () => {
     try {
@@ -126,6 +136,18 @@ export const SubirArchivoCliente = () => {
     cerrarModal(false);
   };
 
+  const handleEnviarRequisitos = () => {
+    if (!aceptaTerminos) {
+      setError('Debe aceptar los términos y condiciones para continuar');
+      return;
+    }
+    setMostrarAlertaCompletado(true);
+  };
+
+  const cerrarAlertaCompletado = () => {
+    setMostrarAlertaCompletado(false);
+  };
+
   if (loading) {
     return (
       <Box p={3} display="flex" flexDirection="column" alignItems="center">
@@ -166,52 +188,84 @@ export const SubirArchivoCliente = () => {
       )}
 
       {requisitos.length > 0 ? (
-        <TableContainer component={Paper} elevation={3} sx={{ mt: 3 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Requisito</TableCell>
-                <TableCell>Detalle</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {requisitos.map((requisito) => (
-                <TableRow
-                  key={requisito.id}
-                  sx={{
-                    backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
-                    '&:hover': {
-                      backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.2)'
-                    }
-                  }}
-                >
-                  <TableCell>{requisito.nombre}</TableCell>
-                  <TableCell>{requisito.detalle}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color={obtenerColorEstado(requisito.estado)}
-                      size="small"
-                    >
-                      {obtenerTextoEstado(requisito.estado)}
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      onClick={() => manejarClickArchivos(requisito)}
-                      disabled={requisito.estado === 1}
-                    >
-                      Subir Archivo
-                    </Button>
-                  </TableCell>
+        <>
+          <TableContainer component={Paper} elevation={3} sx={{ mt: 3 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Requisito</TableCell>
+                  <TableCell>Detalle</TableCell>
+                  <TableCell>Estado</TableCell>
+                  <TableCell>Acciones</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {requisitos.map((requisito) => (
+                  <TableRow
+                    key={requisito.id}
+                    sx={{
+                      backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)',
+                      '&:hover': {
+                        backgroundColor: requisito.estado === 1 ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.2)'
+                      }
+                    }}
+                  >
+                    <TableCell>{requisito.nombre}</TableCell>
+                    <TableCell>{requisito.detalle}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color={obtenerColorEstado(requisito.estado)}
+                        size="small"
+                      >
+                        {obtenerTextoEstado(requisito.estado)}
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        onClick={() => manejarClickArchivos(requisito)}
+                        disabled={requisito.estado === 1}
+                      >
+                        Subir Archivo
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {todosCompletados && (
+            <Box sx={{ mt: 3, p: 2, border: '1px solid #ddd', borderRadius: 1 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={aceptaTerminos}
+                    onChange={(e) => setAceptaTerminos(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Typography>
+                    Acepto los términos y condiciones del seguro{' '}
+                    <CheckCircleIcon color="success" sx={{ verticalAlign: 'middle', ml: 1 }} />
+                  </Typography>
+                }
+              />
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleEnviarRequisitos}
+                  disabled={!aceptaTerminos}
+                >
+                  Enviar Requisitos Completados
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </>
       ) : (
         <Alert severity="info" sx={{ mt: 2 }}>
           No se encontraron requisitos para mostrar.
@@ -227,6 +281,23 @@ export const SubirArchivoCliente = () => {
         userData={usuario}
         onUploadSuccess={handleUploadSuccess}
       />
+
+      <Dialog open={mostrarAlertaCompletado} onClose={cerrarAlertaCompletado}>
+        <DialogTitle>¡Requisitos Completados!</DialogTitle>
+        <DialogContent>
+          <Alert severity="success" sx={{ mb: 2 }}>
+            Todos los requisitos para tu seguro han sido completados correctamente.
+          </Alert>
+          <Typography>
+            Hemos recibido toda la documentación necesaria. Nuestro equipo revisará los archivos y te notificará sobre el siguiente paso.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cerrarAlertaCompletado} color="primary" autoFocus>
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

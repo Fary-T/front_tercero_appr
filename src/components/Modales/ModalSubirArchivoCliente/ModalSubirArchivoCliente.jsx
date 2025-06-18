@@ -63,6 +63,7 @@ export const ModalSubirArchivoCliente = ({
 			const formData = new FormData();
 			formData.append('archivo', selectedFile);
 			formData.append('id_usuario_seguro_per', idUsuarioSeguro);
+			formData.append('id_usuario', userData.id_usuario);
 			formData.append("cedula", userData.cedula);
 			formData.append('nombre_documento', requisito.nombre);
 			formData.append('id_requisito_per', requisito.id);

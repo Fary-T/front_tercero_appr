@@ -30,14 +30,23 @@ export const PagoSeguroCliente = () => {
   const [pagosEsperados, setPagosEsperados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [idSeguro, setIdSeguro] = useState(null); // 👈 para el ID del seguro
+  const [idSeguro, setIdSeguro] = useState(null);
 
   const [modalPagoAbierto, setModalPagoAbierto] = useState(false);
   const [modalReembolsoAbierto, setModalReembolsoAbierto] = useState(false);
 
   const abrirModalPago = () => setModalPagoAbierto(true);
   const cerrarModalPago = () => setModalPagoAbierto(false);
-  const abrirModalReembolso = () => setModalReembolsoAbierto(true);
+
+  const abrirModalReembolso = () => {
+    if (!idSeguro || idSeguro === "undefined") {
+      alert("El ID del seguro aún no se ha cargado. Intente nuevamente en unos segundos.");
+      return;
+    }
+    console.log("Abriendo modal con ID seguro:", idSeguro);
+    setModalReembolsoAbierto(true);
+  };
+
   const cerrarModalReembolso = () => setModalReembolsoAbierto(false);
 
   const calcularPagosEsperados = (inicio, fin, tiempoPago, precio) => {
@@ -69,13 +78,14 @@ export const PagoSeguroCliente = () => {
       if (data.length === 0) throw new Error('No se encontraron pagos para el usuario');
 
       const { fecha_contrato, fecha_fin, tiempo_pago, precio, id_usuario_seguro } = data[0];
+      console.log("ID del seguro cargado desde backend:", id_usuario_seguro); // <-- para depurar
 
       const pagosConcretados = data.filter(p => p.fecha_pago);
       const esperados = calcularPagosEsperados(fecha_contrato, fecha_fin, tiempo_pago, precio);
 
       setPagosEsperados(esperados);
       setPagosRealizados(pagosConcretados);
-      setIdSeguro(id_usuario_seguro); // 👈 almacenar el id del seguro
+      setIdSeguro(id_usuario_seguro);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -90,11 +100,14 @@ export const PagoSeguroCliente = () => {
     }
   }, [usuario]);
 
-  const buscarPago = (fecha) => pagosRealizados.find(p => dayjs(p.fecha_pago).isSame(fecha, 'day'));
+  const buscarPago = (fecha) =>
+    pagosRealizados.find(p => dayjs(p.fecha_pago).isSame(fecha, 'day'));
+
   const esFechaActualOPasada = (fecha) => {
     const hoy = dayjs();
     return dayjs(fecha).isSame(hoy, 'day') || dayjs(fecha).isBefore(hoy, 'day');
   };
+
   const getColorFila = (fecha, pagado) => {
     if (pagado) return 'rgba(0, 255, 0, 0.1)';
     if (esFechaActualOPasada(fecha)) return 'rgba(0, 255, 0, 0.1)';
@@ -129,9 +142,11 @@ export const PagoSeguroCliente = () => {
           Registrar Pago
         </Button>
 
-        <Button variant="outlined" color="secondary" onClick={abrirModalReembolso}>
-          Solicitar Reembolso
-        </Button>
+        {idSeguro && (
+          <Button variant="outlined" color="secondary" onClick={abrirModalReembolso}>
+            Solicitar Reembolso
+          </Button>
+        )}
       </Box>
 
       <ModalPagoClientes

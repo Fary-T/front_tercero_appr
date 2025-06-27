@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ModalReembolsos.css';
 import PropTypes from 'prop-types';
 
@@ -14,6 +14,17 @@ export const ModalReembolsos = ({
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Validación de props al abrir
+  useEffect(() => {
+    if (open && (!id_usuario_per || !id_usuario_seguro_per)) {
+      console.warn("Faltan props requeridos:", {
+        id_usuario_per,
+        id_usuario_seguro_per
+      });
+      setError("Faltan datos del usuario o del seguro.");
+    }
+  }, [open, id_usuario_per, id_usuario_seguro_per]);
+
   const handleAgregarArchivo = (e) => {
     const nuevosArchivos = Array.from(e.target.files);
     setArchivos((prev) => [...prev, ...nuevosArchivos]);
@@ -25,8 +36,14 @@ export const ModalReembolsos = ({
   };
 
   const handleSubmit = async () => {
+    // Validaciones
+    if (!id_usuario_per || !id_usuario_seguro_per) {
+      setError("Faltan datos del usuario o del seguro.");
+      return;
+    }
+
     if (archivos.length === 0) {
-      setError('Debe adjuntar al menos un archivo.');
+      setError("Debe adjuntar al menos un archivo.");
       return;
     }
 
@@ -35,7 +52,7 @@ export const ModalReembolsos = ({
 
     const formData = new FormData();
     archivos.forEach((archivo) => {
-      formData.append('archivos', archivo);
+      formData.append('archivos', archivo); // como usas multer.any(), está bien así
     });
     formData.append('id_usuario_per', id_usuario_per);
     formData.append('id_usuario_seguro_per', id_usuario_seguro_per);
@@ -133,4 +150,10 @@ export const ModalReembolsos = ({
   );
 };
 
-ModalReembolsos.propTypes = {};
+ModalReembolsos.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onReembolsoExitoso: PropTypes.func.isRequired,
+  id_usuario_per: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  id_usuario_seguro_per: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};

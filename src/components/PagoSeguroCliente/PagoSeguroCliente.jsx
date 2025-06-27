@@ -1,14 +1,26 @@
 'use client';
 import React, { useEffect, useState, useContext } from 'react';
 import {
-  Box, Table, TableHead, TableRow, TableCell,
-  TableBody, Paper, TableContainer, Typography,
-  CircularProgress, Alert, Button
+  Box,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  TableContainer,
+  Typography,
+  CircularProgress,
+  Alert,
+  Button
 } from '@mui/material';
 import { UserContext } from '../../context/UserContext';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
+
+// Modales
 import { ModalPagoClientes } from '../Modales/ModalPagoClientes/ModalPagoClientes';
+import { ModalReembolsos } from '../Modales/ModalReembolsos/ModalReembolsos'; // 👈 Nuevo import
 
 dayjs.extend(isBetween);
 
@@ -19,15 +31,21 @@ export const PagoSeguroCliente = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const abrirModal = () => setModalAbierto(true);
-  const cerrarModal = () => setModalAbierto(false);
+  // Estados para los modales
+  const [modalPagoAbierto, setModalPagoAbierto] = useState(false);
+  const [modalReembolsoAbierto, setModalReembolsoAbierto] = useState(false); // 👈 Nuevo estado
+
+  const abrirModalPago = () => setModalPagoAbierto(true);
+  const cerrarModalPago = () => setModalPagoAbierto(false);
+
+  const abrirModalReembolso = () => setModalReembolsoAbierto(true); // 👈 Nuevo método
+  const cerrarModalReembolso = () => setModalReembolsoAbierto(false); // 👈 Nuevo método
 
   const calcularPagosEsperados = (inicio, fin, tiempoPago, precio) => {
     const lista = [];
     let actual = dayjs(inicio);
     const fechaFin = dayjs(fin);
-    const intervalo = parseInt(tiempoPago); // número de meses entre pagos
+    const intervalo = parseInt(tiempoPago);
 
     while (actual.isBefore(fechaFin) || actual.isSame(fechaFin, 'day')) {
       lista.push({
@@ -82,9 +100,9 @@ export const PagoSeguroCliente = () => {
   };
 
   const getColorFila = (fecha, pagado) => {
-    if (pagado) return 'rgba(0, 255, 0, 0.1)'; // Verde si pagado
-    if (esFechaActualOPasada(fecha)) return 'rgba(0, 255, 0, 0.1)'; // Verde si ya llegó la fecha
-    return 'rgba(255, 0, 0, 0.1)'; // Rojo si aún no llega la fecha
+    if (pagado) return 'rgba(0, 255, 0, 0.1)';
+    if (esFechaActualOPasada(fecha)) return 'rgba(0, 255, 0, 0.1)';
+    return 'rgba(255, 0, 0, 0.1)';
   };
 
   if (loading) {
@@ -110,22 +128,43 @@ export const PagoSeguroCliente = () => {
         Pagos del Seguro de Vida y Salud
       </Typography>
 
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{ mb: 2 }}
-        onClick={abrirModal}
-      >
-        Registrar Pago
-      </Button>
+      {/* Botones para abrir cada modal */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={abrirModalPago}
+        >
+          Registrar Pago
+        </Button>
 
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={abrirModalReembolso}
+        >
+          Solicitar Reembolso
+        </Button>
+      </Box>
+
+      {/* Instancia de los modales */}
       <ModalPagoClientes
-        open={modalAbierto}
-        onClose={cerrarModal}
+        open={modalPagoAbierto}
+        onClose={cerrarModalPago}
         onPagoExitoso={cargarPagos}
         id_usuario={usuario.id_usuario}
         pagosEsperados={pagosEsperados}
         pagosRealizados={pagosRealizados}
+      />
+
+      <ModalReembolsos
+        open={modalReembolsoAbierto}
+        onClose={cerrarModalReembolso}
+        onReembolsoExitoso={(data) => {
+          console.log('Reembolso solicitado:', data);
+          alert('Solicitud de reembolso enviada');
+          cerrarModalReembolso();
+        }}
       />
 
       <TableContainer component={Paper}>

@@ -20,6 +20,7 @@ const menuItems = [
   { text: 'Información Cliente', icon: <PeopleIcon /> },
   { text: 'Contratar Seguro', icon: <AddShoppingCartIcon/>},
   { text: 'Subida de archivos', icon: <UploadFileIcon/> },
+  { text: 'Pagos Seguro', icon: <AddShoppingCartIcon /> },
   { text: 'Cerrar Sesión', icon: <LogoutIcon /> },
 ];
 

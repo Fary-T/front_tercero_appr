@@ -31,7 +31,7 @@ export const Sidebar = ({
     { texto: "Polizas", icono: <AssignmentIcon /> },
     { texto: "Usuarios", icono: <PeopleIcon /> },
     { texto: "Revisión Archivos", icono: <DescriptionIcon /> },
-    { texto: "Reportes", icono: <BarChartIcon /> },
+    { texto: "Revisión Pagos", icono: <BarChartIcon /> },
     { texto: "Cerrar Sesión", icono: <ExitToAppIcon /> },
   ];
 
@@ -108,3 +108,5 @@ export const Sidebar = ({
     </Drawer>
   );
 };
+
+Sidebar.propTypes = {};

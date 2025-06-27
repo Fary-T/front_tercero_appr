@@ -25,7 +25,8 @@ const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon /> },
   { text: 'Polizas', icon: <DescriptionIcon /> },
   { text: 'Clientes', icon: <PeopleIcon /> },
-  { text: 'Reportes', icon: <AssessmentIcon /> },
+  { text: 'Revisión Archivos', icon: <AdminPanelSettingsIcon /> },
+  { text: 'Revisión Pagos', icon: <AssessmentIcon /> },
   { text: 'Cerrar Sesión', icon: <LogoutIcon /> },
 ];
 

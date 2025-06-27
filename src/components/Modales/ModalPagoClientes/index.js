@@ -1,0 +1,1 @@
+export { ModalPagoClientes } from './ModalPagoClientes';

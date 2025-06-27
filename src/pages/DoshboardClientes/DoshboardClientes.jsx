@@ -21,6 +21,7 @@ import { SidebarCliente } from "../../components/Sidebar/SidebarCliente";
 import { ClientesContentClientes } from "../../components/Doshboard/ClientesContentClientes";
 import { SubirArchivoCliente } from "../../components/SubirArchivoCliente";
 import { ContratarSeguro } from "../../components/Doshboard/ContratarSeguro";
+import { PagoSeguroCliente } from "../../components/PagoSeguroCliente";
 
 export const DoshboardClientes = () => {
   const [seccionActiva, setSeccionActiva] = useState("Dashboard");
@@ -72,6 +73,8 @@ export const DoshboardClientes = () => {
         return <ContratarSeguro />;
       case "Subida de archivos":
         return <SubirArchivoCliente />;
+      case "Pagos Seguro":
+        return <PagoSeguroCliente />;
       default:
         return <Typography variant="h6">Selecciona una opción</Typography>;
     }

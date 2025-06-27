@@ -20,7 +20,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 
 // Modales
 import { ModalPagoClientes } from '../Modales/ModalPagoClientes/ModalPagoClientes';
-import { ModalReembolsos } from '../Modales/ModalReembolsos/ModalReembolsos'; // 👈 Nuevo import
+import { ModalReembolsos } from '../Modales/ModalReembolsos/ModalReembolsos';
 
 dayjs.extend(isBetween);
 
@@ -30,16 +30,15 @@ export const PagoSeguroCliente = () => {
   const [pagosEsperados, setPagosEsperados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [idSeguro, setIdSeguro] = useState(null); // 👈 para el ID del seguro
 
-  // Estados para los modales
   const [modalPagoAbierto, setModalPagoAbierto] = useState(false);
-  const [modalReembolsoAbierto, setModalReembolsoAbierto] = useState(false); // 👈 Nuevo estado
+  const [modalReembolsoAbierto, setModalReembolsoAbierto] = useState(false);
 
   const abrirModalPago = () => setModalPagoAbierto(true);
   const cerrarModalPago = () => setModalPagoAbierto(false);
-
-  const abrirModalReembolso = () => setModalReembolsoAbierto(true); // 👈 Nuevo método
-  const cerrarModalReembolso = () => setModalReembolsoAbierto(false); // 👈 Nuevo método
+  const abrirModalReembolso = () => setModalReembolsoAbierto(true);
+  const cerrarModalReembolso = () => setModalReembolsoAbierto(false);
 
   const calcularPagosEsperados = (inicio, fin, tiempoPago, precio) => {
     const lista = [];
@@ -69,13 +68,14 @@ export const PagoSeguroCliente = () => {
       const data = await response.json();
       if (data.length === 0) throw new Error('No se encontraron pagos para el usuario');
 
-      const { fecha_contrato, fecha_fin, tiempo_pago, precio } = data[0];
-      const pagosConcretados = data.filter(p => p.fecha_pago);
+      const { fecha_contrato, fecha_fin, tiempo_pago, precio, id_usuario_seguro } = data[0];
 
+      const pagosConcretados = data.filter(p => p.fecha_pago);
       const esperados = calcularPagosEsperados(fecha_contrato, fecha_fin, tiempo_pago, precio);
 
       setPagosEsperados(esperados);
       setPagosRealizados(pagosConcretados);
+      setIdSeguro(id_usuario_seguro); // 👈 almacenar el id del seguro
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -90,15 +90,11 @@ export const PagoSeguroCliente = () => {
     }
   }, [usuario]);
 
-  const buscarPago = (fecha) => {
-    return pagosRealizados.find(p => dayjs(p.fecha_pago).isSame(fecha, 'day'));
-  };
-
+  const buscarPago = (fecha) => pagosRealizados.find(p => dayjs(p.fecha_pago).isSame(fecha, 'day'));
   const esFechaActualOPasada = (fecha) => {
     const hoy = dayjs();
     return dayjs(fecha).isSame(hoy, 'day') || dayjs(fecha).isBefore(hoy, 'day');
   };
-
   const getColorFila = (fecha, pagado) => {
     if (pagado) return 'rgba(0, 255, 0, 0.1)';
     if (esFechaActualOPasada(fecha)) return 'rgba(0, 255, 0, 0.1)';
@@ -128,26 +124,16 @@ export const PagoSeguroCliente = () => {
         Pagos del Seguro de Vida y Salud
       </Typography>
 
-      {/* Botones para abrir cada modal */}
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={abrirModalPago}
-        >
+        <Button variant="contained" color="primary" onClick={abrirModalPago}>
           Registrar Pago
         </Button>
 
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={abrirModalReembolso}
-        >
+        <Button variant="outlined" color="secondary" onClick={abrirModalReembolso}>
           Solicitar Reembolso
         </Button>
       </Box>
 
-      {/* Instancia de los modales */}
       <ModalPagoClientes
         open={modalPagoAbierto}
         onClose={cerrarModalPago}
@@ -160,11 +146,9 @@ export const PagoSeguroCliente = () => {
       <ModalReembolsos
         open={modalReembolsoAbierto}
         onClose={cerrarModalReembolso}
-        onReembolsoExitoso={(data) => {
-          console.log('Reembolso solicitado:', data);
-          alert('Solicitud de reembolso enviada');
-          cerrarModalReembolso();
-        }}
+        onReembolsoExitoso={cargarPagos}
+        id_usuario_per={usuario.id_usuario}
+        id_usuario_seguro_per={idSeguro}
       />
 
       <TableContainer component={Paper}>

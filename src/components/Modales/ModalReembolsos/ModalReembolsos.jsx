@@ -3,9 +3,16 @@ import React, { useState } from 'react';
 import './ModalReembolsos.css';
 import PropTypes from 'prop-types';
 
-export const ModalReembolsos = ({ open, onClose, onReembolsoExitoso }) => {
+export const ModalReembolsos = ({
+  open,
+  onClose,
+  onReembolsoExitoso,
+  id_usuario_per,
+  id_usuario_seguro_per
+}) => {
   const [archivos, setArchivos] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleAgregarArchivo = (e) => {
     const nuevosArchivos = Array.from(e.target.files);
@@ -17,19 +24,48 @@ export const ModalReembolsos = ({ open, onClose, onReembolsoExitoso }) => {
     setArchivos(nuevosArchivos);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (archivos.length === 0) {
       setError('Debe adjuntar al menos un archivo.');
       return;
     }
 
-    onReembolsoExitoso({ archivos });
-    handleClose();
+    setError(null);
+    setLoading(true);
+
+    const formData = new FormData();
+    archivos.forEach((archivo) => {
+      formData.append('archivos', archivo);
+    });
+    formData.append('id_usuario_per', id_usuario_per);
+    formData.append('id_usuario_seguro_per', id_usuario_seguro_per);
+
+    try {
+      const response = await fetch('http://localhost:3030/documentos/reembolsos', {
+        method: 'POST',
+        body: formData
+      });
+
+      const resultado = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resultado.error || 'Error al enviar los archivos');
+      }
+
+      onReembolsoExitoso(); // Recargar datos en el componente padre
+      handleClose();
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClose = () => {
     setArchivos([]);
     setError(null);
+    setLoading(false);
     onClose();
   };
 
@@ -84,11 +120,11 @@ export const ModalReembolsos = ({ open, onClose, onReembolsoExitoso }) => {
           {error && <div className="alert-error">{error}</div>}
 
           <div className="modal-actions">
-            <button onClick={handleClose} className="btn-cancel">
+            <button onClick={handleClose} className="btn-cancel" disabled={loading}>
               Cancelar
             </button>
-            <button onClick={handleSubmit} className="btn-submit">
-              Enviar Solicitud
+            <button onClick={handleSubmit} className="btn-submit" disabled={loading}>
+              {loading ? 'Enviando...' : 'Enviar Solicitud'}
             </button>
           </div>
         </div>
@@ -97,8 +133,4 @@ export const ModalReembolsos = ({ open, onClose, onReembolsoExitoso }) => {
   );
 };
 
-ModalReembolsos.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onReembolsoExitoso: PropTypes.func.isRequired,
-};
+ModalReembolsos.propTypes = {};

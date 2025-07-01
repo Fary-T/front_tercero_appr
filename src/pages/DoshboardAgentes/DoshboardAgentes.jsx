@@ -24,6 +24,7 @@ import { PolizasContent } from '../../components/Doshboard/PolizasContent';
 import { ClientesContentAgentes } from '../../components/Doshboard/ClientesContentAgentes'; 
 import { RevicionPagos } from '../../components/RevicionPagos';
 import { RevisionArchivos } from '../../components/Doshboard/RevisionArchivosAdmi';
+import { ReembolsoAdmin } from '../../components/ReembolsoAdmin/ReembolsoAdmin';
 
 // Hook personalizado para evitar navegación hacia atrás
 const usePreventBackNavigation = () => {
@@ -83,6 +84,8 @@ export const DoshboardAgentes = () => {
         return <RevicionPagos />;
       case "Revisión Archivos":
         return <RevisionArchivos />;
+      case "Reembolsos":
+        return <ReembolsoAdmin />;
       default:
         return <Typography variant="h6">Selecciona una opción</Typography>;
     }

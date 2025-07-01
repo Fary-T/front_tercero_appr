@@ -31,6 +31,7 @@ export const PagoSeguroCliente = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [idSeguro, setIdSeguro] = useState(null);
+  const [precio, setPrecio] = useState(null);
 
   const [modalPagoAbierto, setModalPagoAbierto] = useState(false);
   const [modalReembolsoAbierto, setModalReembolsoAbierto] = useState(false);
@@ -79,6 +80,7 @@ export const PagoSeguroCliente = () => {
 
       const { fecha_contrato, fecha_fin, tiempo_pago, precio, id_usuario_seguro } = data[0];
       console.log("ID del seguro cargado desde backend:", id_usuario_seguro); // <-- para depurar
+      console.log("Precio cargado desde backend:", precio);
 
       const pagosConcretados = data.filter(p => p.fecha_pago);
       const esperados = calcularPagosEsperados(fecha_contrato, fecha_fin, tiempo_pago, precio);
@@ -86,6 +88,7 @@ export const PagoSeguroCliente = () => {
       setPagosEsperados(esperados);
       setPagosRealizados(pagosConcretados);
       setIdSeguro(id_usuario_seguro);
+      setPrecio(precio);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -156,6 +159,8 @@ export const PagoSeguroCliente = () => {
         id_usuario={usuario.id_usuario}
         pagosEsperados={pagosEsperados}
         pagosRealizados={pagosRealizados}
+        id_usuario_seguro_per={idSeguro}
+        cantidad={precio}
       />
 
       <ModalReembolsos

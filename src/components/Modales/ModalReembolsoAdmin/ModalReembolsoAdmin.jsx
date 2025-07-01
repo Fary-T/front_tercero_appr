@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import "./ModalRevisionArchivosAdmin.css";
+import React, { useState, useEffect } from "react";
+import "./ModalReembolsoAdmin.css";
+import PropTypes from "prop-types";
 
-export const ModalRevisionArchivosAdmin = ({
+export const ModalReembolsoAdmin = ({
   isOpen,
   onClose,
   cliente,
@@ -12,7 +13,6 @@ export const ModalRevisionArchivosAdmin = ({
   const [archivos, setArchivos] = useState([]);
   const [cargandoArchivos, setCargandoArchivos] = useState(true);
 
-  // Cargar archivos al abrir el modal
   useEffect(() => {
     if (isOpen && cliente?.id_usuario) {
       listarArchivosCliente();
@@ -27,17 +27,15 @@ export const ModalRevisionArchivosAdmin = ({
 
       const data = await response.json();
 
-      // Filtrar por cliente y descartar archivos de tipo reembolso
+      // Filtrar solo archivos de reembolso del cliente
       const archivosDelCliente = data.filter((archivo) => {
         if (!archivo.nombre) return false;
         const partesKey = archivo.nombre.split("/");
-
-        // Excluir archivos con "reembolso" en el nombre
         const contieneReembolso = archivo.nombre.toLowerCase().includes("reembolso");
 
         return (
           partesKey[0] === cliente.id_usuario.toString() &&
-          !contieneReembolso
+          contieneReembolso
         );
       });
 
@@ -94,82 +92,10 @@ export const ModalRevisionArchivosAdmin = ({
     }
   };
 
-  const aceptarUsuario = async () => {
-    if (!cliente.id_usuario_seguro) {
-      alert("No se encontró un ID de seguro válido.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `http://localhost:3030/usuario_seguro/modificar/${cliente.id_usuario_seguro}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ estado: 1 }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Error al guardar el estado");
-
-      const data = await response.json();
-      setCliente((prev) => ({ ...prev, estado: 1 }));
-
-      if (setEstadosSeguros && typeof setEstadosSeguros === "function") {
-        setEstadosSeguros((prevList) => {
-          if (!Array.isArray(prevList)) return [];
-          return prevList.map((seguro) =>
-            seguro.id_usuario === cliente.id_usuario
-              ? { ...seguro, estado: 1 }
-              : seguro
-          );
-        });
-      }
-
-      alert("Usuario aceptado correctamente.");
-    } catch (error) {
-      console.error("Error al aceptar usuario:", error);
-      alert("No se pudo aceptar el usuario. Inténtalo de nuevo.");
-    }
-  };
-
-  const negarUsuario = async () => {
-    if (!cliente.id_usuario_seguro) {
-      alert("No se encontró un ID de seguro válido.");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `http://localhost:3030/usuario_seguro/modificar/${cliente.id_usuario_seguro}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ estado: 0 }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Error al guardar el estado");
-
-      const data = await response.json();
-      setCliente((prev) => ({ ...prev, estado: 0 }));
-
-      if (setEstadosSeguros && typeof setEstadosSeguros === "function") {
-        setEstadosSeguros((prevList) => {
-          if (!Array.isArray(prevList)) return [];
-          return prevList.map((seguro) =>
-            seguro.id_usuario === cliente.id_usuario
-              ? { ...seguro, estado: 0 }
-              : seguro
-          );
-        });
-      }
-
-      alert("Usuario negado correctamente.");
-    } catch (error) {
-      console.error("Error al negar usuario:", error);
-      alert("No se pudo negar el usuario. Inténtalo de nuevo.");
-    }
+  const handleAceptarReembolso = () => {
+    // Aquí puedes agregar la lógica para aceptar el reembolso
+    alert("Reembolso aceptado correctamente");
+    onClose();
   };
 
   if (!isOpen || !cliente) return null;
@@ -177,13 +103,11 @@ export const ModalRevisionArchivosAdmin = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h3>
-          Requisitos de {cliente.nombre} {cliente.apellido}
-        </h3>
+        <h3>Reembolsos de {cliente.nombre} {cliente.apellido}</h3>
 
         {/* Archivos subidos */}
         <div className="archivos-subidos">
-          <strong>Archivos subidos:</strong>
+          <strong>Comprobantes de reembolso:</strong>
           {cargandoArchivos ? (
             <p>Cargando archivos...</p>
           ) : archivos.length > 0 ? (
@@ -200,25 +124,23 @@ export const ModalRevisionArchivosAdmin = ({
               ))}
             </ul>
           ) : (
-            <p>No ha subido ningún archivo (excluyendo reembolsos).</p>
+            <p>No ha subido comprobantes de reembolso.</p>
           )}
         </div>
 
-        {/* Botones de acción */}
         <div className="modal-footer">
-          <button className="btn-negar" onClick={negarUsuario}>
-            Negar
+          <button className="btn-aceptar" onClick={handleAceptarReembolso}>
+            Aceptar Reembolso
           </button>
-          <button className="btn-aceptar" onClick={aceptarUsuario}>
-            Aceptar
+          <button className="btn-eliminar" onClick={onClose}>
+            Eliminar Reembolso
           </button>
         </div>
 
-        {/* Botón cerrar */}
-        <button className="btn-cerrar" onClick={onClose}>
-          Cerrar
-        </button>
+        <button className="btn-cerrar" onClick={onClose}>Cerrar</button>
       </div>
     </div>
   );
 };
+
+ModalReembolsoAdmin.propTypes = {};

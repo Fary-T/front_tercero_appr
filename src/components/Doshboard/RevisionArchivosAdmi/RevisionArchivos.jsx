@@ -4,6 +4,7 @@ import "./RevisionArchivos.css";
 import PropTypes from "prop-types";
 import { ModalRevisionArchivosAdmin } from "../../Modales/ModalRevisionArchivosAdmin";
 
+
 export const RevisionArchivos = ({}) => {
   const [clientes, setClientes] = useState([]);
   const [modalVerDocumentoAbierto, setModalVerDocumentoAbierto] =

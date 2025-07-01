@@ -32,6 +32,7 @@ export const Sidebar = ({
     { texto: "Usuarios", icono: <PeopleIcon /> },
     { texto: "Revisión Archivos", icono: <DescriptionIcon /> },
     { texto: "Revisión Pagos", icono: <BarChartIcon /> },
+    { texto: "Reembolsos", icono: <DescriptionIcon /> }, // Reembolsos
     { texto: "Cerrar Sesión", icono: <ExitToAppIcon /> },
   ];
 

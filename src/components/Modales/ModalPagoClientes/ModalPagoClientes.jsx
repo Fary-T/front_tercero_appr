@@ -21,7 +21,9 @@ export const ModalPagoClientes = ({
   onPagoExitoso,
   id_usuario,
   pagosEsperados,
-  pagosRealizados
+  pagosRealizados,
+  id_usuario_seguro_per,
+  cantidad
 }) => {
   const [fechaPago, setFechaPago] = useState(dayjs().format('YYYY-MM-DD'));
   const [error, setError] = useState(null);
@@ -37,6 +39,7 @@ export const ModalPagoClientes = ({
 
   useEffect(() => {
     if (open) resetModal();
+    console.log('precio:', cantidad);
   }, [open]);
 
   const yaFuePagado = (fecha) => {
@@ -91,10 +94,10 @@ export const ModalPagoClientes = ({
       // Preparar FormData
       const formData = new FormData();
       formData.append("archivo", file);
-      formData.append("id_usuario", String(id_usuario));
+      formData.append("id_usuario", id_usuario);
       formData.append("fecha_pago", fechaPago);
-      formData.append("id_usuario_seguro_per", String(esperado.id_usuario_seguro_per));
-      formData.append("precio", String(esperado.precio));
+      formData.append("id_usuario_seguro_per", id_usuario_seguro_per);
+      formData.append("precio", cantidad);
 
       // Debug: Mostrar datos que se enviarán
       console.log('Datos enviados:');

@@ -30,7 +30,7 @@ export const RevicionPagos = () => {
   const cargarDatos = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://r4jdf9tl-3030.use.devtunnels.ms/pagos');
+      const response = await fetch('http://localhost:3030/pagos');
 
       if (!response.ok) {
         throw new Error('Error al obtener los datos');

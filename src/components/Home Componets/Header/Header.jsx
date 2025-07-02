@@ -79,7 +79,7 @@ export const Header = () => {
     }
 
     try {
-      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/home", {
+      const response = await fetch("http://localhost:3030/home", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -105,11 +105,11 @@ export const Header = () => {
         console.log("Login exitoso:", data);
 
         // Redireccionar según la respuesta del backend
-        if (data.usuario.tipo === 0) {
+        if (data.usuario.tipo == 0) {
           navigate('/doshboard', { replace: true });
-        } else if (data.usuario.tipo === 1) {
+        } else if (data.usuario.tipo == 1) {
           navigate('/doshboardAgentes', { replace: true });
-        } else if (data.usuario.tipo === 2) {
+        } else if (data.usuario.tipo == 2) {
           navigate('/doshboardClientes', { replace: true });
         } else {
           navigate('/home', { replace: true });

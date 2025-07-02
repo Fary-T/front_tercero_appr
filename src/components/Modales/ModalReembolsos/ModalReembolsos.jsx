@@ -58,7 +58,7 @@ export const ModalReembolsos = ({
     formData.append('id_usuario_seguro_per', id_usuario_seguro_per);
 
     try {
-      const response = await fetch('https://r4jdf9tl-3030.use.devtunnels.ms/documentos/reembolsos', {
+      const response = await fetch('http://localhost:3030/documentos/reembolsos', {
         method: 'POST',
         body: formData
       });

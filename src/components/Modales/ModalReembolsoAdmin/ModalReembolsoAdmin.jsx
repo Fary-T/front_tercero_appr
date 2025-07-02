@@ -22,7 +22,7 @@ export const ModalReembolsoAdmin = ({
   const listarArchivosCliente = async () => {
     try {
       setCargandoArchivos(true);
-      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/documentos/lista");
+      const response = await fetch("http://localhost:3030/documentos/lista");
       if (!response.ok) throw new Error("Error al cargar los archivos");
 
       const data = await response.json();
@@ -45,50 +45,6 @@ export const ModalReembolsoAdmin = ({
       alert("No se pudieron cargar los archivos. Revisa la consola.");
     } finally {
       setCargandoArchivos(false);
-    }
-  };
-
-  const descargarArchivo = async (key) => {
-    try {
-      const nombreArchivo = key.split("/").pop();
-      const url = `https://r4jdf9tl-3030.use.devtunnels.ms/documentos/descargar?key=${encodeURIComponent(
-        key
-      )}`;
-      const response = await fetch(url);
-
-      if (!response.ok) throw new Error("No se pudo descargar el archivo");
-
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.setAttribute("download", nombreArchivo);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Error al descargar:", error);
-      alert("No se pudo descargar el archivo. Inténtalo de nuevo.");
-    }
-  };
-
-  const eliminarArchivo = async (key) => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar este archivo?")) return;
-
-    try {
-      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/documentos/eliminar", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key }),
-      });
-
-      if (!response.ok) throw new Error("No se pudo eliminar el archivo");
-
-      setArchivos((prevList) => prevList.filter((archivo) => archivo.Key !== key));
-      alert("Archivo eliminado correctamente.");
-    } catch (error) {
-      console.error("Error al eliminar archivo:", error);
-      alert("No se pudo eliminar el archivo. Inténtalo de nuevo.");
     }
   };
 
@@ -117,8 +73,25 @@ export const ModalReembolsoAdmin = ({
                   <span>{archivo.nombre.split("/")[2]}</span>
                   <span>{archivo.nombre.split("/")[3]}</span>
                   <div className="acciones">
-                    <button onClick={() => descargarArchivo(archivo.Key)}>Descargar</button>
-                    <button onClick={() => eliminarArchivo(archivo.Key)}>Eliminar</button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const resp = await fetch(
+                            `http://localhost:3030/documentos/descargar?key=${encodeURIComponent(archivo.nombre)}`
+                          );
+                          const data = await resp.json();
+                          if (data.url) {
+                            window.open(data.url, "_blank");
+                          } else {
+                            alert("No se pudo obtener la URL de previsualización.");
+                          }
+                        } catch (err) {
+                          alert("Error al obtener la previsualización.");
+                        }
+                      }}
+                    >
+                      Ver
+                    </button>
                   </div>
                 </li>
               ))}

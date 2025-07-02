@@ -154,7 +154,7 @@ export const ModalPoliza = ({ open, onClose, onGuardar }) => {
     const { nombre, precio, tiempo_pago, descripcion, tipo } = formData;
 
     try {
-      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/seguro/agregar", {
+      const response = await fetch("http://localhost:3030/seguro/agregar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

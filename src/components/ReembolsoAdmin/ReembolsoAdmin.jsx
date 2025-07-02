@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import './ReembolsoAdmin.css';
+import PropTypes from 'prop-types';
 import { ModalReembolsoAdmin } from '../Modales/ModalReembolsoAdmin/ModalReembolsoAdmin';
 
 export const ReembolsoAdmin = () => {
 	const [clientes, setClientes] = useState([]);
 	const [modalVerDocumentoAbierto, setModalVerDocumentoAbierto] = useState(false);
 	const [documentoClienteSeleccionado, setDocumentoClienteSeleccionado] = useState(null);
-	const [ setNombreClienteSeleccionado] = useState("");
+	const [nombreClienteSeleccionado, setNombreClienteSeleccionado] = useState("");
 
 	useEffect(() => {
 		consultarClientes();
@@ -15,7 +16,7 @@ export const ReembolsoAdmin = () => {
 
 	const consultarClientes = async () => {
 		try {
-			const response = await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/usuario_revision/`);
+			const response = await fetch(`http://localhost:3030/usuario_revision/`);
 			if (!response.ok) {
 				throw new Error("Error al consultar los clientes");
 			}

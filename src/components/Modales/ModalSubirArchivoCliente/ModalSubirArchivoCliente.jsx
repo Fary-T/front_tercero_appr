@@ -1,11 +1,13 @@
 'use client';
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
 	Dialog,
 	DialogTitle,
 	DialogContent,
 	DialogActions,
 	Button,
+	TextField,
 	Alert,
 	CircularProgress,
 	Box,
@@ -66,7 +68,7 @@ export const ModalSubirArchivoCliente = ({
 			formData.append('nombre_documento', requisito.nombre);
 			formData.append('id_requisito_per', requisito.id);
 
-			const response = await fetch('https://r4jdf9tl-3030.use.devtunnels.ms/documentos/', {
+			const response = await fetch('http://localhost:3030/documentos/', {
 				method: 'POST',
 				body: formData
 			});

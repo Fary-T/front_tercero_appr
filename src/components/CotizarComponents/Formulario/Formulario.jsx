@@ -42,20 +42,26 @@ const Formulario = ({ plan = "Plan Básico Salud" }) => {
     if (formData.cedula.length !== 10) return alert('La cédula debe tener exactamente 10 dígitos.');
     if (formData.telefono.length !== 10) return alert('El teléfono debe tener exactamente 10 dígitos.');
 
+    // Prepara los datos correctamente
+    const dataToSend = {
+      ...formData,
+      tipo: Number(formData.tipo),
+      activo: Number(formData.activo),
+      password: formData.cedula // Usa la cédula como contraseña inicial
+    };
+
     try {
-      const response = await fetch('https://r4jdf9tl-3030.use.devtunnels.ms/usuario/agregar', {
+      const response = await fetch('http://localhost:3030/usuario/agregar', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
-      await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/usuario_seguro/mensaje/${formData.correo}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: formData.cedula }),
-      });
+      const result = await response.json(); // Lee el JSON solo una vez
 
-      if (!response.ok) throw new Error('Error al registrar el usuario');
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al registrar el usuario');
+      }
 
       alert('¡Usuario registrado exitosamente!');
       setFormData({

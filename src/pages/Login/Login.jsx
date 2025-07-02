@@ -6,7 +6,7 @@ import './Login.css';
 
 export const Login = ({}) => {
 	const navigate = useNavigate();
-	const {usuario} = useContext(UserContext);
+	const {usuario, setUsuario} = useContext(UserContext);
 
 	const redireccionHome =()=>{
 		navigate('/home',{replace:true})

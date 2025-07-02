@@ -1,4 +1,5 @@
-import { Grid, Box, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Grid, Box, Typography, Card, CardContent, Rating } from '@mui/material';
 import TestimonioCard from './TestimonioCard';
 
 const Testimonios = () => {

@@ -19,7 +19,7 @@ export const ModalEliminarPoliza = ({ open, onClose, poliza, onEliminar }) => {
 
   const handleEliminar = async () => {
     try {
-      const response = await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/seguro/eliminar/${poliza.id_seguro}`, {
+      const response = await fetch(`http://localhost:3030/seguro/eliminar/${poliza.id_seguro}`, {
         method: 'DELETE'
       });
 

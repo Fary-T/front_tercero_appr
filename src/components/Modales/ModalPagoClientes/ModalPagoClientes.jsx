@@ -106,7 +106,7 @@ export const ModalPagoClientes = ({
       }
 
       // Enviar petición
-      const response = await fetch('https://r4jdf9tl-3030.use.devtunnels.ms/documentos/comprobante', {
+      const response = await fetch('http://localhost:3030/documentos/comprobante', {
         method: 'POST',
         body: formData
       });

@@ -46,7 +46,7 @@ export const SubirArchivoCliente = () => {
         throw new Error('No se pudo identificar al usuario');
       }
 
-      const response = await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/requisitos/${usuario.id_usuario}`, {
+      const response = await fetch(`http://localhost:3030/requisitos/${usuario.id_usuario}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

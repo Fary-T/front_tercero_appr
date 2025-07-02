@@ -58,7 +58,7 @@ export const PolizasContent = () => {
 
   const obtenerPolizas = async () => {
     try {
-      const response = await fetch("http://35.172.129.60:3030/seguro/", {
+      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/seguro/", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -77,7 +77,7 @@ export const PolizasContent = () => {
 
   const obtenerUsuarios = async () => {
     try {
-      const response = await fetch("http://35.172.129.60:3030/usuario/", {
+      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/usuario/", {
         method: "POST", // Según tu backend, usa POST
         headers: { "Content-Type": "application/json" },
       });
@@ -118,7 +118,7 @@ export const PolizasContent = () => {
   const confirmarEliminacion = async () => {
     if (polizaAEliminar) {
       try {
-        const response = await fetch(`http://35.172.129.60:3030/seguro/eliminar/${polizaAEliminar.id_seguro}`, {
+        const response = await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/seguro/eliminar/${polizaAEliminar.id_seguro}`, {
           method: 'DELETE',
         });
 

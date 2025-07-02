@@ -46,7 +46,7 @@ export const ModalEliminarContratarSeguro = ({ open, onClose, onEliminar }) => {
     setLoading(true);
     try {
       // Cargar seguros contratados
-      const responseSeguros = await fetch("http://35.172.129.60:3030/usuario_seguro/", {
+      const responseSeguros = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/usuario_seguro/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -55,13 +55,13 @@ export const ModalEliminarContratarSeguro = ({ open, onClose, onEliminar }) => {
         const dataSeguros = await responseSeguros.json();
         
         // Cargar usuarios para obtener nombres
-        const responseUsuarios = await fetch("http://35.172.129.60:3030/usuario/", {
+        const responseUsuarios = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/usuario/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
         });
 
         // Cargar seguros para obtener nombres de planes
-        const responsePlanes = await fetch("http://35.172.129.60:3030/seguro/");
+        const responsePlanes = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/seguro/");
 
         let usuariosData = [];
         let planesData = [];
@@ -147,7 +147,7 @@ export const ModalEliminarContratarSeguro = ({ open, onClose, onEliminar }) => {
     try {
       for (const id of segurosSeleccionados) {
         try {
-          const response = await fetch(`http://35.172.129.60:3030/usuario_seguro/eliminar/${id}`, {
+          const response = await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/usuario_seguro/eliminar/${id}`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
           });

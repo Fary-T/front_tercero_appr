@@ -15,7 +15,7 @@ export const ReembolsoAdmin = () => {
 
 	const consultarClientes = async () => {
 		try {
-			const response = await fetch(`http://35.172.129.60:3030/usuario_revision/`);
+			const response = await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/usuario_revision/`);
 			if (!response.ok) {
 				throw new Error("Error al consultar los clientes");
 			}

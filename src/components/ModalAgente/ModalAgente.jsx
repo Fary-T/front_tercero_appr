@@ -87,7 +87,7 @@ export const ModalAgente = ({ open, onClose, onGuardar }) => {
     if (!validarCampos()) return;
 
     try {
-      const response = await fetch("http://35.172.129.60:3030/usuario/agregar", {
+      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/usuario/agregar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

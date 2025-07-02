@@ -79,7 +79,7 @@ export const Header = () => {
     }
 
     try {
-      const response = await fetch("http://35.172.129.60:3030/home", {
+      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/home", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

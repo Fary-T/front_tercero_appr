@@ -19,7 +19,7 @@ export const ModalEliminarUsuarioAgente = ({ open, onClose, usuario, onEliminar 
 
   const handleEliminar = async () => {
     try {
-      const response = await fetch(`http://35.172.129.60:3030/usuario/eliminar/${usuario.id_usuario}`, {
+      const response = await fetch(`https://r4jdf9tl-3030.use.devtunnels.ms/usuario/eliminar/${usuario.id_usuario}`, {
         method: 'DELETE'
       });
 

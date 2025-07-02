@@ -52,7 +52,7 @@ export const ClientesContentAgentes = () => {
 
   const consultarClientes = async () => {
     try {
-      const response = await fetch("http://35.172.129.60:3030/usuario", {
+      const response = await fetch("https://r4jdf9tl-3030.use.devtunnels.ms/usuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

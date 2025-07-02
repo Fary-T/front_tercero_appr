@@ -135,7 +135,7 @@ export const ModalEditarUsuario = ({ open, onClose, usuario, onGuardar }) => {
       const { username, password, ...dataToSend } = formData;
       
       const response = await fetch(
-        `http://35.172.129.60:3030/usuario/editar2/${formData.id_usuario}`,
+        `https://r4jdf9tl-3030.use.devtunnels.ms/usuario/editar2/${formData.id_usuario}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

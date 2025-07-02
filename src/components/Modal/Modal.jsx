@@ -180,7 +180,7 @@ export const Modal = ({ open, onClose, onGuardar }) => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3030/usuario/agregar", {
+      const response = await fetch("http://35.172.129.60:3030/usuario/agregar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -1,12 +1,12 @@
 import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { UserContext, UserProvider, useUser } from "../../../context/UserContext";
+import { UserContext } from "../../../context/UserContext";
 import { ModalContratarSeguro } from '../../Modales/ModalContratarSeguro/ModalContratarSeguro';
 import './ContratarSeguro.css';
 import { useContext } from 'react';
 
 export const ContratarSeguro = () => {
-  const {usuario, setUsuario} = useContext(UserContext);
+  const {usuario} = useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [planes, setPlanes] = useState([]);
@@ -16,7 +16,7 @@ export const ContratarSeguro = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-      const response = await fetch('http://localhost:3030/planes/seguros');
+      const response = await fetch('http://35.172.129.60:3030/planes/seguros');
       const data = await response.json();
         setPlanes(data);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Box, Typography, Card, CardContent, Rating } from '@mui/material';
+import { Box, Typography, Card, CardContent, Rating } from '@mui/material';
 
 const TestimonioCard = ({ testimonio, nombre, estrellas }) => {
   return (

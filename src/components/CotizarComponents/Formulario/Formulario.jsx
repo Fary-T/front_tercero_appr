@@ -43,13 +43,13 @@ const Formulario = ({ plan = "Plan Básico Salud" }) => {
     if (formData.telefono.length !== 10) return alert('El teléfono debe tener exactamente 10 dígitos.');
 
     try {
-      const response = await fetch('http://localhost:3030/usuario/agregar', {
+      const response = await fetch('http://35.172.129.60:3030/usuario/agregar', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      await fetch(`http://localhost:3030/usuario_seguro/mensaje/${formData.correo}`, {
+      await fetch(`http://35.172.129.60:3030/usuario_seguro/mensaje/${formData.correo}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: formData.cedula }),

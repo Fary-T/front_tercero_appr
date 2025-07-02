@@ -30,7 +30,7 @@ export const RevicionPagos = () => {
   const cargarDatos = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3030/pagos');
+      const response = await fetch('http://35.172.129.60:3030/pagos');
 
       if (!response.ok) {
         throw new Error('Error al obtener los datos');

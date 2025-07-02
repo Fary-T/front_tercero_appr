@@ -36,7 +36,7 @@ export const ModalContratarSeguro = ({ open, onClose, plan, userData }) => {
     formData.append("id_seguro_per", plan.id_seguro);
     console.log(userData);
     console.log(formData);
-    const response = await fetch("http://localhost:3030/documentos/formulario", {
+    const response = await fetch("http://35.172.129.60:3030/documentos/formulario", {
       method: "POST",
       body: formData,
     });

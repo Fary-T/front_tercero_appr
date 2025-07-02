@@ -31,7 +31,7 @@ export const ClientesContentClientes = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch("http://localhost:3030/usuario", {
+      const response = await fetch("http://35.172.129.60:3030/usuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

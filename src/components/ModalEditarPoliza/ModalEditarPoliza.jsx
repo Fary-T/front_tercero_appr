@@ -179,7 +179,7 @@ export const ModalEditarPoliza = ({ open, onClose, poliza, onGuardar }) => {
     const { nombre, precio, tiempo_pago, descripcion } = formData;
 
     try {
-      const response = await fetch(`http://localhost:3030/seguro/editar/${poliza.id_seguro}`, {
+      const response = await fetch(`http://35.172.129.60:3030/seguro/editar/${poliza.id_seguro}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

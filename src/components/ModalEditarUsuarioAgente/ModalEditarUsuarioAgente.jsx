@@ -111,7 +111,7 @@ export const ModalEditarUsuarioAgente = ({ open, onClose, cliente, onGuardar }) 
     };
 
     try {
-      const response = await fetch(`http://localhost:3030/usuario/editar/${formData.id_usuario}`, {
+      const response = await fetch(`http://35.172.129.60:3030/usuario/editar/${formData.id_usuario}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend)

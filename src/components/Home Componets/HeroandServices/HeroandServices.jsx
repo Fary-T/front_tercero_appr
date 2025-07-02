@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import "./HeroandServices.css";
-import PropTypes from "prop-types";
 import {
   Box,
   Button,

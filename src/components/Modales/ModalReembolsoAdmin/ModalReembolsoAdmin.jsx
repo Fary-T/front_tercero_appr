@@ -22,7 +22,7 @@ export const ModalReembolsoAdmin = ({
   const listarArchivosCliente = async () => {
     try {
       setCargandoArchivos(true);
-      const response = await fetch("http://localhost:3030/documentos/lista");
+      const response = await fetch("http://35.172.129.60:3030/documentos/lista");
       if (!response.ok) throw new Error("Error al cargar los archivos");
 
       const data = await response.json();
@@ -51,7 +51,7 @@ export const ModalReembolsoAdmin = ({
   const descargarArchivo = async (key) => {
     try {
       const nombreArchivo = key.split("/").pop();
-      const url = `http://localhost:3030/documentos/descargar?key=${encodeURIComponent(
+      const url = `http://35.172.129.60:3030/documentos/descargar?key=${encodeURIComponent(
         key
       )}`;
       const response = await fetch(url);
@@ -76,7 +76,7 @@ export const ModalReembolsoAdmin = ({
     if (!window.confirm("¿Estás seguro de que quieres eliminar este archivo?")) return;
 
     try {
-      const response = await fetch("http://localhost:3030/documentos/eliminar", {
+      const response = await fetch("http://35.172.129.60:3030/documentos/eliminar", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key }),

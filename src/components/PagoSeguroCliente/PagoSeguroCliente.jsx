@@ -72,7 +72,7 @@ export const PagoSeguroCliente = () => {
       setLoading(true);
       if (!usuario?.id_usuario) throw new Error('Usuario no identificado');
 
-      const response = await fetch(`http://localhost:3030/pagos/${usuario.id_usuario}`);
+      const response = await fetch(`http://35.172.129.60:3030/pagos/${usuario.id_usuario}`);
       if (!response.ok) throw new Error('Error al obtener los pagos');
 
       const data = await response.json();

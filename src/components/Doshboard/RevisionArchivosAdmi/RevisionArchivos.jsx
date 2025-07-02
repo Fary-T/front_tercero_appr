@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "./RevisionArchivos.css";
-import PropTypes from "prop-types";
 import { ModalRevisionArchivosAdmin } from "../../Modales/ModalRevisionArchivosAdmin";
 
 
@@ -11,7 +10,7 @@ export const RevisionArchivos = ({}) => {
     useState(false);
   const [documentoClienteSeleccionado, setDocumentoClienteSeleccionado] =
     useState(null);
-  const [nombreClienteSeleccionado, setNombreClienteSeleccionado] =
+  const [ setNombreClienteSeleccionado] =
     useState("");
 
   useEffect(() => {
@@ -20,7 +19,7 @@ export const RevisionArchivos = ({}) => {
 
   const consultarClientes = async () => {
     try {
-      const response = await fetch(`http://localhost:3030/usuario_revision/`);
+      const response = await fetch(`http://35.172.129.60:3030/usuario_revision/`);
       console.log("Respuesta de la API:", response);
       if (!response.ok) {
         throw new Error("Error al consultar los clientes");

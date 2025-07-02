@@ -38,7 +38,7 @@ export const ClientesContentAgentes = () => {
   const [modalVerAbierto, setModalVerAbierto] = useState(false);
   const [usuarioVer, setUsuarioVer] = useState(null);
   const [modalContratarAbierto, setModalContratarAbierto] = useState(false);
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+  const [ setClienteSeleccionado] = useState(null);
 
   const [modalEliminarSegurosAbierto, setModalEliminarSegurosAbierto] = useState(false); // ✅ Nuevo estado
   const [usuarioEliminarSeguros, setUsuarioEliminarSeguros] = useState(null);            // ✅ Nuevo estado
@@ -52,7 +52,7 @@ export const ClientesContentAgentes = () => {
 
   const consultarClientes = async () => {
     try {
-      const response = await fetch("http://localhost:3030/usuario", {
+      const response = await fetch("http://35.172.129.60:3030/usuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });

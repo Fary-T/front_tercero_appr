@@ -28,11 +28,11 @@ export const ModalEliminarSegurosUsuario = ({ open, onClose, usuario, onEliminar
     setLoading(true);
     try {
       const [resSeguros, resPlanes] = await Promise.all([
-        fetch("http://localhost:3030/usuario_seguro/", {
+        fetch("http://35.172.129.60:3030/usuario_seguro/", {
           method: "POST",
           headers: { "Content-Type": "application/json" }
         }),
-        fetch("http://localhost:3030/seguro/")
+        fetch("http://35.172.129.60:3030/seguro/")
       ]);
 
       if (resSeguros.ok && resPlanes.ok) {
@@ -86,7 +86,7 @@ export const ModalEliminarSegurosUsuario = ({ open, onClose, usuario, onEliminar
 
     try {
       for (const id of seleccionados) {
-        const response = await fetch(`http://localhost:3030/usuario_seguro/eliminar/${id}`, {
+        const response = await fetch(`http://35.172.129.60:3030/usuario_seguro/eliminar/${id}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" }
         });

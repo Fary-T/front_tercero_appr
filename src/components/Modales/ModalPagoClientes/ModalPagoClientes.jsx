@@ -106,7 +106,7 @@ export const ModalPagoClientes = ({
       }
 
       // Enviar petición
-      const response = await fetch('http://localhost:3030/documentos/comprobante', {
+      const response = await fetch('http://35.172.129.60:3030/documentos/comprobante', {
         method: 'POST',
         body: formData
       });

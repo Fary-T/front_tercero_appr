@@ -33,7 +33,7 @@ export const ModalVerUsuario = ({ open, onClose, usuario }) => {
       setError(null);
       
       // Obtener todas las relaciones usuario-seguro
-      const responseUsuarioSeguro = await fetch('http://localhost:3030/usuario_seguro/', {
+      const responseUsuarioSeguro = await fetch('http://35.172.129.60:3030/usuario_seguro/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export const ModalVerUsuario = ({ open, onClose, usuario }) => {
       );
       
       // Obtener información de todos los seguros
-      const responseSeguros = await fetch('http://localhost:3030/seguro/');
+      const responseSeguros = await fetch('http://35.172.129.60:3030/seguro/');
       
       if (!responseSeguros.ok) {
         throw new Error('Error al obtener datos de seguros');

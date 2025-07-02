@@ -87,7 +87,7 @@ export const ModalEditarUsuarioCliente = ({ open, onClose, usuario, onGuardar })
           return;
         }
 
-        const response = await fetch(`http://localhost:3030/usuario/editar/${formData.id_usuario}`, {
+        const response = await fetch(`http://35.172.129.60:3030/usuario/editar/${formData.id_usuario}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData)

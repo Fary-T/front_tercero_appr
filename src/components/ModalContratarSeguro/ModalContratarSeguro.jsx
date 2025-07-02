@@ -63,7 +63,7 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
     setLoading(true);
     try {
       // Cargar usuarios (usando POST según tu backend)
-      const responseUsuarios = await fetch("http://localhost:3030/usuario/", {
+      const responseUsuarios = await fetch("http://35.172.129.60:3030/usuario/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -75,7 +75,7 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
       }
 
       // Cargar seguros
-      const responseSeguros = await fetch("http://localhost:3030/seguro/");
+      const responseSeguros = await fetch("http://35.172.129.60:3030/seguro/");
       if (responseSeguros.ok) {
         const dataSeguros = await responseSeguros.json();
         setSeguros(dataSeguros);
@@ -141,7 +141,7 @@ export const ModalContratarSeguro = ({ open, onClose, onContratar }) => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3030/usuario_seguro/agregar", {
+      const response = await fetch("http://35.172.129.60:3030/usuario_seguro/agregar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
